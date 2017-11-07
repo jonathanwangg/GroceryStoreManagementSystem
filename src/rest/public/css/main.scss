@@ -1,0 +1,85 @@
+$animation-speed: 0.3s;
+
+/* Colours */
+$dark: rgb(50, 30, 65);
+$dark-light: rgb(60, 34, 77);
+$dark-text: rgb(55, 31, 76);
+$time-slot-even: rgb(65, 36, 90);
+$time-slot-odd: rgb(72, 38, 99);
+$light: rgb(220, 60, 80);
+$light-opa: rgba(220, 60, 80, 0.9);
+$light-light: rgb(255, 122, 138);
+$light-text: rgb(255, 255, 255);
+$speed: 0.3s;
+
+@font-face {
+    font-family: fontawesome;
+    src: url("../fonts/fontawesome-webfont.woff");
+}
+
+@mixin animate() {
+    -moz-transition: all $speed;
+    -ms-transition: all $speed;
+    -o-transition: all $speed;
+    -webkit-transition: all $speed;
+    transition: all $speed;
+}
+
+body {
+    display: flex;
+    font: 100% Helvetica, sans-serif;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    background-color: $light-light;
+
+    .data-entry {
+        align-items: center;
+        border: 0.1em black solid;
+        display: flex;
+        flex-flow: column nowrap;
+        font-size: 4em;
+        justify-content: center;
+        margin: 0.5em 0 0 0;
+        padding: 0.2em;
+
+        .header {
+            align-items: center;
+            display: flex;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+        }
+
+        .button {
+            align-items: center;
+            background-color: $light-opa;
+            cursor: pointer;
+            display: flex;
+            height: 2em;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+
+            &:hover {
+                background-color: $light;
+            }
+        }
+
+        .info {
+            margin: 0.5em 0;
+
+            label, input {
+                display: inline-block;
+                float: left;
+                font-size: 0.5em;
+            }
+
+            label {
+                clear: left;
+                width: 5em;
+                text-align: left;
+            }
+        }
+    }
+}

@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES5",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "typeRoots": [
+      "./node_modules/@types"
+    ]
+  },
+  "filesGlob": [
+    "/src/**/*.ts",
+    "/test/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

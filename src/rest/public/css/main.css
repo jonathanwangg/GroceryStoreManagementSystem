@@ -1,0 +1,49 @@
+/* Colours */
+@font-face {
+  font-family: fontawesome;
+  src: url("../fonts/fontawesome-webfont.woff"); }
+body {
+  display: flex;
+  font: 100% Helvetica, sans-serif;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  background-color: #ff7a8a; }
+  body .data-entry {
+    align-items: center;
+    border: 0.1em black solid;
+    display: flex;
+    flex-flow: column nowrap;
+    font-size: 4em;
+    justify-content: center;
+    margin: 0.5em 0 0 0;
+    padding: 0.2em; }
+    body .data-entry .header {
+      align-items: center;
+      display: flex;
+      justify-content: center;
+      text-align: center;
+      width: 100%; }
+    body .data-entry .button {
+      align-items: center;
+      background-color: rgba(220, 60, 80, 0.9);
+      cursor: pointer;
+      display: flex;
+      height: 2em;
+      justify-content: center;
+      text-align: center;
+      width: 100%; }
+      body .data-entry .button:hover {
+        background-color: #dc3c50; }
+    body .data-entry .info {
+      margin: 0.5em 0; }
+      body .data-entry .info label, body .data-entry .info input {
+        display: inline-block;
+        float: left;
+        font-size: 0.5em; }
+      body .data-entry .info label {
+        clear: left;
+        width: 5em;
+        text-align: left; }
+
+/*# sourceMappingURL=main.css.map */
