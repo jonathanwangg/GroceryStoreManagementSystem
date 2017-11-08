@@ -11,8 +11,10 @@ Run these in Windows CMD:
 8) npm install oracledb
 
 Conneting to Oracle:
+1) set up tunnel on a LINUX shell:
 ssh -l g7s0b -L localhost:1522:dbhost.ugrad.cs.ubc.ca:1522 remote.ugrad.cs.ubc.ca
 2) On Windows CMD, run "npm start"
 3) On your web browser, go to "localhost:4321"
 4) Insert something (may need to change ID as it is unique)
+5) To check if your insertions are committed, go to:
 http://www.ugrad.cs.ubc.ca/~g7s0b/oracle-test-modified.php
