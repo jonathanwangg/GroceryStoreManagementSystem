@@ -3,7 +3,46 @@ var url = "http://localhost:4321";
 function init() {
     $(document).ready(function () {
         $("#studentSubmit").on("click", enterStudent());
+        expandDataSelection();
+        selectField();
     });
+}
+function expandDataSelection() {
+    $("#selected-data").on("click", function () {
+        $(".data-selection").css("display", "flex");
+    });
+}
+function selectField() {
+    $(".field-selection").on("click", function () {
+        var selection = $(this).html();
+        $("#selected-data").html(selection);
+        $(".data-selection").css("display", "none");
+        createInputFields(selection);
+    });
+}
+function createInputFields(selection) {
+    var fields = [], htmlString = "";
+    switch (selection) {
+        case "Customer":
+            fields = ["Membership ID*", "First Name", "Last Name", "Address", "Phone Number", "Join Date"];
+            break;
+        case "Employee":
+            fields = ["Employee ID*", "First Name", "Last Name", "SIN", "Wage"];
+            break;
+        case "Payroll":
+            fields = ["Employee ID*", "Start Date*", "End Date*", "Hours Worked", "Deductions", "Gross Pay", "Net Pay"];
+            break;
+        case "Product":
+            fields = ["SKU*", "Cost", "Days to Expiry", "Supplier Name"];
+            break;
+        case "Supplier":
+            fields = ["Supplier Name*", "Location*", "Phone Number"];
+            break;
+    }
+    fields.forEach(function (field) {
+        htmlString += "<input type=\"text\" placeholder=\"" + field + "\">\n";
+    });
+    $("#user-data-input").html(htmlString);
 }
 function enterStudent() {
     return new Promise(function (resolve, reject) {

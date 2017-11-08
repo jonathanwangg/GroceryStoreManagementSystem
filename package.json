@@ -38,6 +38,7 @@
     "request": "^2.79.0",
     "request-promise-native": "^1.0.3",
     "restify": "^4.0.3",
-    "typescript": "^2.1.X"
+    "typescript": "^2.1.X",
+    "oracledb": "^1.13.1"
   }
 }

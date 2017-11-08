@@ -10,14 +10,27 @@
 </head>
 
 <body>
-<div id="student-entry" class="data-entry">
-    <span class="header">Insert</span>
-    <div class="info">
-        <label>ID</label><input title="nid" type="text">
-        <label>Name</label><input title="name" type="text">
-        <label>Age</label><input title="age" type="text">
+
+<div id="modal-data" class="modal-container">
+    <div id="data-container">
+        <div id="selected-data">Customer</div>
+        <div class="data-selection">
+            <span class="field-selection">Customer</span>
+            <span class="field-selection">Employee</span>
+            <span class="field-selection">Payroll</span>
+            <span class="field-selection">Product</span>
+            <span class="field-selection">Supplier</span>
+        </div>
+        <div id="user-data-input">
+            <input type="text" placeholder="Membership ID*">
+            <input type="text" placeholder="First Name">
+            <input type="text" placeholder="Last Name">
+            <input type="text" placeholder="Address">
+            <input type="text" placeholder="Phone Number">
+            <input type="text" placeholder="Join Date">
+        </div>
+        <span id="studentSubmit" class="button">Insert</span>
     </div>
-    <span id="studentSubmit" class="button">Submit</span>
 </div>
 
 <script src="./js/jquery-3.1.1.min.js"></script>

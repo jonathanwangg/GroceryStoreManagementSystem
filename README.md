@@ -5,10 +5,12 @@ Run these in Windows CMD:
 2) yarn install
 3) npm --add-python-to-path='true' --debug install --global windows-build-tools
 4) npm install instantclient
-5) set PATH=%cd%\instantclient;%PATH%
-6) set OCI_LIB_DIR=%cd%\instantclient\sdk\lib\msvc
-7) set OCI_INC_DIR=%cd%\instantclient\sdk\include
-8) npm install oracledb
+5)
+set PATH=%cd%\instantclient;%PATH%
+set OCI_LIB_DIR=%cd%\instantclient\sdk\lib\msvc
+set OCI_INC_DIR=%cd%\instantclient\sdk\include
+
+6) npm install oracledb
 
 Conneting to Oracle:
 1) set up tunnel on a LINUX shell:
