@@ -5,7 +5,7 @@
 
 import Log from "../Util";
 import restify = require("restify");
-import Select from "../controller/Select";
+import Communicator from "../controller/Communicator";
 
 /**
  * This configures the REST endpoints for the server.
@@ -55,27 +55,41 @@ export default class Server {
                     name: "grocery"
                 });
 
-                that.rest.use(restify.bodyParser({mapParams: true, mapFiles: true}));
-
-                that.rest.get(/.*/, restify.serveStatic({
-                    directory: __dirname + "/public",
-                    default: "index.html"
+                that.rest.use(restify.bodyParser({
+                    mapParams: true,
+                    mapFiles: true,
+                    requestBodyOnGet: true
                 }));
 
                 // provides the echo service
                 // curl -is  http://localhost:4321/echo/myMessage
                 that.rest.get("/echo/:msg", Server.echo);
 
-                that.rest.post("/insertStudent", function (req: restify.Request, res: restify.Response, next: restify.Next) {
-                    // that.sendInsightResponse(req, res, next);
-                    Select.insertStudent(req.body)
-                    // Select.insertStudent(req.params.id)
+                that.rest.get(/.*/, restify.serveStatic({
+                    directory: __dirname + "/public",
+                    default: "index.html"
+                }));
+
+                that.rest.post("/send-data", function (req: restify.Request,res: restify.Response, next: restify.Next) {
+                    Communicator.processInput(req.body)
                         .then(function (inRes) {
                             res.send(inRes);
                             return next();
                         })
-                        .catch(function (inRes) {
+                        .catch(function (err) {
+                            res.send(err);
+                            return next();
+                        });
+                });
+
+                that.rest.post("/update-table", function (req: restify.Request, res: restify.Response, next: restify.Next) {
+                    Communicator.getData(req.body.entity)
+                        .then(function (inRes) {
                             res.send(inRes);
+                            return next();
+                        })
+                        .catch(function (err) {
+                            res.send(err);
                             return next();
                         });
                 });

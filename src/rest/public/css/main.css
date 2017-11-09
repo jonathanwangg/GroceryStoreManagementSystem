@@ -13,61 +13,157 @@ body {
   padding: 0;
   margin: 0;
   background-color: #ff7a8a; }
-  body #modal-data #data-container {
-    align-items: center;
-    border: 0.1em black solid;
+  body #modal-data {
+    align-items: flex-start;
+    box-sizing: border-box;
     display: flex;
-    flex-flow: column nowrap;
-    font-size: 4em;
+    flex-flow: row nowrap;
+    height: 100vh;
     justify-content: center;
-    margin: 0.5em 0 0 0;
-    padding: 0.2em;
-    position: relative; }
-    body #modal-data #data-container #selected-data, body #modal-data #data-container .button {
+    padding: 1em;
+    width: 100vw; }
+    body #modal-data #data-container {
       align-items: center;
-      background-color: rgba(220, 60, 80, 0.9);
-      color: white;
-      cursor: pointer;
-      display: flex;
-      height: 2em;
-      justify-content: center;
-      text-align: center;
-      width: 100%; }
-      body #modal-data #data-container #selected-data:hover, body #modal-data #data-container .button:hover {
-        background-color: #dc3c50; }
-    body #modal-data #data-container .data-selection {
-      align-items: center;
-      background-color: #dc3c50;
-      border: 0.1em #321e41 solid;
+      border: 0.02em black solid;
       box-sizing: border-box;
-      cursor: pointer;
-      display: none;
+      display: flex;
       flex-flow: column nowrap;
-      justify-content: flex-start;
-      position: absolute;
-      top: 0;
-      text-align: center;
-      width: 100%;
-      z-index: 1; }
-      body #modal-data #data-container .data-selection span {
+      font-size: 4em;
+      height: 100%;
+      justify-content: center;
+      padding: 0.2em;
+      position: relative;
+      width: 7em; }
+      body #modal-data #data-container #selected-entity {
+        align-items: center;
+        background-color: rgba(220, 60, 80, 0.8);
         color: white;
-        left: 0;
-        padding: 0.2em 0;
+        cursor: pointer;
+        display: flex;
+        height: 2em;
+        justify-content: center;
+        text-align: center;
         width: 100%; }
-        body #modal-data #data-container .data-selection span:hover {
-          background-color: #3c224d; }
-    body #modal-data #data-container #user-data-input {
+        body #modal-data #data-container #selected-entity:hover {
+          background-color: #dc3c50; }
+      body #modal-data #data-container .data-selection, body #modal-data #data-container .method-selection {
+        align-items: center;
+        background-color: #dc3c50;
+        border: 0.1em #321e41 solid;
+        box-sizing: border-box;
+        cursor: pointer;
+        display: none;
+        flex-flow: column nowrap;
+        justify-content: flex-start;
+        position: absolute;
+        text-align: center;
+        width: 100%;
+        z-index: 1; }
+        body #modal-data #data-container .data-selection span, body #modal-data #data-container .method-selection span {
+          color: white;
+          left: 0;
+          padding: 0.2em 0;
+          width: 100%; }
+          body #modal-data #data-container .data-selection span:hover, body #modal-data #data-container .method-selection span:hover {
+            background-color: #3c224d; }
+      body #modal-data #data-container .data-selection {
+        top: 0; }
+      body #modal-data #data-container .method-selection {
+        bottom: 0; }
+      body #modal-data #data-container #selected-method-container {
+        align-items: center;
+        display: flex;
+        flex-flow: row nowrap;
+        height: 2em;
+        justify-content: center;
+        text-align: center;
+        width: 100%; }
+        body #modal-data #data-container #selected-method-container #selected-method, body #modal-data #data-container #selected-method-container #method-selection {
+          align-items: center;
+          background: rgba(220, 60, 80, 0.8);
+          color: white;
+          height: 100%;
+          justify-content: center; }
+          body #modal-data #data-container #selected-method-container #selected-method:hover, body #modal-data #data-container #selected-method-container #method-selection:hover {
+            background: #dc3c50;
+            cursor: pointer; }
+        body #modal-data #data-container #selected-method-container #selected-method {
+          display: flex;
+          flex: 4 1 auto; }
+        body #modal-data #data-container #selected-method-container #method-selection {
+          display: flex;
+          flex: 1 1 auto;
+          font-size: 0.5em; }
+          body #modal-data #data-container #selected-method-container #method-selection:hover .fa {
+            transition: 1s;
+            transform: rotate(360deg); }
+      body #modal-data #data-container #user-data-input {
+        align-items: center;
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        margin: 0.5em 0;
+        width: 100%; }
+        body #modal-data #data-container #user-data-input input {
+          box-sizing: border-box;
+          font-size: 0.5em;
+          margin: 0.1em 0;
+          padding: 0.2em 0.6em;
+          width: 100%; }
+    body #modal-data #table-container {
+      border: 0.1em black solid;
+      box-sizing: border-box;
       align-items: center;
       display: flex;
       flex-flow: column nowrap;
+      margin: 0 0 0 0.5em;
+      max-height: 100%;
       justify-content: center;
-      margin: 0.5em 0;
-      width: 100%; }
-      body #modal-data #data-container #user-data-input input {
-        box-sizing: border-box;
-        font-size: 0.5em;
-        margin: 0.1em 0;
-        padding: 0.1em 0.5em;
+      width: 60%; }
+      body #modal-data #table-container #view-table {
+        align-items: center;
+        background: rgba(220, 60, 80, 0.8);
+        color: white;
+        display: flex;
+        flex: 1 1 auto;
+        font-size: 4em;
+        height: 2em;
+        justify-content: center;
+        text-align: center;
         width: 100%; }
+        body #modal-data #table-container #view-table:hover {
+          background: #dc3c50;
+          cursor: pointer; }
+      body #modal-data #table-container #table-data {
+        align-items: center;
+        color: white;
+        display: flex;
+        flex-flow: column nowrap;
+        height: 100%;
+        justify-content: center;
+        margin: 0;
+        max-height: 100%;
+        overflow-y: auto;
+        padding: 0;
+        width: 100%; }
+        body #modal-data #table-container #table-data tr {
+          align-items: center;
+          display: flex;
+          flex-flow: row nowrap;
+          justify-content: center;
+          width: 100%; }
+          body #modal-data #table-container #table-data tr th, body #modal-data #table-container #table-data tr td {
+            flex: 1 1 0;
+            margin: 0;
+            padding: 0.5em 0;
+            text-align: center; }
+          body #modal-data #table-container #table-data tr th:nth-child(even), body #modal-data #table-container #table-data tr td:nth-child(even) {
+            background-color: #321e41; }
+          body #modal-data #table-container #table-data tr th:nth-child(odd), body #modal-data #table-container #table-data tr td:nth-child(odd) {
+            background-color: #3c224d; }
+          body #modal-data #table-container #table-data tr th {
+            font-size: 1.2em; }
+          body #modal-data #table-container #table-data tr:hover {
+            color: #ff7a8a; }
 
 /*# sourceMappingURL=main.css.map */

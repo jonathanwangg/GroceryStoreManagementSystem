@@ -2,80 +2,148 @@ var $document = $(document);
 var url = "http://localhost:4321";
 function init() {
     $(document).ready(function () {
-        $("#studentSubmit").on("click", enterStudent());
         expandDataSelection();
+        expandMethodSelection();
         selectField();
+        selectMethod();
+        sendData();
+        getTableData();
     });
 }
 function expandDataSelection() {
-    $("#selected-data").on("click", function () {
+    $("#selected-entity").on("click", function () {
         $(".data-selection").css("display", "flex");
+    });
+}
+function expandMethodSelection() {
+    $("#method-selection").on("click", function () {
+        $(".method-selection").css("display", "flex");
     });
 }
 function selectField() {
     $(".field-selection").on("click", function () {
         var selection = $(this).html();
-        $("#selected-data").html(selection);
+        $("#selected-entity").html(selection);
         $(".data-selection").css("display", "none");
-        createInputFields(selection);
+        createInputFields();
     });
 }
-function createInputFields(selection) {
-    var fields = [], htmlString = "";
-    switch (selection) {
-        case "Customer":
-            fields = ["Membership ID*", "First Name", "Last Name", "Address", "Phone Number", "Join Date"];
-            break;
-        case "Employee":
-            fields = ["Employee ID*", "First Name", "Last Name", "SIN", "Wage"];
-            break;
-        case "Payroll":
-            fields = ["Employee ID*", "Start Date*", "End Date*", "Hours Worked", "Deductions", "Gross Pay", "Net Pay"];
-            break;
-        case "Product":
-            fields = ["SKU*", "Cost", "Days to Expiry", "Supplier Name"];
-            break;
-        case "Supplier":
-            fields = ["Supplier Name*", "Location*", "Phone Number"];
-            break;
-    }
+function selectMethod() {
+    $(".method").on("click", function () {
+        var method = $(this).html();
+        $("#selected-method").html(method);
+        $(".method-selection").css("display", "none");
+        createInputFields();
+    });
+}
+function createInputFields() {
+    var fields = getFields(), htmlString = "";
     fields.forEach(function (field) {
         htmlString += "<input type=\"text\" placeholder=\"" + field + "\">\n";
     });
     $("#user-data-input").html(htmlString);
 }
-function enterStudent() {
-    return new Promise(function (resolve, reject) {
-        console.log("INSERSTUDENTS CLIENT CALL 1/2");
-        $("#studentSubmit").on("click", function () {
-            console.log("START: insertStudent()");
-            insertStudent()
-                .then(function (inRes) {
-                console.log("TERMINATION :) : " + inRes);
-                return resolve(inRes);
+function getFields() {
+    var method = $("#selected-method").html(), obj = $("#selected-entity").html(), customerPK = ["Membership ID"], customer = ["First Name", "Last Name", "Address", "Phone Number", "Join Date"], employeePK = ["Employee ID"], employee = ["First Name", "Last Name", "SIN", "Wage"], payrollPK = ["Employee ID", "Start Date", "End Date"], payroll = ["Hours Worked", "Deductions", "Gross Pay", "Net Pay"], productPK = ["SKU"], product = ["Cost", "Days to Expiry", "Supplier Name"], supplierPK = ["Supplier Name", "Location"], supplier = ["Phone Number"];
+    switch (method) {
+        case "Delete":
+            switch (obj) {
+                case "Customer":
+                    return customerPK;
+                case "Employee":
+                    return employeePK;
+                case "Payroll":
+                    return payrollPK;
+                case "Product":
+                    return productPK;
+                case "Supplier":
+                    return supplierPK;
+            }
+            break;
+        case "Insert":
+        case "Update":
+            switch (obj) {
+                case "Customer":
+                    return customerPK.concat(customer);
+                case "Employee":
+                    return employeePK.concat(employee);
+                case "Payroll":
+                    return payrollPK.concat(payroll);
+                case "Product":
+                    return productPK.concat(product);
+                case "Supplier":
+                    return supplierPK.concat(supplier);
+            }
+            break;
+        default:
+            return [];
+    }
+}
+function sendData() {
+    $("#selected-method").on("click", function () {
+        return new Promise(function (resolve, reject) {
+            return $.ajax({
+                type: getType(),
+                url: url + "/send-data",
+                data: JSON.stringify({
+                    method: $("#selected-method").html(),
+                    entity: $("#selected-entity").html(),
+                    inputs: getInput()
+                }),
+                contentType: "application/json; charset=utf-8"
+            })
+                .then(function (res) {
+                $("#user-data-input").find("input").each(function () {
+                    $(this).val("");
+                });
+                return resolve(res);
             })
                 .catch(function (err) {
-                console.log("TERMINATION :(");
                 return reject(err);
             });
-            console.log("END:   insertStudent()");
         });
     });
 }
-function insertStudent() {
-    console.log("INSERSTUDENTS CLIENT CALL 2/2");
-    return $.ajax({
-        type: "POST",
-        url: url + "/insertStudent",
-        data: JSON.stringify(getInput("#student-entry")),
-        contentType: "application/json; charset=utf-8"
+function getTableData() {
+    $("#view-table").on("click", function () {
+        return new Promise(function (resolve, reject) {
+            return $.ajax({
+                type: getType(),
+                url: url + "/update-table",
+                data: JSON.stringify({ entity: $("#selected-entity").html() }),
+                contentType: "application/json; charset=utf-8"
+            })
+                .then(function (res) {
+                updateTable(res);
+                return resolve(res);
+            })
+                .catch(function (err) {
+                return reject(err);
+            });
+        });
     });
 }
-function getInput(id) {
-    var nid = $(id).find("input:nth-child(2)").val();
-    var name = $(id).find("input:nth-child(4)").val();
-    var age = $(id).find("input:nth-child(6)").val();
-    return { nid: nid, name: name, age: age };
+function updateTable(res) {
+    var HTMLStr = "<tr>\n"
+        + res.metaData.map(function (obj) {
+            return "<th>" + obj.name.toLowerCase() + "</th>\n";
+        }).join("") + "</tr>\n"
+        + res.rows.map(function (arr) {
+            return "<tr>\n" + arr.map(function (elem) {
+                return "<td>" + elem + "</td>\n";
+            }).join("") + "</tr>\n";
+        }).join("");
+    $("#table-data").html(HTMLStr);
+}
+function getType() {
+    return "POST";
+}
+function getInput() {
+    var inputObj = {};
+    $("#user-data-input").find("input").each(function () {
+        inputObj[$(this).attr("placeholder").replace(/ /g, "_").toLowerCase()] = $(this).val();
+    });
+    return inputObj;
 }
 window.onload = function () {
     init();

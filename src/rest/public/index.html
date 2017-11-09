@@ -13,7 +13,7 @@
 
 <div id="modal-data" class="modal-container">
     <div id="data-container">
-        <div id="selected-data">Customer</div>
+        <div id="selected-entity">Customer</div>
         <div class="data-selection">
             <span class="field-selection">Customer</span>
             <span class="field-selection">Employee</span>
@@ -22,14 +22,31 @@
             <span class="field-selection">Supplier</span>
         </div>
         <div id="user-data-input">
-            <input type="text" placeholder="Membership ID*">
+            <input type="text" placeholder="Membership ID">
             <input type="text" placeholder="First Name">
             <input type="text" placeholder="Last Name">
             <input type="text" placeholder="Address">
             <input type="text" placeholder="Phone Number">
             <input type="text" placeholder="Join Date">
         </div>
-        <span id="studentSubmit" class="button">Insert</span>
+        <div id="selected-method-container">
+            <div id="selected-method" class="button">Insert</div>
+            <div id="method-selection">
+                <span class="fa fa-cog" aria-hidden="true"></span>
+            </div>
+        </div>
+        <div class="method-selection">
+            <span class="method">Insert</span>
+            <span class="method">Update</span>
+            <span class="method">Delete</span>
+            <span class="method">Create</span>
+            <span class="method">Drop</span>
+        </div>
+    </div>
+    <div id="table-container">
+        <div id="view-table">View Table</div>
+        <table id="table-data">
+        </table>
     </div>
 </div>
 

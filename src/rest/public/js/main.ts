@@ -3,15 +3,24 @@ let url: string = "http://localhost:4321";
 
 function init(): void {
     $(document).ready(function () {
-        $("#studentSubmit").on("click", enterStudent());
         expandDataSelection();
+        expandMethodSelection();
         selectField();
+        selectMethod();
+        sendData();
+        getTableData();
     });
 }
 
 function expandDataSelection() {
-    $("#selected-data").on("click", function () {
+    $("#selected-entity").on("click", function () {
         $(".data-selection").css("display", "flex");
+    });
+}
+
+function expandMethodSelection() {
+    $("#method-selection").on("click", function () {
+        $(".method-selection").css("display", "flex");
     });
 }
 
@@ -22,37 +31,33 @@ function selectField() {
     $(".field-selection").on("click", function () {
         let selection: String = $(this).html();
 
-        $("#selected-data").html(selection);
+        $("#selected-entity").html(selection);
         $(".data-selection").css("display", "none");
 
-        createInputFields(selection);
+        createInputFields();
     });
 }
 
 /**
- * Creates the necessary input parameters for the given selection (Employee, Customer, etc.)
+ * Choose a method (Insert, Update, etc.).
  */
-function createInputFields(selection: String) {
-    let fields: any = [],
-        htmlString: string = "";
+function selectMethod() {
+    $(".method").on("click", function () {
+        let method: String = $(this).html();
 
-    switch (selection) {
-        case "Customer":
-            fields = ["Membership ID*", "First Name", "Last Name", "Address", "Phone Number", "Join Date"];
-            break;
-        case "Employee":
-            fields = ["Employee ID*", "First Name", "Last Name", "SIN", "Wage"];
-            break;
-        case "Payroll":
-            fields = ["Employee ID*", "Start Date*", "End Date*", "Hours Worked", "Deductions", "Gross Pay", "Net Pay"];
-            break;
-        case "Product":
-            fields = ["SKU*", "Cost", "Days to Expiry", "Supplier Name"];
-            break;
-        case "Supplier":
-            fields = ["Supplier Name*", "Location*", "Phone Number"];
-            break;
-    }
+        $("#selected-method").html(method);
+        $(".method-selection").css("display", "none");
+
+        createInputFields();
+    });
+}
+
+/**
+ * Creates the necessary input parameters for Object (Employee, Customer, etc.) and Method (Delete, Input, etc.).
+ */
+function createInputFields() {
+    let fields: any = getFields(),
+        htmlString: string = "";
 
     fields.forEach(function (field: string) {
         htmlString += "<input type=\"text\" placeholder=\"" + field + "\">\n";
@@ -62,51 +67,164 @@ function createInputFields(selection: String) {
 }
 
 /**
- * Proof of concept purposes
+ * Returns the fields needed by the selected Object and Method.
  */
-function enterStudent() {
-    return new Promise(function (resolve, reject) {
-        console.log("INSERSTUDENTS CLIENT CALL 1/2");
+function getFields() {
+    let method: String = $("#selected-method").html(),
+        obj: String = $("#selected-entity").html(),
+        customerPK = ["Membership ID"],
+        customer = ["First Name", "Last Name", "Address", "Phone Number", "Join Date"],
+        employeePK = ["Employee ID"],
+        employee = ["First Name", "Last Name", "SIN", "Wage"],
+        payrollPK = ["Employee ID", "Start Date", "End Date"],
+        payroll = ["Hours Worked", "Deductions", "Gross Pay", "Net Pay"],
+        productPK = ["SKU"],
+        product = ["Cost", "Days to Expiry", "Supplier Name"],
+        supplierPK = ["Supplier Name", "Location"],
+        supplier = ["Phone Number"];
 
-        $("#studentSubmit").on("click", function () {
-            console.log("START: insertStudent()");
-
-            insertStudent()
-                .then(function (inRes: any) {
-                    console.log("TERMINATION :) : " + inRes);
-                    return resolve(inRes);
-                })
-                .catch(function (err: Error) {
-                    console.log("TERMINATION :(");
-                    return reject(err);
-                });
-            console.log("END:   insertStudent()");
-        });
-    })
+    switch (method) {
+        case "Delete":
+            switch (obj) {
+                case "Customer":
+                    return customerPK;
+                case "Employee":
+                    return employeePK;
+                case "Payroll":
+                    return payrollPK;
+                case "Product":
+                    return productPK;
+                case "Supplier":
+                    return supplierPK;
+            }
+            break;
+        case "Insert":
+        case "Update":
+            switch (obj) {
+                case "Customer":
+                    return customerPK.concat(customer);
+                case "Employee":
+                    return employeePK.concat(employee);
+                case "Payroll":
+                    return payrollPK.concat(payroll);
+                case "Product":
+                    return productPK.concat(product);
+                case "Supplier":
+                    return supplierPK.concat(supplier);
+            }
+            break;
+        default:
+            return [];
+    }
 }
 
 /**
- * Queries the server about "courses" and "rooms".
+ * Sends client data to server for conversion into SQL statements.
  */
-function insertStudent(): any {
-    console.log("INSERSTUDENTS CLIENT CALL 2/2");
-
-    return $.ajax({
-        type: "POST",
-        url: url + "/insertStudent",
-        data: JSON.stringify(getInput("#student-entry")),
-        contentType: "application/json; charset=utf-8"
+function sendData() {
+    $("#selected-method").on("click", function () {
+        return new Promise(function (resolve, reject) {
+            return $.ajax({
+                type: getType(),
+                url: url + "/send-data",
+                data: JSON.stringify({
+                    method: $("#selected-method").html(),
+                    entity: $("#selected-entity").html(),
+                    inputs: getInput()
+                }),
+                contentType: "application/json; charset=utf-8"
+            })
+                .then(function (res: any) {
+                    $("#user-data-input").find("input").each(function () {
+                        $(this).val("");
+                    });
+                    return resolve(res);
+                })
+                .catch(function (err: Error) {
+                    return reject(err);
+                });
+        });
     });
 }
 
-function getInput(id: string): Object {
-    let nid: number = $(id).find("input:nth-child(2)").val();
-    let name: number = $(id).find("input:nth-child(4)").val();
-    let age: number = $(id).find("input:nth-child(6)").val();
-
-    return {nid: nid, name: name, age: age};
+/**
+ * Retrieves entity data from the database.
+ */
+function getTableData() {
+    $("#view-table").on("click", function () {
+        return new Promise(function (resolve, reject) {
+            return $.ajax({
+                type: getType(),
+                url: url + "/update-table",
+                data: JSON.stringify({entity: $("#selected-entity").html()}),
+                contentType: "application/json; charset=utf-8"
+            })
+                .then(function (res: any) {
+                    updateTable(res);
+                    return resolve(res);
+                })
+                .catch(function (err: Error) {
+                    return reject(err);
+                });
+        });
+    });
 }
 
+/**
+ * Updates the Table HTML with the given response.
+ */
+function updateTable(res: any) {
+    let HTMLStr: String = "<tr>\n"
+        + res.metaData.map(function (obj: any) {
+            return "<th>" + obj.name.toLowerCase() + "</th>\n"
+        }).join("") + "</tr>\n"
+        + res.rows.map(function (arr: any) {
+            return "<tr>\n" + arr.map(function (elem: any) {
+                return "<td>" + elem + "</td>\n";
+            }).join("") + "</tr>\n";
+        }).join("");
+
+    $("#table-data").html(HTMLStr);
+}
+
+/**
+ * Returns the HTTP method type.
+ */
+function getType() {
+    //TODO: Fix the HTTP methods
+    // switch ($("#selected-method").html()) {
+    //     case "Insert":
+    //         return "POST";
+    //     case "Update":
+    //         return "PUT";
+    //     case "Delete":
+    //         return "DELETE";
+    //     case "SELECT":
+    //         return "GET";
+    //     case "Create":
+    //         return "WHAT?"; //TODO: Fix this
+    //     case "Drop":
+    //         return "WHAT?"; //TODO: Fix this
+    // }
+    return "POST";
+}
+
+/**
+ * Creates a JavaScript Object using user defined inputs and settings.
+ */
+function getInput() {
+    let inputObj: any = {};
+
+    $("#user-data-input").find("input").each(function () {
+        inputObj[$(this).attr("placeholder").replace(/ /g, "_").toLowerCase()] = $(this).val();
+    });
+
+    return inputObj;
+}
+
+/**
+ * Load window.
+ */
 window.onload = function () {
     init();
 };

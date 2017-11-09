@@ -14,7 +14,7 @@ set OCI_INC_DIR=%cd%\instantclient\sdk\include
 
 Conneting to Oracle:
 1) set up tunnel on a LINUX shell:
-ssh -l g7s0b -L localhost:1522:dbhost.ugrad.cs.ubc.ca:1522 remote.ugrad.cs.ubc.ca
+ssh -l g7s0b -L localhost:1522:dbhost.ugrad.cs.ubc.ca:1522 lulu.ugrad.cs.ubc.ca
 2) On Windows CMD, run "npm start"
 3) On your web browser, go to "localhost:4321"
 4) Insert something (may need to change ID as it is unique)

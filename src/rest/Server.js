@@ -1,7 +1,7 @@
 "use strict";
 var Util_1 = require("../Util");
 var restify = require("restify");
-var Select_1 = require("../controller/Select");
+var Communicator_1 = require("../controller/Communicator");
 var Server = (function () {
     function Server(port) {
         Util_1.default.info("Server::<init>( " + port + " )");
@@ -24,20 +24,35 @@ var Server = (function () {
                 that.rest = restify.createServer({
                     name: "grocery"
                 });
-                that.rest.use(restify.bodyParser({ mapParams: true, mapFiles: true }));
+                that.rest.use(restify.bodyParser({
+                    mapParams: true,
+                    mapFiles: true,
+                    requestBodyOnGet: true
+                }));
+                that.rest.get("/echo/:msg", Server.echo);
                 that.rest.get(/.*/, restify.serveStatic({
                     directory: __dirname + "/public",
                     default: "index.html"
                 }));
-                that.rest.get("/echo/:msg", Server.echo);
-                that.rest.post("/insertStudent", function (req, res, next) {
-                    Select_1.default.insertStudent(req.body)
+                that.rest.post("/send-data", function (req, res, next) {
+                    Communicator_1.default.processInput(req.body)
                         .then(function (inRes) {
                         res.send(inRes);
                         return next();
                     })
-                        .catch(function (inRes) {
+                        .catch(function (err) {
+                        res.send(err);
+                        return next();
+                    });
+                });
+                that.rest.post("/update-table", function (req, res, next) {
+                    Communicator_1.default.getData(req.body.entity)
+                        .then(function (inRes) {
                         res.send(inRes);
+                        return next();
+                    })
+                        .catch(function (err) {
+                        res.send(err);
                         return next();
                     });
                 });
