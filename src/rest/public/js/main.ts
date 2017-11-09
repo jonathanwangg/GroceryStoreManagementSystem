@@ -122,12 +122,19 @@ function getFields() {
  * Sends client data to server for conversion into SQL statements.
  */
 function sendData() {
-    $("#selected-method").on("click", function () {
+    let method = $("#selected-method");
+
+    method.on("click", function () {
+        if (!method.hasClass("normal")) {
+            return;
+        }
+
+        method.removeClass("normal");
         return new Promise(function (resolve, reject) {
             return $.ajax({
-                type: getType(),
-                url: url + "/send-data",
-                data: JSON.stringify({
+                type:        getType(),
+                url:         url + "/send-data",
+                data:        JSON.stringify({
                     method: $("#selected-method").html(),
                     entity: $("#selected-entity").html(),
                     inputs: getInput()
@@ -138,13 +145,39 @@ function sendData() {
                     $("#user-data-input").find("input").each(function () {
                         $(this).val("");
                     });
+                    buttonFeedback(true);
                     return resolve(res);
                 })
                 .catch(function (err: Error) {
+                    buttonFeedback(false);
                     return reject(err);
                 });
         });
     });
+}
+
+/**
+ * Animates button feedback.
+ */
+function buttonFeedback(success: boolean) {
+    let method = $("#selected-method"),
+        selection = $("#method-selection");
+
+    let origMethod: String = method.html(),
+        origIcon: String = selection.html();
+
+    method.html(success ? "Done" : "Failed");
+    selection.html(success ? "<span class=\"fa fa-check\" aria-hidden=\"true\"></span>"
+        : "<span class=\"fa fa-times\" aria-hidden=\"true\"></span>");
+    method.removeClass("normal").addClass(success ? "success" : "fail");
+    selection.removeClass("normal").addClass(success ? "success" : "fail");
+
+    setTimeout(function () {
+        method.html(origMethod);
+        selection.html(origIcon);
+        method.removeClass("success fail").addClass("normal");
+        selection.removeClass("success fail").addClass("normal");
+    }, 1500);
 }
 
 /**
@@ -154,9 +187,9 @@ function getTableData() {
     $("#view-table").on("click", function () {
         return new Promise(function (resolve, reject) {
             return $.ajax({
-                type: getType(),
-                url: url + "/update-table",
-                data: JSON.stringify({entity: $("#selected-entity").html()}),
+                type:        getType(),
+                url:         url + "/update-table",
+                data:        JSON.stringify({entity: $("#selected-entity").html()}),
                 contentType: "application/json; charset=utf-8"
             })
                 .then(function (res: any) {
@@ -174,15 +207,15 @@ function getTableData() {
  * Updates the Table HTML with the given response.
  */
 function updateTable(res: any) {
-    let HTMLStr: String = "<tr>\n"
+    let HTMLStr: String = "<thead>\n<tr>\n"
         + res.metaData.map(function (obj: any) {
             return "<th>" + obj.name.toLowerCase() + "</th>\n"
-        }).join("") + "</tr>\n"
+        }).join("") + "</tr>\n<\thead>\n<tbody>\n"
         + res.rows.map(function (arr: any) {
             return "<tr>\n" + arr.map(function (elem: any) {
                 return "<td>" + elem + "</td>\n";
             }).join("") + "</tr>\n";
-        }).join("");
+        }).join("") + "<\tbody>\n";
 
     $("#table-data").html(HTMLStr);
 }

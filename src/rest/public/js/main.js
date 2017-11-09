@@ -80,7 +80,12 @@ function getFields() {
     }
 }
 function sendData() {
-    $("#selected-method").on("click", function () {
+    var method = $("#selected-method");
+    method.on("click", function () {
+        if (!method.hasClass("normal")) {
+            return;
+        }
+        method.removeClass("normal");
         return new Promise(function (resolve, reject) {
             return $.ajax({
                 type: getType(),
@@ -96,13 +101,30 @@ function sendData() {
                 $("#user-data-input").find("input").each(function () {
                     $(this).val("");
                 });
+                buttonFeedback(true);
                 return resolve(res);
             })
                 .catch(function (err) {
+                buttonFeedback(false);
                 return reject(err);
             });
         });
     });
+}
+function buttonFeedback(success) {
+    var method = $("#selected-method"), selection = $("#method-selection");
+    var origMethod = method.html(), origIcon = selection.html();
+    method.html(success ? "Done" : "Failed");
+    selection.html(success ? "<span class=\"fa fa-check\" aria-hidden=\"true\"></span>"
+        : "<span class=\"fa fa-times\" aria-hidden=\"true\"></span>");
+    method.removeClass("normal").addClass(success ? "success" : "fail");
+    selection.removeClass("normal").addClass(success ? "success" : "fail");
+    setTimeout(function () {
+        method.html(origMethod);
+        selection.html(origIcon);
+        method.removeClass("success fail").addClass("normal");
+        selection.removeClass("success fail").addClass("normal");
+    }, 1500);
 }
 function getTableData() {
     $("#view-table").on("click", function () {
@@ -124,15 +146,15 @@ function getTableData() {
     });
 }
 function updateTable(res) {
-    var HTMLStr = "<tr>\n"
+    var HTMLStr = "<thead>\n<tr>\n"
         + res.metaData.map(function (obj) {
             return "<th>" + obj.name.toLowerCase() + "</th>\n";
-        }).join("") + "</tr>\n"
+        }).join("") + "</tr>\n<\thead>\n<tbody>\n"
         + res.rows.map(function (arr) {
             return "<tr>\n" + arr.map(function (elem) {
                 return "<td>" + elem + "</td>\n";
             }).join("") + "</tr>\n";
-        }).join("");
+        }).join("") + "<\tbody>\n";
     $("#table-data").html(HTMLStr);
 }
 function getType() {

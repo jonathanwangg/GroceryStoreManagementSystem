@@ -47,7 +47,7 @@ export default class Communicator {
      */
     public static connect() {
         return new Promise(function (resolve, reject) {
-            return Communicator.oracledb.getConnection(Communicator.setting, function (err: Error, connection: any) {
+            Communicator.oracledb.getConnection(Communicator.setting, function (err: Error, connection: any) {
                 if (err) {
                     return reject(err);
                 }
@@ -131,7 +131,6 @@ export default class Communicator {
         let SQLStr: String = "",
             entity: any = obj.entity.toLowerCase(),
             inputs: any = obj.inputs;
-        console.log("Current method: " + obj.method);
 
         switch (obj.method) {
             case "Create":
@@ -161,7 +160,7 @@ export default class Communicator {
                     }).join(", ") + ")";
                 break;
             case "Update":
-                SQLStr += "INSERT INTO " + entity + " ("
+                SQLStr += "UPDATE " + entity + "\nSET "
                     + Object.keys(inputs).join(", ") + ")" + "\nVALUES ("
                     + Object.keys(inputs).map(function (elem) {
                         if (Dictionary.type[elem] === "NUMBER") {

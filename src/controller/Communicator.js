@@ -29,7 +29,7 @@ var Communicator = (function () {
     };
     Communicator.connect = function () {
         return new Promise(function (resolve, reject) {
-            return Communicator.oracledb.getConnection(Communicator.setting, function (err, connection) {
+            Communicator.oracledb.getConnection(Communicator.setting, function (err, connection) {
                 if (err) {
                     return reject(err);
                 }
@@ -91,7 +91,6 @@ var Communicator = (function () {
     };
     Communicator.getSQLStr = function (obj) {
         var SQLStr = "", entity = obj.entity.toLowerCase(), inputs = obj.inputs;
-        console.log("Current method: " + obj.method);
         switch (obj.method) {
             case "Create":
                 SQLStr += "CREATE TABLE " + entity + " (\n"
@@ -119,7 +118,7 @@ var Communicator = (function () {
                     }).join(", ") + ")";
                 break;
             case "Update":
-                SQLStr += "INSERT INTO " + entity + " ("
+                SQLStr += "UPDATE " + entity + "\nSET "
                     + Object.keys(inputs).join(", ") + ")" + "\nVALUES ("
                     + Object.keys(inputs).map(function (elem) {
                         if (Dictionary_1.default.type[elem] === "NUMBER") {

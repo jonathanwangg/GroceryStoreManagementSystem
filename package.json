@@ -1,6 +1,6 @@
 {
-  "name": "cpsc304project",
-  "description": "CPSC 304 project",
+  "name": "GroceryStoreManagementSystem",
+  "description": "Grocery Project",
   "homepage": "",
   "author": "",
   "contributors": "N/A",
@@ -13,8 +13,7 @@
     "bunyan": "^1.8.5",
     "icedfrisby": "^0.3.X",
     "joi": "^10.0.X",
-    "mocha": "^3.2.0",
-    "tslint": "^4.1.X"
+    "mocha": "^3.2.0"
   },
   "scripts": {
     "clean": "rm -rf ./node_modules/",

@@ -1,13 +1,9 @@
 /**
- * Created by rtholmes on 2016-06-20.
- */
-
-/**
- * Collection of logging methods. Useful for making the output easier to read and understand.
+ * Collection of logging methods.
  *
  * @param msg
  */
-/* tslint:disable:no-console */
+
 export default class Log {
 
     public static trace(msg: string) {
