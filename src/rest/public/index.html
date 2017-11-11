@@ -6,6 +6,8 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" type="text/css" href="./css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="http://akottr.github.io/css/reset.css"/>
+    <link rel="stylesheet" type="text/css" href="http://akottr.github.io/css/akottr.css"/>
     <link rel="stylesheet" type="text/css" href="./css/main.css">
 </head>
 
@@ -14,14 +16,14 @@
 <div id="modal-data" class="modal-container">
     <div id="data-container">
         <div id="selected-entity">Customer</div>
-        <div class="data-selection">
-            <span class="field-selection">Customer</span>
-            <span class="field-selection">Employee</span>
-            <span class="field-selection">Payroll</span>
-            <span class="field-selection">Product</span>
-            <span class="field-selection">Supplier</span>
+        <div id="entities">
+            <span class="entity">Customer</span>
+            <span class="entity">Employee</span>
+            <span class="entity">Payroll</span>
+            <span class="entity">Product</span>
+            <span class="entity">Supplier</span>
         </div>
-        <div id="user-data-input">
+        <div id="attribute-inputs">
             <input type="text" placeholder="Membership ID">
             <input type="text" placeholder="First Name">
             <input type="text" placeholder="Last Name">
@@ -29,13 +31,21 @@
             <input type="text" placeholder="Phone Number">
             <input type="text" placeholder="Join Date">
         </div>
-        <div id="selected-method-container">
+        <div id="methods-container">
             <div id="selected-method" class="normal">Insert</div>
-            <div id="method-selection" class="normal">
+            <div id="method-selector" class="normal">
                 <span class="fa fa-cog" aria-hidden="true"></span>
             </div>
         </div>
-        <div class="method-selection">
+        <div id="confirmation-container">
+            <div id="drop-confirm" class="method">
+                <span class="fa fa-check" aria-hidden="true"></span>
+            </div>
+            <div id="drop-cancel" class="normal">
+                <span class="fa fa-times" aria-hidden="true"></span>
+            </div>
+        </div>
+        <div id="methods">
             <span class="method">Insert</span>
             <span class="method">Update</span>
             <span class="method">Delete</span>
@@ -44,13 +54,133 @@
         </div>
     </div>
     <div id="table-container">
-        <div id="view-table">View Table</div>
-        <table id="table-data">
+        <table>
+            <thead>
+                <tr>
+                    <th>Membership ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Address</th>
+                    <th>Phone Number</th>
+                    <th>Join Date</th>
+                </tr>
+                <tr class="specification">
+                    <td>
+                        <div class="operator-container-list">
+                            <div class="operator-icon fa fa-calculator" aria-hidden="true">
+                                <div class="operator-selection">
+                                    <span class="operator selected">=</span>
+                                    <span class="operator">!=</span> <!-- &ne; doesn't display anything-->
+                                    <span class="operator">&gt;</span>
+                                    <span class="operator">&ge;</span>
+                                    <span class="operator">&lt;</span>
+                                    <span class="operator">&le;</span>
+                                </div>
+                            </div>
+                            <span class="sort fa fa-chevron-up" aria-hidden="true"></span>
+                        </div>
+                        <div class="table-input">
+                            <span class="fa fa-search" aria-hidden="true"></span>
+                            <input type="text">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="operator-container-list">
+                            <div class="operator-icon fa fa-font" aria-hidden="true">
+                                <div class="operator-selection">
+                                    <span class="operator selected">A</span>
+                                    <span class="operator">A...</span>
+                                    <span class="operator">...A</span>
+                                    <span class="operator">...A...</span>
+                                </div>
+                            </div>
+                            <span class="sort fa fa-chevron-up" aria-hidden="true"></span>
+                        </div>
+                        <div class="table-input">
+                            <span class="fa fa-search" aria-hidden="true"></span>
+                            <input type="text">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="operator-container-list">
+                            <div class="operator-icon fa fa-font" aria-hidden="true">
+                                <div class="operator-selection">
+                                    <span class="operator selected">A</span>
+                                    <span class="operator">A...</span>
+                                    <span class="operator">...A</span>
+                                    <span class="operator">...A...</span>
+                                </div>
+                            </div>
+                            <span class="sort fa fa-chevron-up" aria-hidden="true"></span>
+                        </div>
+                        <div class="table-input">
+                            <span class="fa fa-search" aria-hidden="true"></span>
+                            <input type="text">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="operator-container-list">
+                            <div class="operator-icon fa fa-font" aria-hidden="true">
+                                <div class="operator-selection">
+                                    <span class="operator selected">A</span>
+                                    <span class="operator">A...</span>
+                                    <span class="operator">...A</span>
+                                    <span class="operator">...A...</span>
+                                </div>
+                            </div>
+                            <span class="sort fa fa-chevron-up" aria-hidden="true"></span>
+                        </div>
+                        <div class="table-input">
+                            <span class="fa fa-search" aria-hidden="true"></span>
+                            <input type="text">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="operator-container-list">
+                            <div class="operator-icon fa fa-font" aria-hidden="true">
+                                <div class="operator-selection">
+                                    <span class="operator selected">A</span>
+                                    <span class="operator">A...</span>
+                                    <span class="operator">...A</span>
+                                    <span class="operator">...A...</span>
+                                </div>
+                            </div>
+                            <span class="sort fa fa-chevron-up" aria-hidden="true"></span>
+                        </div>
+                        <div class="table-input">
+                            <span class="fa fa-search" aria-hidden="true"></span>
+                            <input type="text">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="operator-container-list">
+                            <div class="operator-icon fa fa-font" aria-hidden="true">
+                                <div class="operator-selection">
+                                    <span class="operator selected">A</span>
+                                    <span class="operator">A...</span>
+                                    <span class="operator">...A</span>
+                                    <span class="operator">...A...</span>
+                                </div>
+                            </div>
+                            <span class="sort fa fa-chevron-up" aria-hidden="true"></span>
+                        </div>
+                        <div class="table-input">
+                            <span class="fa fa-search" aria-hidden="true"></span>
+                            <input type="text">
+                        </div>
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
         </table>
     </div>
 </div>
 
-<script src="./js/jquery-3.1.1.min.js"></script>
+<!--<script src="./js/jquery-3.1.1.min.js"></script> THIS BREAKS DRAGTABLE-->
+<script src="http://code.jquery.com/jquery-3.1.0.min.js"></script>
+<script src="./js/jquery-ui.min.js"></script>
+<script src="./js/jquery.dragtable.js"></script>
 <script src="./js/main.js"></script>
 </body>
 

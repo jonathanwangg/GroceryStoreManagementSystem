@@ -13,6 +13,8 @@ Setting up Windows (run everything in Windows CMD):
     1) set PATH=%cd%\instantclient;%PATH%
     2) set OCI_LIB_DIR=%cd%\instantclient\sdk\lib\msvc
     3) set OCI_INC_DIR=%cd%\instantclient\sdk\include
+7) Optionally run (to stop Webstorm warnings)
+    1) npm install --save @types/jquery
 
 Connecting remotely to UBC's server and running the local Node server:
 1) Set up a tunnel on a LINUX shell (XXXX is your CS ID):

@@ -17,19 +17,16 @@ body {
     flex-flow: row nowrap;
     height: 100vh;
     justify-content: center;
-    padding: 1em;
     width: 100vw; }
     body #modal-data #data-container {
       align-items: center;
-      border: 0.02em black solid;
       box-sizing: border-box;
       display: flex;
       flex: 1 1 0;
       flex-flow: column nowrap;
       font-size: 4em;
       height: 100%;
-      justify-content: center;
-      padding: 0.2em;
+      justify-content: space-between;
       position: relative;
       width: 7em; }
       body #modal-data #data-container #selected-entity {
@@ -38,46 +35,54 @@ body {
         color: white;
         cursor: pointer;
         display: flex;
-        height: 2em;
+        font-variant: small-caps;
+        height: 15vh;
         justify-content: center;
         text-align: center;
         width: 100%; }
         body #modal-data #data-container #selected-entity:hover {
           background-color: #dc3c50; }
-      body #modal-data #data-container .data-selection, body #modal-data #data-container .method-selection {
+      body #modal-data #data-container #entities, body #modal-data #data-container #methods {
         align-items: center;
         background-color: #dc3c50;
-        border: 0.1em #69247b solid;
+        border: 0.02em black solid;
         box-sizing: border-box;
         cursor: pointer;
         display: none;
         flex-flow: column nowrap;
-        justify-content: flex-start;
+        font-variant: small-caps;
+        justify-content: center;
         position: absolute;
         text-align: center;
-        width: 100%;
-        z-index: 1; }
-        body #modal-data #data-container .data-selection span, body #modal-data #data-container .method-selection span {
+        width: 100%; }
+        body #modal-data #data-container #entities span, body #modal-data #data-container #methods span {
+          align-items: center;
           color: white;
+          display: flex;
+          height: 15vh;
+          justify-content: center;
           left: 0;
-          padding: 0.2em 0;
           width: 100%; }
-          body #modal-data #data-container .data-selection span:hover, body #modal-data #data-container .method-selection span:hover {
+          body #modal-data #data-container #entities span:hover, body #modal-data #data-container #methods span:hover {
             background-color: #6c3081; }
-      body #modal-data #data-container .data-selection {
-        top: 0; }
-      body #modal-data #data-container .method-selection {
-        bottom: 0; }
-      body #modal-data #data-container #selected-method-container {
+      body #modal-data #data-container #entities {
+        margin: 15vh 0 0 0;
+        top: 0;
+        z-index: 3; }
+      body #modal-data #data-container #methods {
+        bottom: 0;
+        margin: 0 0 15vh 0;
+        z-index: 2; }
+      body #modal-data #data-container #methods-container {
         align-items: center;
         background: rgba(220, 60, 80, 0.8);
         display: flex;
         flex-flow: row nowrap;
-        height: 2em;
+        height: 15vh;
         justify-content: center;
         text-align: center;
         width: 100%; }
-        body #modal-data #data-container #selected-method-container #selected-method, body #modal-data #data-container #selected-method-container #method-selection {
+        body #modal-data #data-container #methods-container #selected-method, body #modal-data #data-container #methods-container #method-selector {
           align-items: center;
           color: white;
           display: flex;
@@ -88,106 +93,245 @@ body {
           -o-transition: all 0.5s;
           -webkit-transition: all 0.5s;
           transition: all 0.5s; }
-          body #modal-data #data-container #selected-method-container #selected-method:hover, body #modal-data #data-container #selected-method-container #method-selection:hover {
+          body #modal-data #data-container #methods-container #selected-method:hover, body #modal-data #data-container #methods-container #method-selector:hover {
             cursor: pointer; }
-        body #modal-data #data-container #selected-method-container #selected-method {
-          flex: 4 1 auto; }
-        body #modal-data #data-container #selected-method-container #method-selection {
-          flex: 1 1 auto;
-          font-size: 0.5em; }
-        body #modal-data #data-container #selected-method-container .normal:hover, body #modal-data #data-container #selected-method-container .success:hover, body #modal-data #data-container #selected-method-container .fail:hover {
+        body #modal-data #data-container #methods-container #selected-method {
+          font-variant: small-caps;
+          width: 85%; }
+        body #modal-data #data-container #methods-container #method-selector {
+          font-size: 0.5em;
+          width: 15%; }
+        body #modal-data #data-container #methods-container .normal:hover, body #modal-data #data-container #methods-container .success:hover, body #modal-data #data-container #methods-container .fail:hover {
           cursor: pointer; }
-        body #modal-data #data-container #selected-method-container .normal:hover {
+        body #modal-data #data-container #methods-container .normal:hover {
           background: #dc3c50; }
-          body #modal-data #data-container #selected-method-container .normal:hover .fa {
+          body #modal-data #data-container #methods-container .normal:hover .fa-cog {
             transition: 1s;
             transform: rotate(360deg); }
-        body #modal-data #data-container #selected-method-container .success {
-          background: green; }
-        body #modal-data #data-container #selected-method-container .fail {
+        body #modal-data #data-container #methods-container .success {
+          background: #009600; }
+        body #modal-data #data-container #methods-container .fail {
           background: #ff1f3c; }
-      body #modal-data #data-container #user-data-input {
+      body #modal-data #data-container #confirmation-container {
+        align-items: center;
+        background: orange;
+        box-sizing: border-box;
+        bottom: 0;
+        display: none;
+        flex-flow: row nowrap;
+        height: 15vh;
+        justify-content: center;
+        position: absolute;
+        text-align: center;
+        width: 100%; }
+        body #modal-data #data-container #confirmation-container #drop-confirm, body #modal-data #data-container #confirmation-container #drop-cancel {
+          align-items: center;
+          color: white;
+          display: flex;
+          height: 100%;
+          justify-content: center;
+          text-align: center;
+          width: 50%;
+          -moz-transition: all 0.5s;
+          -ms-transition: all 0.5s;
+          -o-transition: all 0.5s;
+          -webkit-transition: all 0.5s;
+          transition: all 0.5s; }
+          body #modal-data #data-container #confirmation-container #drop-confirm:hover, body #modal-data #data-container #confirmation-container #drop-cancel:hover {
+            cursor: pointer; }
+        body #modal-data #data-container #confirmation-container #drop-confirm:hover {
+          background: #009600;
+          width: 100%; }
+        body #modal-data #data-container #confirmation-container #drop-cancel:hover {
+          background: #ff1f3c;
+          width: 100%; }
+      body #modal-data #data-container #attribute-inputs {
         align-items: center;
         display: flex;
         flex-flow: column nowrap;
         justify-content: center;
         margin: 0.5em 0;
         width: 100%; }
-        body #modal-data #data-container #user-data-input input {
+        body #modal-data #data-container #attribute-inputs input {
+          border: 0.05em solid white;
           box-sizing: border-box;
+          background: white;
           font-size: 0.5em;
           margin: 0.1em 0;
           padding: 0.2em 0.6em;
           width: 100%; }
+          body #modal-data #data-container #attribute-inputs input:focus {
+            border: 0.05em #dc3c50 solid; }
     body #modal-data #table-container {
-      border: 0.1em black solid;
       box-sizing: border-box;
       align-items: center;
       display: flex;
       flex: 3 1 0;
       flex-flow: column nowrap;
       height: 100%;
-      margin: 0 0 0 0.5em;
-      max-height: 100%;
       justify-content: center;
-      width: 100%; }
-      body #modal-data #table-container #view-table {
-        align-items: center;
-        background: rgba(220, 60, 80, 0.8);
-        color: white;
+      max-height: 100%;
+      position: relative;
+      width: 100%;
+      overflow: hidden; }
+      body #modal-data #table-container .dragtable-sortable {
+        background-color: #69247b;
         display: flex;
-        flex: 1 1 auto;
-        font-size: 4em;
-        min-height: 1.5em;
-        justify-content: center;
-        text-align: center;
-        width: 100%; }
-        body #modal-data #table-container #view-table:hover {
-          background: #dc3c50;
-          cursor: pointer; }
-      body #modal-data #table-container #table-data {
-        align-items: center;
+        flex-flow: row nowrap;
+        height: 2.3em;
+        list-style-type: none;
+        top: 0;
+        -moz-user-select: none;
+        position: absolute; }
+        body #modal-data #table-container .dragtable-sortable li {
+          float: left; }
+      body #modal-data #table-container .ui-sortable-helper {
+        opacity: 0.7;
+        filter: alpha(opacity=70); }
+      body #modal-data #table-container .ui-sortable-placeholder {
+        background: #6c3081 !important;
+        height: 2em !important;
+        visibility: visible !important; }
+      body #modal-data #table-container .ui-sortable-placeholder * {
+        opacity: 1;
+        visibility: hidden; }
+      body #modal-data #table-container table {
+        border: none;
         color: white;
         background-color: #411f56;
         display: flex;
         flex-flow: column nowrap;
-        height: 100%;
+        height: 100vh;
         justify-content: flex-start;
         margin: 0;
         max-height: 100%;
         padding: 0;
         width: 100%; }
-        body #modal-data #table-container #table-data thead, body #modal-data #table-container #table-data tbody {
+        body #modal-data #table-container table thead, body #modal-data #table-container table tbody {
           align-items: center;
-          display: block;
+          flex-flow: column nowrap;
           justify-content: center;
           width: 100%; }
-          body #modal-data #table-container #table-data thead tr, body #modal-data #table-container #table-data tbody tr {
+          body #modal-data #table-container table thead tr, body #modal-data #table-container table tbody tr {
             align-items: center;
             display: flex;
             flex-flow: row nowrap;
             justify-content: center;
             width: 100%; }
-            body #modal-data #table-container #table-data thead tr th, body #modal-data #table-container #table-data thead tr td, body #modal-data #table-container #table-data tbody tr th, body #modal-data #table-container #table-data tbody tr td {
+            body #modal-data #table-container table thead tr th, body #modal-data #table-container table thead tr td, body #modal-data #table-container table tbody tr th, body #modal-data #table-container table tbody tr td {
               align-items: center;
+              border: none;
               display: flex;
               flex: 1 1 0;
               justify-content: center;
               margin: 0;
               padding: 0.5em 0;
               text-align: center; }
-            body #modal-data #table-container #table-data thead tr td:nth-child(even), body #modal-data #table-container #table-data tbody tr td:nth-child(even) {
-              background-color: #69247b; }
-            body #modal-data #table-container #table-data thead tr td:nth-child(odd), body #modal-data #table-container #table-data tbody tr td:nth-child(odd) {
-              background-color: #6c3081; }
-            body #modal-data #table-container #table-data thead tr th, body #modal-data #table-container #table-data tbody tr th {
+            body #modal-data #table-container table thead tr th, body #modal-data #table-container table tbody tr th {
               background-color: #411f56;
               color: #ff7a8a;
               font-size: 1.3em;
+              font-variant: small-caps;
               height: 1.5em; }
-            body #modal-data #table-container #table-data thead tr:hover, body #modal-data #table-container #table-data tbody tr:hover {
+              body #modal-data #table-container table thead tr th:hover, body #modal-data #table-container table tbody tr th:hover {
+                cursor: pointer; }
+        body #modal-data #table-container table thead {
+          font-size: 1em;
+          height: 15%; }
+          body #modal-data #table-container table thead .specification {
+            align-items: center;
+            display: flex;
+            flex-flow: row nowrap;
+            font-size: 2em;
+            justify-content: center;
+            width: 100%; }
+            body #modal-data #table-container table thead .specification td {
+              align-items: center;
+              display: flex;
+              flex-flow: column nowrap;
+              height: 100%;
+              justify-content: center;
+              padding: 0.5em;
+              width: 100%; }
+              body #modal-data #table-container table thead .specification td .operator-container-list {
+                align-items: center;
+                display: flex;
+                flex-flow: row nowrap;
+                height: 100%;
+                justify-content: center;
+                padding: 0.5em 0 0.1em 0;
+                width: 100%; }
+                body #modal-data #table-container table thead .specification td .operator-container-list > span, body #modal-data #table-container table thead .specification td .operator-container-list > div {
+                  align-items: flex-start;
+                  border: solid 0.1em #ff7a8a;
+                  border-radius: 5em;
+                  cursor: pointer;
+                  display: flex;
+                  height: 1.6em;
+                  justify-content: center;
+                  line-height: 1.6em;
+                  margin: 0 0.5em;
+                  padding: 0;
+                  width: 1.6em; }
+                  body #modal-data #table-container table thead .specification td .operator-container-list > span .operator-selection, body #modal-data #table-container table thead .specification td .operator-container-list > div .operator-selection {
+                    align-items: center;
+                    background-color: #ff7a8a;
+                    border: 0.1em black solid;
+                    display: none;
+                    flex-flow: column nowrap;
+                    justify-content: center;
+                    margin: 2em 0 0 0;
+                    position: fixed; }
+                    body #modal-data #table-container table thead .specification td .operator-container-list > span .operator-selection .selected, body #modal-data #table-container table thead .specification td .operator-container-list > div .operator-selection .selected {
+                      background: #dc3c50; }
+                    body #modal-data #table-container table thead .specification td .operator-container-list > span .operator-selection > span, body #modal-data #table-container table thead .specification td .operator-container-list > div .operator-selection > span {
+                      box-sizing: border-box;
+                      padding: 0.5em 1em;
+                      width: 100%; }
+                      body #modal-data #table-container table thead .specification td .operator-container-list > span .operator-selection > span:hover, body #modal-data #table-container table thead .specification td .operator-container-list > div .operator-selection > span:hover {
+                        background: #dc3c50;
+                        cursor: pointer; }
+                  body #modal-data #table-container table thead .specification td .operator-container-list > span:hover, body #modal-data #table-container table thead .specification td .operator-container-list > div:hover {
+                    border-color: #dc3c50; }
+              body #modal-data #table-container table thead .specification td .table-input {
+                align-items: center;
+                display: flex;
+                flex-flow: row nowrap;
+                justify-content: space-around;
+                width: 100%; }
+                body #modal-data #table-container table thead .specification td .table-input span {
+                  font-size: 1.5em;
+                  width: 20%; }
+                body #modal-data #table-container table thead .specification td .table-input input {
+                  border: none;
+                  border-bottom: solid 0.1em white;
+                  box-sizing: border-box;
+                  color: white;
+                  padding: 0 0.4em;
+                  width: 70%; }
+                  body #modal-data #table-container table thead .specification td .table-input input:focus {
+                    border-color: #ff7a8a; }
+        body #modal-data #table-container table tbody {
+          font-size: 1.5em;
+          display: block;
+          height: 85%;
+          overflow-y: overlay;
+          width: 100%; }
+          body #modal-data #table-container table tbody tr {
+            width: 100%; }
+            body #modal-data #table-container table tbody tr td:nth-child(even) {
+              background-color: #69247b; }
+            body #modal-data #table-container table tbody tr td:nth-child(odd) {
+              background-color: #6c3081; }
+            body #modal-data #table-container table tbody tr:hover {
               color: #ff7a8a; }
-        body #modal-data #table-container #table-data tbody {
-          overflow-y: overlay; }
+          body #modal-data #table-container table tbody tr {
+            counter-increment: rowNumber; }
+          body #modal-data #table-container table tbody tr:hover::before {
+            content: counter(rowNumber);
+            width: 0;
+            position: relative;
+            z-index: 5;
+            transform: translateX(0.5em); }
 
 /*# sourceMappingURL=main.css.map */

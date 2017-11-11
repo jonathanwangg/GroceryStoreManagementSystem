@@ -1,119 +1,298 @@
-var $document = $(document);
-var url = "http://localhost:4321";
+var url = "http://localhost:4321", PKNK = {
+    customerPK: ["membership_id"],
+    customerNK: ["first_name", "last_name", "address", "phone_number", "join_date"],
+    employeePK: ["employee_id"],
+    employeeNK: ["first_name", "last_name", "sin", "wage"],
+    payrollPK: ["employee_id", "start_date", "end_date"],
+    payrollNK: ["hours_worked", "deductions", "gross_pay", "net_pay"],
+    productPK: ["sku"],
+    productNK: ["cost", "days_to_expiry", "supplier_name"],
+    supplierPK: ["supplier_name", "location"],
+    supplierNK: ["phone_number"]
+}, entityDict = {
+    customer: PKNK.customerPK.concat(PKNK.customerNK),
+    employee: PKNK.employeePK.concat(PKNK.employeeNK),
+    payroll: PKNK.payrollPK.concat(PKNK.payrollNK),
+    product: PKNK.productPK.concat(PKNK.productNK),
+    supplier: PKNK.supplierPK.concat(PKNK.supplierNK)
+}, type = {
+    membership_id: "NUMBER",
+    first_name: "VARCHAR2(30)",
+    last_name: "VARCHAR2(30)",
+    address: "VARCHAR2(30)",
+    phone_number: "VARCHAR2(30)",
+    join_date: "VARCHAR2(30)",
+    employee_id: "NUMBER",
+    sin: "VARCHAR2(30)",
+    wage: "NUMBER",
+    start_date: "VARCHAR2(30)",
+    end_date: "VARCHAR2(30)",
+    hours_worked: "VARCHAR2(30)",
+    deductions: "VARCHAR2(30)",
+    gross_pay: "VARCHAR2(30)",
+    net_pay: "VARCHAR2(30)",
+    sku: "VARCHAR2(30)",
+    cost: "NUMBER",
+    days_to_expiry: "NUMBER",
+    supplier_name: "VARCHAR2(30)",
+    location: "VARCHAR2(30)",
+}, confirmDrop = false;
 function init() {
-    $(document).ready(function () {
-        expandDataSelection();
-        expandMethodSelection();
-        selectField();
-        selectMethod();
-        sendData();
+    $(function () {
+        setDragTable();
         getTableData();
+        toggleEntitySelection();
+        toggleMethodSelection();
+        toggleOperatorSelection();
+        pressEnterToUpdateTable();
+        toggleSort();
+        selectEntity();
+        selectMethod();
+        selectOperator();
+        dropCancel();
+        dropProceed();
+        sendProceed();
     });
 }
-function expandDataSelection() {
+function setDragTable() {
+    $("table").removeData().dragtable();
+}
+function getEntity() {
+    return $("#selected-entity").html().toLowerCase();
+}
+function getMethod() {
+    return $("#selected-method").html().toLowerCase();
+}
+function toggleEntitySelection() {
     $("#selected-entity").on("click", function () {
-        $(".data-selection").css("display", "flex");
+        var entities = $("#entities");
+        entities.css("display") === "none" ? entities.css("display", "flex")
+            : entities.css("display", "none");
     });
 }
-function expandMethodSelection() {
-    $("#method-selection").on("click", function () {
-        $(".method-selection").css("display", "flex");
+function toggleMethodSelection() {
+    var selector = $("#method-selector");
+    selector.on("click", function () {
+        if (selector.hasClass("success") || selector.hasClass("fail")) {
+            return;
+        }
+        var methods = $("#methods");
+        methods.css("display") === "none" ? methods.css("display", "flex")
+            : methods.css("display", "none");
     });
 }
-function selectField() {
-    $(".field-selection").on("click", function () {
+function toggleOperatorSelection() {
+    $("table").on("click", ".operator-icon", function () {
+        var selection = $(this).find(".operator-selection");
+        selection.css("display", selection.css("display") === "none" ? "flex" : "none");
+    });
+}
+function selectEntity() {
+    $(".entity").on("click", function () {
         var selection = $(this).html();
         $("#selected-entity").html(selection);
-        $(".data-selection").css("display", "none");
+        $("#entities").css("display", "none");
         createInputFields();
+        insertTableColumns();
     });
 }
 function selectMethod() {
     $(".method").on("click", function () {
         var method = $(this).html();
-        $("#selected-method").html(method);
-        $(".method-selection").css("display", "none");
+        $("#selected-method").html(decorateText(method));
+        $("#methods").css("display", "none");
         createInputFields();
     });
 }
-function createInputFields() {
-    var fields = getFields(), htmlString = "";
-    fields.forEach(function (field) {
-        htmlString += "<input type=\"text\" placeholder=\"" + field + "\">\n";
+function selectOperator() {
+    $("table").on("click", ".operator", function () {
+        var that = $(this);
+        that.parent().children(".operator").each(function () {
+            $(this).removeClass("selected");
+        });
+        that.addClass("selected");
     });
-    $("#user-data-input").html(htmlString);
 }
-function getFields() {
-    var method = $("#selected-method").html(), obj = $("#selected-entity").html(), customerPK = ["Membership ID"], customer = ["First Name", "Last Name", "Address", "Phone Number", "Join Date"], employeePK = ["Employee ID"], employee = ["First Name", "Last Name", "SIN", "Wage"], payrollPK = ["Employee ID", "Start Date", "End Date"], payroll = ["Hours Worked", "Deductions", "Gross Pay", "Net Pay"], productPK = ["SKU"], product = ["Cost", "Days to Expiry", "Supplier Name"], supplierPK = ["Supplier Name", "Location"], supplier = ["Phone Number"];
-    switch (method) {
-        case "Delete":
-            switch (obj) {
-                case "Customer":
-                    return customerPK;
-                case "Employee":
-                    return employeePK;
-                case "Payroll":
-                    return payrollPK;
-                case "Product":
-                    return productPK;
-                case "Supplier":
-                    return supplierPK;
-            }
-            break;
-        case "Insert":
-        case "Update":
-            switch (obj) {
-                case "Customer":
-                    return customerPK.concat(customer);
-                case "Employee":
-                    return employeePK.concat(employee);
-                case "Payroll":
-                    return payrollPK.concat(payroll);
-                case "Product":
-                    return productPK.concat(product);
-                case "Supplier":
-                    return supplierPK.concat(supplier);
-            }
-            break;
+function toggleSort() {
+    $("table").on("click", ".sort", function () {
+        var that = $(this);
+        var isAscending = that.hasClass("fa-chevron-up");
+        that.removeClass(isAscending ? "fa-chevron-up" : "fa-chevron-down")
+            .addClass(isAscending ? "fa-chevron-down" : "fa-chevron-up");
+        getTableData();
+    });
+}
+function pressEnterToUpdateTable() {
+    $("table input").keypress(function (event) {
+        if (event.which === 13) {
+            getTableData();
+        }
+    });
+}
+function createInputFields() {
+    var fields = getAttributes(), htmlString = "";
+    fields.forEach(function (field) {
+        htmlString += "<input type=\"text\" placeholder=\"" + decorateText(field) + "\">";
+    });
+    $("#attribute-inputs").html(htmlString);
+}
+function insertTableColumns() {
+    var htmlStr = "";
+    htmlStr += "<tr>" + entityDict[getEntity()].map(function (attr) {
+        return "<th>" + decorateText(attr) + "</th>";
+    }).join("") + "</tr>";
+    htmlStr += "<tr class=\"specification\">" + entityDict[getEntity()].map(function (attr) {
+        if (type[attr] === "NUMBER") {
+            return "<td>\n" +
+                "                        <div class=\"operator-container-list\">\n" +
+                "                            <div class=\"operator-icon fa fa-calculator\" aria-hidden=\"true\">\n" +
+                "                                <div class=\"operator-selection\">\n" +
+                "                                    <span class=\"operator selected\">=</span>\n" +
+                "                                    <span class=\"operator\">!=</span>\n" +
+                "                                    <span class=\"operator\">&gt;</span>\n" +
+                "                                    <span class=\"operator\">&ge;</span>\n" +
+                "                                    <span class=\"operator\">&lt;</span>\n" +
+                "                                    <span class=\"operator\">&le;</span>\n" +
+                "                                </div>\n" +
+                "                            </div>\n" +
+                "                            <span class=\"sort fa fa-chevron-up\" aria-hidden=\"true\"></span>\n" +
+                "                        </div>\n" +
+                "                        <div class=\"table-input\">\n" +
+                "                            <span class=\"fa fa-search\" aria-hidden=\"true\"></span>\n" +
+                "                            <input type=\"text\">\n" +
+                "                        </div>\n" +
+                "                    </td>";
+        }
+        return "<td>\n" +
+            "            <div class=\"operator-container-list\">\n" +
+            "                <div class=\"operator-icon fa fa-font\" aria-hidden=\"true\">\n" +
+            "                    <div class=\"operator-selection\">\n" +
+            "                        <span class=\"operator selected\">A</span>\n" +
+            "                        <span class=\"operator\">A...</span>\n" +
+            "                        <span class=\"operator\">...A</span>\n" +
+            "                        <span class=\"operator\">...A...</span>\n" +
+            "                    </div>\n" +
+            "                </div>\n" +
+            "                <span class=\"sort fa fa-chevron-up\" aria-hidden=\"true\"></span>\n" +
+            "            </div>\n" +
+            "            <div class=\"table-input\">\n" +
+            "                <span class=\"fa fa-search\" aria-hidden=\"true\"></span>\n" +
+            "                <input type=\"text\">\n" +
+            "            </div>\n" +
+            "        </td>";
+    }).join("") + "</tr>";
+    $("thead").html(htmlStr);
+    $("tbody").html("");
+    setDragTable();
+}
+function decorateText(str) {
+    switch (str) {
+        case "customer_id":
+            return "Customer ID";
+        case "employee_id":
+            return "Employee ID";
+        case "membership_id":
+            return "Membership ID";
+        case "sin":
+            return "SIN";
+        case "sku":
+            return "SKU";
+        case "days_to_expiry":
+            return "Days to Expiry";
+        default:
+            return str.replace(/_/g, " ").replace(/\w\S*/g, function (txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+    }
+}
+function undecorateText(str) {
+    return str.replace(/ /g, "_").toLowerCase();
+}
+function getAttributes() {
+    var entity = getEntity();
+    switch (getMethod()) {
+        case "delete":
+            return PKNK[entity + "PK"];
+        case "insert":
+        case "update":
+            return entityDict[entity];
         default:
             return [];
     }
 }
 function sendData() {
-    var method = $("#selected-method");
-    method.on("click", function () {
-        if (!method.hasClass("normal")) {
-            return;
-        }
-        method.removeClass("normal");
-        return new Promise(function (resolve, reject) {
-            return $.ajax({
-                type: getType(),
-                url: url + "/send-data",
-                data: JSON.stringify({
-                    method: $("#selected-method").html(),
-                    entity: $("#selected-entity").html(),
-                    inputs: getInput()
-                }),
-                contentType: "application/json; charset=utf-8"
-            })
-                .then(function (res) {
-                $("#user-data-input").find("input").each(function () {
-                    $(this).val("");
-                });
-                buttonFeedback(true);
-                return resolve(res);
-            })
-                .catch(function (err) {
-                buttonFeedback(false);
-                return reject(err);
+    console.log(JSON.stringify({
+        method: getMethod(),
+        entity: getEntity(),
+        inputs: getInput()
+    }));
+    return new Promise(function (resolve, reject) {
+        return $.ajax({
+            type: getType(),
+            url: url + "/send-data",
+            data: JSON.stringify({
+                method: getMethod(),
+                entity: getEntity(),
+                inputs: getInput()
+            }),
+            contentType: "application/json; charset=utf-8"
+        })
+            .then(function (res) {
+            $("#attribute-inputs").find("input").each(function () {
+                $(this).val("");
             });
+            buttonFeedback(true);
+            getTableData();
+            return resolve(res);
+        })
+            .catch(function (err) {
+            buttonFeedback(false);
+            return reject(err);
         });
     });
 }
+function dropConfirm() {
+    $("#confirmation-container").css("display", "flex");
+}
+function dropCancel() {
+    $("#drop-cancel").on("click", function () {
+        restoreDrop();
+        $("#confirmation-container").css("display", "none");
+    });
+}
+function restoreDrop() {
+    $("#selected-method").html("Drop");
+    $("#confirmation-container").css("display", "none");
+}
+function dropProceed() {
+    $("#drop-confirm").on("click", function () {
+        var method = $(this);
+        restoreDrop();
+        $("#methods").css("display", "none");
+        method.removeClass("normal");
+        sendData();
+    });
+}
+function sendProceed() {
+    $("#selected-method").on("click", function () {
+        var method = $(this), methodStr = getMethod();
+        $("#methods").css("display", "none");
+        if (!method.hasClass("normal")) {
+            return;
+        }
+        if (isEmptyInput() && (methodStr === "insert" || methodStr === "update" || methodStr === "delete")) {
+            return getTableData();
+        }
+        if (methodStr === "drop") {
+            dropConfirm();
+            return;
+        }
+        method.removeClass("normal");
+        sendData();
+    });
+}
 function buttonFeedback(success) {
-    var method = $("#selected-method"), selection = $("#method-selection");
-    var origMethod = method.html(), origIcon = selection.html();
+    var method = $("#selected-method"), selection = $("#method-selector"), origMethod = method.html(), origIcon = selection.html();
     method.html(success ? "Done" : "Failed");
     selection.html(success ? "<span class=\"fa fa-check\" aria-hidden=\"true\"></span>"
         : "<span class=\"fa fa-times\" aria-hidden=\"true\"></span>");
@@ -127,45 +306,68 @@ function buttonFeedback(success) {
     }, 1500);
 }
 function getTableData() {
-    $("#view-table").on("click", function () {
-        return new Promise(function (resolve, reject) {
-            return $.ajax({
-                type: getType(),
-                url: url + "/update-table",
-                data: JSON.stringify({ entity: $("#selected-entity").html() }),
-                contentType: "application/json; charset=utf-8"
-            })
-                .then(function (res) {
-                updateTable(res);
-                return resolve(res);
-            })
-                .catch(function (err) {
-                return reject(err);
-            });
+    return new Promise(function (resolve, reject) {
+        return $.ajax({
+            type: getType(),
+            url: url + "/update-table",
+            data: JSON.stringify(getSpecification()),
+            contentType: "application/json; charset=utf-8"
+        })
+            .then(function (res) {
+            updateTable(res);
+            return resolve(res);
+        })
+            .catch(function (err) {
+            return reject(err);
         });
     });
 }
 function updateTable(res) {
-    var HTMLStr = "<thead>\n<tr>\n"
-        + res.metaData.map(function (obj) {
-            return "<th>" + obj.name.toLowerCase() + "</th>\n";
-        }).join("") + "</tr>\n<\thead>\n<tbody>\n"
-        + res.rows.map(function (arr) {
-            return "<tr>\n" + arr.map(function (elem) {
-                return "<td>" + elem + "</td>\n";
-            }).join("") + "</tr>\n";
-        }).join("") + "<\tbody>\n";
-    $("#table-data").html(HTMLStr);
+    var HTMLStr = res.rows.map(function (arr) {
+        return "<tr>" + arr.map(function (elem) {
+            return "<td>" + elem + "</td>";
+        }).join("") + "</tr>";
+    }).join("");
+    $("tbody").html(HTMLStr);
+    setDragTable();
 }
 function getType() {
     return "POST";
 }
 function getInput() {
     var inputObj = {};
-    $("#user-data-input").find("input").each(function () {
-        inputObj[$(this).attr("placeholder").replace(/ /g, "_").toLowerCase()] = $(this).val();
+    $("#attribute-inputs").children("input").each(function () {
+        inputObj[undecorateText($(this).attr("placeholder"))] = $(this).val();
     });
     return inputObj;
+}
+function isEmptyInput() {
+    var isEmpty = true;
+    $("#attribute-inputs").children("input").each(function () {
+        if ($(this).val() !== "") {
+            isEmpty = false;
+            return false;
+        }
+    });
+    return isEmpty;
+}
+function getSpecification() {
+    var numColumns = $("thead tr:first-child > th").length, attributes = new Array(3), operators = new Array(3), isAscendings = new Array(3), inputs = new Array(3);
+    for (var j = 0; j < numColumns; j++) {
+        attributes[j] = undecorateText($("thead > tr:eq(0) > th:eq(" + j + ")").html());
+        operators[j] = $("thead > tr:eq(1) > td:eq(" + j + ") .selected").html();
+        isAscendings[j] = $("thead > tr:eq(1) > td:eq(" + j + ") .sort").hasClass("fa-chevron-up");
+        inputs[j] = $("thead > tr:eq(1) > td:eq(" + j + ") input").val();
+    }
+    return {
+        attributes: attributes,
+        entity: getEntity(),
+        inputs: inputs,
+        isAscendings: isAscendings,
+        method: "select",
+        operators: operators,
+        size: numColumns
+    };
 }
 window.onload = function () {
     init();

@@ -36,8 +36,8 @@ var Server = (function () {
                 }));
                 that.rest.post("/send-data", function (req, res, next) {
                     Communicator_1.default.processInput(req.body)
-                        .then(function (inRes) {
-                        res.send(inRes);
+                        .then(function (response) {
+                        res.send(response);
                         return next();
                     })
                         .catch(function (err) {
@@ -46,9 +46,9 @@ var Server = (function () {
                     });
                 });
                 that.rest.post("/update-table", function (req, res, next) {
-                    Communicator_1.default.getData(req.body.entity)
-                        .then(function (inRes) {
-                        res.send(inRes);
+                    Communicator_1.default.getData(req.body)
+                        .then(function (response) {
+                        res.send(response);
                         return next();
                     })
                         .catch(function (err) {

@@ -30,6 +30,7 @@
   "dependencies": {
     "@types/chai": "^3.4.34",
     "@types/core-js": "^0.9.35",
+    "@types/jquery": "^3.2.16",
     "@types/mocha": "^2.2.33",
     "@types/node": "^6.0.52",
     "@types/restify": "^2.0.35",
