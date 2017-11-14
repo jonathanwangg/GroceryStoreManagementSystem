@@ -106,14 +106,36 @@ var Communicator = (function () {
                     + Communicator.getORDERBY(data.size, data.attributes, data.isAscendings);
                 break;
             case "update":
-                SQLStr += "UPDATE " + entity + "\nSET "
-                    + Object.keys(inputs).join(", ") + ")" + "\nVALUES ("
-                    + Object.keys(inputs).map(function (elem) {
-                        if (Dictionary_1.default.type[elem] === "NUMBER") {
-                            return inputs[elem];
-                        }
-                        return "\'" + inputs[elem] + "\'";
-                    }).join(", ") + ")";
+                SQLStr = "UPDATE " + entity + "\nSET ";
+                var filteredKeys = Object.keys(inputs).filter(function (key) {
+                    return inputs[key].length != 0;
+                });
+                var updateColumns_1 = '';
+                filteredKeys.forEach(function (key) {
+                    updateColumns_1 += key + ' = ' + inputs[key] + ', ';
+                });
+                var size = void 0;
+                switch (entity) {
+                    case "customer":
+                        size = Dictionary_1.default.PKNK.customerPK.length;
+                        break;
+                    case "employee":
+                        size = Dictionary_1.default.PKNK.employeePK.length;
+                        break;
+                    case "payroll":
+                        size = Dictionary_1.default.PKNK.payrollPK.length;
+                        break;
+                    case "product":
+                        size = Dictionary_1.default.PKNK.productPK.length;
+                        break;
+                    case "supplier":
+                        size = Dictionary_1.default.PKNK.supplierPK.length;
+                        break;
+                }
+                var values = Object.keys(inputs).map(function (key) {
+                    return inputs[key];
+                });
+                SQLStr += updateColumns_1.slice(0, -2) + Communicator.getWHERE(size, Object.keys(inputs), ['=', '=', '='], values);
                 break;
         }
         console.log(SQLStr + "\n");

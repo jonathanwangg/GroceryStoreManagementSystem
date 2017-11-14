@@ -4,8 +4,8 @@ export default class Communicator {
     public static oracledb = require("oracledb");
     public static dbConfig = require("./dbconfig.js");
     public static setting = {
-        user:          Communicator.dbConfig.user,
-        password:      Communicator.dbConfig.password,
+        user: Communicator.dbConfig.user,
+        password: Communicator.dbConfig.password,
         connectString: Communicator.dbConfig.connectString
     };
 
@@ -148,15 +148,40 @@ export default class Communicator {
                     + Communicator.getORDERBY(data.size, data.attributes, data.isAscendings);
                 break;
             case "update":
-                SQLStr += "UPDATE " + entity + "\nSET "
-                    + Object.keys(inputs).join(", ") + ")" + "\nVALUES ("
-                    + Object.keys(inputs).map(function (elem) {
-                        if (Dictionary.type[elem] === "NUMBER") {
-                            return inputs[elem];
-                        }
+                SQLStr = "UPDATE " + entity + "\nSET ";
 
-                        return "\'" + inputs[elem] + "\'";
-                    }).join(", ") + ")";
+                let filteredKeys = Object.keys(inputs).filter(function (key) {
+                    return inputs[key].length != 0;
+                })
+                let updateColumns = '';
+                filteredKeys.forEach(function (key) {
+                    updateColumns += key + ' = ' + inputs[key] + ', ';
+                })
+
+                let size;
+                switch (entity) {
+                    case "customer":
+                        size = Dictionary.PKNK.customerPK.length;
+                        break;
+                    case "employee":
+                        size = Dictionary.PKNK.employeePK.length;
+                        break;
+                    case "payroll":
+                        size = Dictionary.PKNK.payrollPK.length;
+                        break;
+                    case "product":
+                        size = Dictionary.PKNK.productPK.length;
+                        break;
+                    case "supplier":
+                        size = Dictionary.PKNK.supplierPK.length;
+                        break;
+                }
+
+                let values = Object.keys(inputs).map(function (key) {
+                    return inputs[key];
+                });
+
+                SQLStr += updateColumns.slice(0,-2) + Communicator.getWHERE(size, Object.keys(inputs),['=','=','='] , values);
                 break;
         }
 
