@@ -42,6 +42,34 @@ export default class Communicator {
     }
 
     /**
+     * Hardcoded queries.
+     */
+    public static getQueryData(query: string): any {
+        return new Promise(function (resolve, reject) {
+            Communicator.communicate(Communicator.getHardQuery(query))
+                .then(function (res: any) {
+                    return resolve(res);
+                })
+                .catch(function (err: Error) {
+                    return reject(err);
+                });
+        });
+    }
+
+    /**
+     * Returns the hardcoded query based on user specification.
+     */
+    public static getHardQuery(query: string): string {
+        switch (query) {
+            case "max_pay":
+                return "SELECT *\n" +
+                    "FROM employee\n" +
+                    "WHERE wage >= ALL (SELECT wage\n" +
+                    "FROM employee)";
+        }
+    }
+
+    /**
      * oracledb.getConnection Promise wrapper.
      */
     public static connect(): any {
@@ -143,12 +171,15 @@ export default class Communicator {
                 break;
             case "select":
                 //SELECT allColumns FROM entity
-                SQLStr += "SELECT " + data.attributes.join(", ") + "\nFROM " + data.entity
+                return SQLStr += "SELECT " + data.attributes.join(", ") + "\nFROM " + data.entity
                     + Communicator.getWHERE(data.size, data.attributes, data.operators, data.inputs)
                     + Communicator.getORDERBY(data.size, data.attributes, data.isAscendings);
-                break;
             case "update":
                 SQLStr += Communicator.update(entity, inputs);
+                break;
+            case "delete":
+                SQLStr += "DELETE FROM " + data.entity + "\n"
+                    + Communicator.getWHERE(data.size, data.attributes, data.operators, data.inputs);
                 break;
         }
 
@@ -191,7 +222,6 @@ export default class Communicator {
      * Constructs UPDATE statement.
      */
     public static update(entity: string, inputs: Object) {
-        console.log("BEGIN");
         let SQLStr = "UPDATE " + entity + "\nSET ",
             NK = Dictionary.PKNK[entity + "NK"].filter(function (key: string) {
                 return inputs[key].length !== 0;

@@ -82,6 +82,18 @@ export default class Server {
                         });
                 });
 
+                that.rest.post("/get-query", function (req: restify.Request, res: restify.Response, next: restify.Next) {
+                    Communicator.getQueryData(req.body)
+                        .then(function (response: any) {
+                            res.send(response);
+                            return next();
+                        })
+                        .catch(function (err: Error) {
+                            res.send(err);
+                            return next();
+                        });
+                });
+
                 that.rest.post("/update-table", function (req: restify.Request, res: restify.Response, next: restify.Next) {
                     Communicator.getData(req.body)
                         .then(function (response: any) {

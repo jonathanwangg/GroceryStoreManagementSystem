@@ -106,6 +106,9 @@ body {
 
             #entities {
                 margin: $header-size 0 0 0;
+                max-height: calc(100vh - #{$header-size});
+                overflow-x: hidden;
+                overflow-y: scroll;
                 top: 0;
                 z-index: 3;
             }

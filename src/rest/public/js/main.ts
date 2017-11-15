@@ -25,7 +25,8 @@ let url: string = "http://localhost:4321",
         employee: PKNK.employeePK.concat(PKNK.employeeNK),
         payroll:  PKNK.payrollPK.concat(PKNK.payrollNK),
         product:  PKNK.productPK.concat(PKNK.productNK),
-        supplier: PKNK.supplierPK.concat(PKNK.supplierNK)
+        supplier: PKNK.supplierPK.concat(PKNK.supplierNK),
+        max_pay: PKNK.employeePK.concat(PKNK.employeeNK)
     },
     type: Object = {
         /* Customer */
@@ -62,8 +63,7 @@ let url: string = "http://localhost:4321",
         supplier_name: "VARCHAR2(30)",
         location:      "VARCHAR2(30)",
         // phone_number: "VARCHAR2(30)"
-    },
-    confirmDrop: boolean = false;
+    };
 
 function init(): void {
     $(function () {
@@ -75,6 +75,7 @@ function init(): void {
         pressEnterToUpdateTable();
         toggleSort();
         selectEntity();
+        selectQuery();
         selectMethod();
         selectOperator();
         dropCancel();
@@ -94,14 +95,14 @@ function setDragTable() {
  * Returns the currently selected entity.
  */
 function getEntity(): string {
-    return $("#selected-entity").html().toLowerCase();
+    return $("#selected-entity").html().toLowerCase().replace(/ /g,"_");
 }
 
 /**
  * Returns the currently selected method
  */
 function getMethod(): string {
-    return $("#selected-method").html().toLowerCase();
+    return $("#selected-method").html().toLowerCase().replace(/ /g,"_");
 }
 
 /**
@@ -111,7 +112,7 @@ function toggleEntitySelection() {
     $("#selected-entity").on("click", function () {
         let entities = $("#entities");
 
-        entities.css("display") === "none" ? entities.css("display", "flex")
+        entities.css("display") === "none" ? entities.css("display", "block")
             : entities.css("display", "none");
     });
 }
@@ -149,13 +150,54 @@ function toggleOperatorSelection() {
  */
 function selectEntity() {
     $(".entity").on("click", function () {
-        let selection: String = $(this).html();
+        let selection: string = $(this).html();
 
         $("#selected-entity").html(selection);
         $("#entities").css("display", "none");
 
-        createInputFields();
+        if (["Customer", "Employee", "Payroll", "Product", "Supplier"].includes(selection)) {
+            createInputFields();
+        } else {
+            $("#attribute-inputs").html("");
+        }
         insertTableColumns();
+    });
+}
+
+/**
+ * Choose a query.
+ */
+function selectQuery() {
+    $(".query").on("click", function () {
+        let selection: string = $(this).html();
+
+        $("#selected-entity").html(selection);
+        $("#entities").css("display", "none");
+
+        $("#attribute-inputs").html("");
+        insertTableColumns();
+        getQueryData();
+    });
+}
+
+/**
+ * Retrieves entity data from the database.
+ */
+function getQueryData(): any {
+    return new Promise(function (resolve, reject) {
+        return $.ajax({
+            type:        getType(),
+            url:         url + "/get-query",
+            data:        JSON.stringify(getEntity()),
+            contentType: "application/json; charset=utf-8"
+        })
+            .then(function (res: any) {
+                updateTable(res);
+                return resolve(res);
+            })
+            .catch(function (err: Error) {
+                return reject(err);
+            });
     });
 }
 
@@ -323,10 +365,18 @@ function getAttributes(): string[] {
 
     switch (getMethod()) {
         case "delete":
-            return PKNK[entity + "PK"];
+            if (PKNK[entity + "PK"]) {
+                return PKNK[entity + "PK"];
+            }
+
+            return [];
         case "insert":
         case "update":
-            return entityDict[entity];
+            if (entityDict[entity]) {
+                return entityDict[entity];
+            }
+
+            return [];
         default:
             return [];
     }
@@ -411,7 +461,7 @@ function dropProceed() {
 }
 
 /**
- * Proceeds with INSERT, UPDATE, DELETE, etc. other than .
+ * Proceeds with INSERT, UPDATE, DELETE, etc. other than DROP.
  */
 function sendProceed() {
     $("#selected-method").on("click", function () {

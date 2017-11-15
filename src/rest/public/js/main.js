@@ -14,7 +14,8 @@ var url = "http://localhost:4321", PKNK = {
     employee: PKNK.employeePK.concat(PKNK.employeeNK),
     payroll: PKNK.payrollPK.concat(PKNK.payrollNK),
     product: PKNK.productPK.concat(PKNK.productNK),
-    supplier: PKNK.supplierPK.concat(PKNK.supplierNK)
+    supplier: PKNK.supplierPK.concat(PKNK.supplierNK),
+    max_pay: PKNK.employeePK.concat(PKNK.employeeNK)
 }, type = {
     membership_id: "NUMBER",
     first_name: "VARCHAR2(30)",
@@ -36,7 +37,7 @@ var url = "http://localhost:4321", PKNK = {
     days_to_expiry: "NUMBER",
     supplier_name: "VARCHAR2(30)",
     location: "VARCHAR2(30)",
-}, confirmDrop = false;
+};
 function init() {
     $(function () {
         setDragTable();
@@ -47,6 +48,7 @@ function init() {
         pressEnterToUpdateTable();
         toggleSort();
         selectEntity();
+        selectQuery();
         selectMethod();
         selectOperator();
         dropCancel();
@@ -58,15 +60,15 @@ function setDragTable() {
     $("table").removeData().dragtable();
 }
 function getEntity() {
-    return $("#selected-entity").html().toLowerCase();
+    return $("#selected-entity").html().toLowerCase().replace(/ /g, "_");
 }
 function getMethod() {
-    return $("#selected-method").html().toLowerCase();
+    return $("#selected-method").html().toLowerCase().replace(/ /g, "_");
 }
 function toggleEntitySelection() {
     $("#selected-entity").on("click", function () {
         var entities = $("#entities");
-        entities.css("display") === "none" ? entities.css("display", "flex")
+        entities.css("display") === "none" ? entities.css("display", "block")
             : entities.css("display", "none");
     });
 }
@@ -92,8 +94,40 @@ function selectEntity() {
         var selection = $(this).html();
         $("#selected-entity").html(selection);
         $("#entities").css("display", "none");
-        createInputFields();
+        if (["Customer", "Employee", "Payroll", "Product", "Supplier"].includes(selection)) {
+            createInputFields();
+        }
+        else {
+            $("#attribute-inputs").html("");
+        }
         insertTableColumns();
+    });
+}
+function selectQuery() {
+    $(".query").on("click", function () {
+        var selection = $(this).html();
+        $("#selected-entity").html(selection);
+        $("#entities").css("display", "none");
+        $("#attribute-inputs").html("");
+        insertTableColumns();
+        getQueryData();
+    });
+}
+function getQueryData() {
+    return new Promise(function (resolve, reject) {
+        return $.ajax({
+            type: getType(),
+            url: url + "/get-query",
+            data: JSON.stringify(getEntity()),
+            contentType: "application/json; charset=utf-8"
+        })
+            .then(function (res) {
+            updateTable(res);
+            return resolve(res);
+        })
+            .catch(function (err) {
+            return reject(err);
+        });
     });
 }
 function selectMethod() {
@@ -212,10 +246,16 @@ function getAttributes() {
     var entity = getEntity();
     switch (getMethod()) {
         case "delete":
-            return PKNK[entity + "PK"];
+            if (PKNK[entity + "PK"]) {
+                return PKNK[entity + "PK"];
+            }
+            return [];
         case "insert":
         case "update":
-            return entityDict[entity];
+            if (entityDict[entity]) {
+                return entityDict[entity];
+            }
+            return [];
         default:
             return [];
     }

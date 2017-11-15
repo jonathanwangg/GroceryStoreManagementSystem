@@ -45,6 +45,17 @@ var Server = (function () {
                         return next();
                     });
                 });
+                that.rest.post("/get-query", function (req, res, next) {
+                    Communicator_1.default.getQueryData(req.body)
+                        .then(function (response) {
+                        res.send(response);
+                        return next();
+                    })
+                        .catch(function (err) {
+                        res.send(err);
+                        return next();
+                    });
+                });
                 that.rest.post("/update-table", function (req, res, next) {
                     Communicator_1.default.getData(req.body)
                         .then(function (response) {

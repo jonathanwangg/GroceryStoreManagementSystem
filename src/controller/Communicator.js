@@ -26,6 +26,26 @@ var Communicator = (function () {
             });
         });
     };
+    Communicator.getQueryData = function (query) {
+        return new Promise(function (resolve, reject) {
+            Communicator.communicate(Communicator.getHardQuery(query))
+                .then(function (res) {
+                return resolve(res);
+            })
+                .catch(function (err) {
+                return reject(err);
+            });
+        });
+    };
+    Communicator.getHardQuery = function (query) {
+        switch (query) {
+            case "max_pay":
+                return "SELECT *\n" +
+                    "FROM employee\n" +
+                    "WHERE wage >= ALL (SELECT wage\n" +
+                    "FROM employee)";
+        }
+    };
     Communicator.connect = function () {
         return new Promise(function (resolve, reject) {
             Communicator.oracledb.getConnection(Communicator.setting, function (err, connection) {
@@ -101,12 +121,15 @@ var Communicator = (function () {
                 SQLStr += Communicator.insert(entity, inputs);
                 break;
             case "select":
-                SQLStr += "SELECT " + data.attributes.join(", ") + "\nFROM " + data.entity
+                return SQLStr += "SELECT " + data.attributes.join(", ") + "\nFROM " + data.entity
                     + Communicator.getWHERE(data.size, data.attributes, data.operators, data.inputs)
                     + Communicator.getORDERBY(data.size, data.attributes, data.isAscendings);
-                break;
             case "update":
                 SQLStr += Communicator.update(entity, inputs);
+                break;
+            case "delete":
+                SQLStr += "DELETE FROM " + data.entity + "\n"
+                    + Communicator.getWHERE(data.size, data.attributes, data.operators, data.inputs);
                 break;
         }
         console.log(SQLStr + "\n");
@@ -135,7 +158,6 @@ var Communicator = (function () {
             }).join(", ") + ")";
     };
     Communicator.update = function (entity, inputs) {
-        console.log("BEGIN");
         var SQLStr = "UPDATE " + entity + "\nSET ", NK = Dictionary_1.default.PKNK[entity + "NK"].filter(function (key) {
             return inputs[key].length !== 0;
         }), PK = Dictionary_1.default.PKNK[entity + "PK"];
