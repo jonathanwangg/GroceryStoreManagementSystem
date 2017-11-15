@@ -375,6 +375,9 @@ function dropConfirm() {
     $("#confirmation-container").css("display", "flex");
 }
 
+/**
+ * Animates confirmation for DROP TABLE.
+ */
 function dropCancel() {
     $("#drop-cancel").on("click", function () {
         restoreDrop();
@@ -391,7 +394,7 @@ function restoreDrop() {
 }
 
 /**
- * Proceeds with DROP.
+ * Proceeds with DROP function after confirmation.
  */
 function dropProceed() {
     $("#drop-confirm").on("click", function () {
@@ -407,6 +410,9 @@ function dropProceed() {
     });
 }
 
+/**
+ * Proceeds with INSERT, UPDATE, DELETE, etc. other than .
+ */
 function sendProceed() {
     $("#selected-method").on("click", function () {
         let method: any = $(this),

@@ -106,36 +106,7 @@ var Communicator = (function () {
                     + Communicator.getORDERBY(data.size, data.attributes, data.isAscendings);
                 break;
             case "update":
-                SQLStr = "UPDATE " + entity + "\nSET ";
-                var filteredKeys = Object.keys(inputs).filter(function (key) {
-                    return inputs[key].length != 0;
-                });
-                var updateColumns_1 = '';
-                filteredKeys.forEach(function (key) {
-                    updateColumns_1 += key + ' = ' + inputs[key] + ', ';
-                });
-                var size = void 0;
-                switch (entity) {
-                    case "customer":
-                        size = Dictionary_1.default.PKNK.customerPK.length;
-                        break;
-                    case "employee":
-                        size = Dictionary_1.default.PKNK.employeePK.length;
-                        break;
-                    case "payroll":
-                        size = Dictionary_1.default.PKNK.payrollPK.length;
-                        break;
-                    case "product":
-                        size = Dictionary_1.default.PKNK.productPK.length;
-                        break;
-                    case "supplier":
-                        size = Dictionary_1.default.PKNK.supplierPK.length;
-                        break;
-                }
-                var values = Object.keys(inputs).map(function (key) {
-                    return inputs[key];
-                });
-                SQLStr += updateColumns_1.slice(0, -2) + Communicator.getWHERE(size, Object.keys(inputs), ['=', '=', '='], values);
+                SQLStr += Communicator.update(entity, inputs);
                 break;
         }
         console.log(SQLStr + "\n");
@@ -162,6 +133,20 @@ var Communicator = (function () {
                 }
                 return "\'" + inputs[elem] + "\'";
             }).join(", ") + ")";
+    };
+    Communicator.update = function (entity, inputs) {
+        console.log("BEGIN");
+        var SQLStr = "UPDATE " + entity + "\nSET ", NK = Dictionary_1.default.PKNK[entity + "NK"].filter(function (key) {
+            return inputs[key].length !== 0;
+        }), PK = Dictionary_1.default.PKNK[entity + "PK"];
+        SQLStr += NK.map(function (key) {
+            return key + " = " + (Dictionary_1.default.type[key] === "NUMBER" ? inputs[key] : "'" + inputs[key] + "'");
+        }).join(", ");
+        return SQLStr + Communicator.getWHERE(PK.length, PK, PK.map(function () {
+            return '=';
+        }), PK.map(function (key) {
+            return inputs[key];
+        }));
     };
     Communicator.getWHERE = function (size, attributes, operators, inputs) {
         if (inputs.join("") === "") {

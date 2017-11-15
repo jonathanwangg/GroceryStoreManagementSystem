@@ -4,8 +4,8 @@ export default class Communicator {
     public static oracledb = require("oracledb");
     public static dbConfig = require("./dbconfig.js");
     public static setting = {
-        user: Communicator.dbConfig.user,
-        password: Communicator.dbConfig.password,
+        user:          Communicator.dbConfig.user,
+        password:      Communicator.dbConfig.password,
         connectString: Communicator.dbConfig.connectString
     };
 
@@ -148,40 +148,7 @@ export default class Communicator {
                     + Communicator.getORDERBY(data.size, data.attributes, data.isAscendings);
                 break;
             case "update":
-                SQLStr = "UPDATE " + entity + "\nSET ";
-
-                let filteredKeys = Object.keys(inputs).filter(function (key) {
-                    return inputs[key].length != 0;
-                })
-                let updateColumns = '';
-                filteredKeys.forEach(function (key) {
-                    updateColumns += key + ' = ' + inputs[key] + ', ';
-                })
-
-                let size;
-                switch (entity) {
-                    case "customer":
-                        size = Dictionary.PKNK.customerPK.length;
-                        break;
-                    case "employee":
-                        size = Dictionary.PKNK.employeePK.length;
-                        break;
-                    case "payroll":
-                        size = Dictionary.PKNK.payrollPK.length;
-                        break;
-                    case "product":
-                        size = Dictionary.PKNK.productPK.length;
-                        break;
-                    case "supplier":
-                        size = Dictionary.PKNK.supplierPK.length;
-                        break;
-                }
-
-                let values = Object.keys(inputs).map(function (key) {
-                    return inputs[key];
-                });
-
-                SQLStr += updateColumns.slice(0,-2) + Communicator.getWHERE(size, Object.keys(inputs),['=','=','='] , values);
+                SQLStr += Communicator.update(entity, inputs);
                 break;
         }
 
@@ -218,6 +185,29 @@ export default class Communicator {
 
                 return "\'" + inputs[elem] + "\'";
             }).join(", ") + ")";
+    }
+
+    /**
+     * Constructs UPDATE statement.
+     */
+    public static update(entity: string, inputs: Object) {
+        console.log("BEGIN");
+        let SQLStr = "UPDATE " + entity + "\nSET ",
+            NK = Dictionary.PKNK[entity + "NK"].filter(function (key: string) {
+                return inputs[key].length !== 0;
+            }),
+            PK = Dictionary.PKNK[entity + "PK"];
+
+        SQLStr += NK.map(function (key: string) {
+            return key + " = " + (Dictionary.type[key] === "NUMBER" ? inputs[key] : "'" + inputs[key] + "'");
+        }).join(", ");
+
+        return SQLStr + Communicator.getWHERE(PK.length, PK,
+            PK.map(function () {
+                return '=';
+            }), PK.map(function (key: string) {
+                return inputs[key];
+            }));
     }
 
     /**
