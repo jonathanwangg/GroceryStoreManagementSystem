@@ -4,8 +4,8 @@ export default class Communicator {
     public static oracledb = require("oracledb");
     public static dbConfig = require("./dbconfig.js");
     public static setting = {
-        user:          Communicator.dbConfig.user,
-        password:      Communicator.dbConfig.password,
+        user: Communicator.dbConfig.user,
+        password: Communicator.dbConfig.password,
         connectString: Communicator.dbConfig.connectString
     };
 
@@ -175,15 +175,37 @@ export default class Communicator {
                 break;
             case "select":
                 //SELECT allColumns FROM entity
-                return SQLStr += "SELECT " + data.attributes.join(", ") + "\nFROM " + data.entity
-                    + Communicator.getWHERE(data.size, data.attributes, data.operators, data.inputs)
+                let map: Object = {};
+
+                data.attributes.forEach(function (key: string, i: number) {
+                    if (data.inputs[i].length !== 0) {
+                        map[key] = data.inputs[i];
+                    } else {
+                        delete data.operators[i];
+                    }
+                });
+
+                SQLStr += "SELECT " + data.attributes.join(", ") + "\nFROM " + data.entity
+                    + Communicator.getWHERE(Object.keys(map).length, Object.keys(map), data.operators.filter(function (value: any) {
+                            return value !== 0;
+                        }),
+                        Object.keys(map).map(function (key: string) {
+                            return map[key];
+                        }))
                     + Communicator.getORDERBY(data.size, data.attributes, data.isAscendings);
+                break;
             case "update":
                 SQLStr += Communicator.update(entity, inputs);
                 break;
             case "delete":
-                SQLStr += "DELETE FROM " + data.entity + "\n"
-                    + Communicator.getWHERE(data.size, data.attributes, data.operators, data.inputs);
+                let PK = Dictionary.PKNK[entity + "PK"];
+                SQLStr += "DELETE FROM " + data.entity
+                    + Communicator.getWHERE(PK.length, PK,
+                        PK.map(function (key: any) {
+                            return Dictionary.type[key] === "NUMBER" ? '=':'A';
+                        }), PK.map(function (key: string) {
+                            return inputs[key];
+                        }));
                 break;
         }
 
@@ -255,10 +277,8 @@ export default class Communicator {
         let whereStr: string = "\nWHERE ";
 
         for (let i: number = 0; i < size; i++) {
-            if (inputs[i] !== "") {
-                whereStr += Communicator.getWHERECondition(attributes[i], operators[i], inputs[i])
-                    + " AND ";
-            }
+            whereStr += Communicator.getWHERECondition(attributes[i], operators[i], inputs[i])
+                + " AND ";
         }
 
         return whereStr.substring(0, whereStr.lastIndexOf(" AND "));

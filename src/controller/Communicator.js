@@ -125,15 +125,34 @@ var Communicator = (function () {
                 SQLStr += Communicator.insert(entity, inputs);
                 break;
             case "select":
-                return SQLStr += "SELECT " + data.attributes.join(", ") + "\nFROM " + data.entity
-                    + Communicator.getWHERE(data.size, data.attributes, data.operators, data.inputs)
+                var map_1 = {};
+                data.attributes.forEach(function (key, i) {
+                    if (data.inputs[i].length !== 0) {
+                        map_1[key] = data.inputs[i];
+                    }
+                    else {
+                        delete data.operators[i];
+                    }
+                });
+                SQLStr += "SELECT " + data.attributes.join(", ") + "\nFROM " + data.entity
+                    + Communicator.getWHERE(Object.keys(map_1).length, Object.keys(map_1), data.operators.filter(function (value) {
+                        return value !== 0;
+                    }), Object.keys(map_1).map(function (key) {
+                        return map_1[key];
+                    }))
                     + Communicator.getORDERBY(data.size, data.attributes, data.isAscendings);
+                break;
             case "update":
                 SQLStr += Communicator.update(entity, inputs);
                 break;
             case "delete":
-                SQLStr += "DELETE FROM " + data.entity + "\n"
-                    + Communicator.getWHERE(data.size, data.attributes, data.operators, data.inputs);
+                var PK = Dictionary_1.default.PKNK[entity + "PK"];
+                SQLStr += "DELETE FROM " + data.entity
+                    + Communicator.getWHERE(PK.length, PK, PK.map(function (key) {
+                        return Dictionary_1.default.type[key] === "NUMBER" ? '=' : 'A';
+                    }), PK.map(function (key) {
+                        return inputs[key];
+                    }));
                 break;
         }
         console.log(SQLStr + "\n");
@@ -180,10 +199,8 @@ var Communicator = (function () {
         }
         var whereStr = "\nWHERE ";
         for (var i = 0; i < size; i++) {
-            if (inputs[i] !== "") {
-                whereStr += Communicator.getWHERECondition(attributes[i], operators[i], inputs[i])
-                    + " AND ";
-            }
+            whereStr += Communicator.getWHERECondition(attributes[i], operators[i], inputs[i])
+                + " AND ";
         }
         return whereStr.substring(0, whereStr.lastIndexOf(" AND "));
     };
