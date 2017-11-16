@@ -25,7 +25,9 @@ let url: string = "http://localhost:4321",
         employee: PKNK.employeePK.concat(PKNK.employeeNK),
         payroll:  PKNK.payrollPK.concat(PKNK.payrollNK),
         product:  PKNK.productPK.concat(PKNK.productNK),
-        supplier: PKNK.supplierPK.concat(PKNK.supplierNK),
+        supplier: PKNK.supplierPK.concat(PKNK.supplierNK)
+    },
+    customQueryDict: Object = {
         max_pay: PKNK.employeePK.concat(PKNK.employeeNK)
     },
     type: Object = {
@@ -95,18 +97,32 @@ function setDragTable() {
  * Returns the currently selected entity.
  */
 function getEntity(): string {
-    return $("#selected-entity").html().toLowerCase().replace(/ /g,"_");
+    return $("#selected-entity").html().toLowerCase().replace(/ /g, "_");
 }
 
 /**
- * Returns the currently selected method
+ * Returns the currently selected method.
  */
 function getMethod(): string {
-    return $("#selected-method").html().toLowerCase().replace(/ /g,"_");
+    return $("#selected-method").html().toLowerCase().replace(/ /g, "_");
 }
 
 /**
- * Expands Entity selection (Employee, Customer, etc.)
+ * Returns the currently selected custom query.
+ */
+function getCustomQuery(): string {
+    return $("#custom-query").children(".selected").html().toLowerCase().replace(/ /g, "_");
+}
+
+/**
+ * Returns true if custom queries.
+ */
+function isCustomQuery(): boolean {
+    return getMethod() === "custom";
+}
+
+/**
+ * Expands Entity selection (Employee, Customer, etc.).
  */
 function toggleEntitySelection() {
     $("#selected-entity").on("click", function () {
@@ -118,7 +134,7 @@ function toggleEntitySelection() {
 }
 
 /**
- * Expands Method selection (INSERT, UPDATE, etc.)
+ * Expands Method selection (INSERT, UPDATE, etc.).
  */
 function toggleMethodSelection() {
     let selector = $("#method-selector");
@@ -136,7 +152,7 @@ function toggleMethodSelection() {
 }
 
 /**
- * Expands Operator selection (=, !=, string regex, etc.)
+ * Expands Operator selection (=, !=, string regex, etc.).
  */
 function toggleOperatorSelection() {
     $("table").on("click", ".operator-icon", function () {
@@ -161,6 +177,7 @@ function selectEntity() {
             $("#attribute-inputs").html("");
         }
         insertTableColumns();
+        getTableData();
     });
 }
 
@@ -169,12 +186,10 @@ function selectEntity() {
  */
 function selectQuery() {
     $(".query").on("click", function () {
-        let selection: string = $(this).html();
+        let that = $(this);
 
-        $("#selected-entity").html(selection);
-        $("#entities").css("display", "none");
-
-        $("#attribute-inputs").html("");
+        that.parent().children(".selected").removeClass("selected");
+        that.addClass("selected");
         insertTableColumns();
         getQueryData();
     });
@@ -188,7 +203,7 @@ function getQueryData(): any {
         return $.ajax({
             type:        getType(),
             url:         url + "/get-query",
-            data:        JSON.stringify(getEntity()),
+            data:        JSON.stringify({query: getCustomQuery(), specification: getSpecification()}),
             contentType: "application/json; charset=utf-8"
         })
             .then(function (res: any) {
@@ -208,10 +223,18 @@ function selectMethod() {
     $(".method").on("click", function () {
         let method: string = $(this).html();
 
-        $("#selected-method").html(decorateText(method));
         $("#methods").css("display", "none");
+        $("#selected-method").html(decorateText(method));
 
-        createInputFields();
+        if (method === "Custom") {
+            expandCustomQuery();
+        } else {
+            expandAttributeInput();
+            createInputFields();
+            getTableData();
+        }
+
+        insertTableColumns();
     });
 }
 
@@ -247,16 +270,18 @@ function toggleSort() {
 function pressEnterToUpdateTable() {
     $("table input").keypress(function (event: any) {
         //13 is enter key
-        if (event.which === 13) {
-            getTableData();
+        if (event.which !== 13) {
+            return;
         }
+
+        $("#selected-entity").css("display") === "none" ? getQueryData() : getTableData();
     });
 }
 
 /**
  * Creates the necessary input parameters for Object (Employee, Customer, etc.) and Method (Delete, Input, etc.).
  */
-function createInputFields() {
+function createInputFields(): void {
     let fields: any = getAttributes(),
         htmlString: string = "";
 
@@ -268,18 +293,38 @@ function createInputFields() {
 }
 
 /**
+ * Expands the list of custom queries.
+ */
+function expandCustomQuery(): void {
+    $("#attribute-inputs").css("display", "none");
+    $("#selected-entity").css("display", "none");
+    $("#custom-query").css("display", "flex");
+}
+
+/**
+ * Expands the list of inputs for a given basic query.
+ */
+function expandAttributeInput(): void {
+    $("#custom-query").css("display", "none");
+    $("#selected-entity").css("display", "flex");
+    $("#attribute-inputs").css("display", "flex");
+}
+
+/**
  * Creates the table columns based on the current entity.
  */
 function insertTableColumns() {
     let htmlStr = "";
+    let attributes: string[] = isCustomQuery() ? customQueryDict[getCustomQuery()] : entityDict[getEntity()];
 
-    //create headers
-    htmlStr += "<tr>" + entityDict[getEntity()].map(function (attr: string) {
-        return "<th>" + decorateText(attr) + "</th>";
-    }).join("") + "</tr>";
+    //create column headers
+    htmlStr += "<tr>"
+        + attributes.map(function (attr: string) {
+            return "<th>" + decorateText(attr) + "</th>";
+        }).join("") + "</tr>";
 
     //create specifications for each header (contains search bar, >=, A..., sorter, etc.)
-    htmlStr += "<tr class=\"specification\">" + entityDict[getEntity()].map(function (attr: string) {
+    htmlStr += "<tr class=\"specification\">" + attributes.map(function (attr: string) {
         if (type[attr] === "NUMBER") {
             return "<td>\n" +
                 "                        <div class=\"operator-container-list\">\n" +
@@ -478,6 +523,10 @@ function sendProceed() {
         //get data from database for INSERT, UPDATE, DELETE
         if (isEmptyInput() && (methodStr === "insert" || methodStr === "update" || methodStr === "delete")) {
             return getTableData();
+        }
+
+        if (methodStr === "custom") {
+            return;
         }
 
         if (methodStr === "drop") {

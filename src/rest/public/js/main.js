@@ -14,7 +14,8 @@ var url = "http://localhost:4321", PKNK = {
     employee: PKNK.employeePK.concat(PKNK.employeeNK),
     payroll: PKNK.payrollPK.concat(PKNK.payrollNK),
     product: PKNK.productPK.concat(PKNK.productNK),
-    supplier: PKNK.supplierPK.concat(PKNK.supplierNK),
+    supplier: PKNK.supplierPK.concat(PKNK.supplierNK)
+}, customQueryDict = {
     max_pay: PKNK.employeePK.concat(PKNK.employeeNK)
 }, type = {
     membership_id: "NUMBER",
@@ -65,6 +66,12 @@ function getEntity() {
 function getMethod() {
     return $("#selected-method").html().toLowerCase().replace(/ /g, "_");
 }
+function getCustomQuery() {
+    return $("#custom-query").children(".selected").html().toLowerCase().replace(/ /g, "_");
+}
+function isCustomQuery() {
+    return getMethod() === "custom";
+}
 function toggleEntitySelection() {
     $("#selected-entity").on("click", function () {
         var entities = $("#entities");
@@ -101,14 +108,14 @@ function selectEntity() {
             $("#attribute-inputs").html("");
         }
         insertTableColumns();
+        getTableData();
     });
 }
 function selectQuery() {
     $(".query").on("click", function () {
-        var selection = $(this).html();
-        $("#selected-entity").html(selection);
-        $("#entities").css("display", "none");
-        $("#attribute-inputs").html("");
+        var that = $(this);
+        that.parent().children(".selected").removeClass("selected");
+        that.addClass("selected");
         insertTableColumns();
         getQueryData();
     });
@@ -118,7 +125,7 @@ function getQueryData() {
         return $.ajax({
             type: getType(),
             url: url + "/get-query",
-            data: JSON.stringify(getEntity()),
+            data: JSON.stringify({ query: getCustomQuery(), specification: getSpecification() }),
             contentType: "application/json; charset=utf-8"
         })
             .then(function (res) {
@@ -133,9 +140,17 @@ function getQueryData() {
 function selectMethod() {
     $(".method").on("click", function () {
         var method = $(this).html();
-        $("#selected-method").html(decorateText(method));
         $("#methods").css("display", "none");
-        createInputFields();
+        $("#selected-method").html(decorateText(method));
+        if (method === "Custom") {
+            expandCustomQuery();
+        }
+        else {
+            expandAttributeInput();
+            createInputFields();
+            getTableData();
+        }
+        insertTableColumns();
     });
 }
 function selectOperator() {
@@ -158,9 +173,10 @@ function toggleSort() {
 }
 function pressEnterToUpdateTable() {
     $("table input").keypress(function (event) {
-        if (event.which === 13) {
-            getTableData();
+        if (event.which !== 13) {
+            return;
         }
+        $("#selected-entity").css("display") === "none" ? getQueryData() : getTableData();
     });
 }
 function createInputFields() {
@@ -170,12 +186,24 @@ function createInputFields() {
     });
     $("#attribute-inputs").html(htmlString);
 }
+function expandCustomQuery() {
+    $("#attribute-inputs").css("display", "none");
+    $("#selected-entity").css("display", "none");
+    $("#custom-query").css("display", "flex");
+}
+function expandAttributeInput() {
+    $("#custom-query").css("display", "none");
+    $("#selected-entity").css("display", "flex");
+    $("#attribute-inputs").css("display", "flex");
+}
 function insertTableColumns() {
     var htmlStr = "";
-    htmlStr += "<tr>" + entityDict[getEntity()].map(function (attr) {
-        return "<th>" + decorateText(attr) + "</th>";
-    }).join("") + "</tr>";
-    htmlStr += "<tr class=\"specification\">" + entityDict[getEntity()].map(function (attr) {
+    var attributes = isCustomQuery() ? customQueryDict[getCustomQuery()] : entityDict[getEntity()];
+    htmlStr += "<tr>"
+        + attributes.map(function (attr) {
+            return "<th>" + decorateText(attr) + "</th>";
+        }).join("") + "</tr>";
+    htmlStr += "<tr class=\"specification\">" + attributes.map(function (attr) {
         if (type[attr] === "NUMBER") {
             return "<td>\n" +
                 "                        <div class=\"operator-container-list\">\n" +
@@ -322,6 +350,9 @@ function sendProceed() {
         }
         if (isEmptyInput() && (methodStr === "insert" || methodStr === "update" || methodStr === "delete")) {
             return getTableData();
+        }
+        if (methodStr === "custom") {
+            return;
         }
         if (methodStr === "drop") {
             dropConfirm();

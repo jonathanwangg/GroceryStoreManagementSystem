@@ -26,9 +26,9 @@ var Communicator = (function () {
             });
         });
     };
-    Communicator.getQueryData = function (query) {
+    Communicator.getQueryData = function (data) {
         return new Promise(function (resolve, reject) {
-            Communicator.communicate(Communicator.getHardQuery(query))
+            Communicator.communicate(Communicator.getHardQuery(data))
                 .then(function (res) {
                 return resolve(res);
             })
@@ -37,13 +37,17 @@ var Communicator = (function () {
             });
         });
     };
-    Communicator.getHardQuery = function (query) {
-        switch (query) {
-            case "max_pay":
-                return "SELECT *\n" +
-                    "FROM employee\n" +
-                    "WHERE wage >= ALL (SELECT wage\n" +
-                    "FROM employee)";
+    Communicator.getHardQuery = function (data) {
+        if (data.specification.inputs.join("") === "") {
+            switch (data.query) {
+                case "max_pay":
+                    return "SELECT *\n" +
+                        "FROM employee\n" +
+                        "WHERE wage >= ALL (SELECT wage\n" +
+                        "FROM employee)";
+            }
+        }
+        else {
         }
     };
     Communicator.connect = function () {

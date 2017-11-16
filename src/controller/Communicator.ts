@@ -44,9 +44,9 @@ export default class Communicator {
     /**
      * Hardcoded queries.
      */
-    public static getQueryData(query: string): any {
+    public static getQueryData(data: string): any {
         return new Promise(function (resolve, reject) {
-            Communicator.communicate(Communicator.getHardQuery(query))
+            Communicator.communicate(Communicator.getHardQuery(data))
                 .then(function (res: any) {
                     return resolve(res);
                 })
@@ -59,13 +59,17 @@ export default class Communicator {
     /**
      * Returns the hardcoded query based on user specification.
      */
-    public static getHardQuery(query: string): string {
-        switch (query) {
-            case "max_pay":
-                return "SELECT *\n" +
-                    "FROM employee\n" +
-                    "WHERE wage >= ALL (SELECT wage\n" +
-                    "FROM employee)";
+    public static getHardQuery(data: any): string {
+        if (data.specification.inputs.join("") === "") {
+            switch (data.query) {
+                case "max_pay":
+                    return "SELECT *\n" +
+                        "FROM employee\n" +
+                        "WHERE wage >= ALL (SELECT wage\n" +
+                        "FROM employee)";
+            }
+        } else {
+            //CUSTOME QUERY WITH USER INPUT IN TABLE FILTERS
         }
     }
 

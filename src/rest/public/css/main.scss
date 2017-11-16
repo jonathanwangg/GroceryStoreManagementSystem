@@ -64,7 +64,6 @@ body {
                 display: flex;
                 font-variant: small-caps;
                 height: $header-size;
-                //height: 8rem;
                 justify-content: center;
                 text-align: center;
                 width: 100%;
@@ -106,7 +105,6 @@ body {
 
             #entities {
                 margin: $header-size 0 0 0;
-                max-height: calc(100vh - #{$header-size});
                 overflow-x: hidden;
                 overflow-y: scroll;
                 top: 0;
@@ -235,6 +233,35 @@ body {
                     &:focus {
                         border: 0.05em $pink solid;
                     }
+                }
+            }
+
+            #custom-query {
+                align-items: center;
+                display: none;
+                height: calc(100vh - #{$header-size});
+                overflow-x: hidden;
+                overflow-y: auto;
+                width: 100%;
+
+                .query {
+                    align-items: center;
+                    color: $white;
+                    cursor: pointer;
+                    display: flex;
+                    font-variant: small-caps;
+                    height: $header-size;
+                    justify-content: center;
+                    text-align: center;
+                    width: 100%;
+
+                    &:hover {
+                        background-color: $pink;
+                    }
+                }
+
+                .selected {
+                    background: $pink;
                 }
             }
         }
