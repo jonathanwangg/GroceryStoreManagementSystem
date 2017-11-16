@@ -298,7 +298,7 @@ function createInputFields(): void {
 function expandCustomQuery(): void {
     $("#attribute-inputs").css("display", "none");
     $("#selected-entity").css("display", "none");
-    $("#custom-query").css("display", "flex");
+    $("#custom-query").css("display", "block");
 }
 
 /**

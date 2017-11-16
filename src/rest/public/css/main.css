@@ -67,8 +67,6 @@ body {
             background-color: #6c3081; }
       body #modal-data #data-container #entities {
         margin: 15vh 0 0 0;
-        overflow-x: hidden;
-        overflow-y: scroll;
         top: 0;
         z-index: 3; }
       body #modal-data #data-container #methods {
