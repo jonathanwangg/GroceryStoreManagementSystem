@@ -4,8 +4,8 @@ export default class Communicator {
     public static oracledb = require("oracledb");
     public static dbConfig = require("./dbconfig.js");
     public static setting = {
-        user:          Communicator.dbConfig.user,
-        password:      Communicator.dbConfig.password,
+        user: Communicator.dbConfig.user,
+        password: Communicator.dbConfig.password,
         connectString: Communicator.dbConfig.connectString
     };
 
@@ -70,10 +70,17 @@ export default class Communicator {
         if (data.specification.inputs.join("") === "") {
             switch (data.query) {
                 case "max_pay":
-                    SQLStr += "SELECT *\n" +
+                    SQLStr = "SELECT *\n" +
                         "FROM employee\n" +
                         "WHERE wage >= ALL (SELECT wage\n" +
                         "FROM employee)";
+                    break;
+                case "sales_target":
+                    SQLStr = "select e.*, result.target from employee e, " +
+                        "(select e.employeeid AS id, SUM(r.quantity) AS target from employee e, processes p, receivesreceipt r " +
+                        "where e.employeeid = p.employeeid AND r.transactionID = p.transactionID GROUP BY e.employeeid HAVING SUM(r.quantity) > " +
+                        data.inputs['target'] + ") result where result.id = e.employeeid;"
+                    console.log(SQLStr);
                     break;
                 case "process_transaction":
                     console.log("PROCESS TRANSACTION");
