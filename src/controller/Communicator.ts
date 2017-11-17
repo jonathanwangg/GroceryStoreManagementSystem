@@ -58,6 +58,11 @@ export default class Communicator {
 
     /**
      * Returns the hardcoded query based on user specification.
+     * data = {
+     *      data.query = "max_pay", "sales_target", etc.
+     *      data.inputs = required input fields for hardcoded queries
+     *      data.specification = "user input on right-hand side table" IGNORE THIS FOR NOW, always blank
+     * }
      */
     public static getHardQuery(data: any): string {
         let SQLStr: string = "";

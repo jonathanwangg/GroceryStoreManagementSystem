@@ -28,13 +28,13 @@ let url: string = "http://localhost:4321",
         supplier: PKNK.supplierPK.concat(PKNK.supplierNK)
     },
     customQueryDict: Object = {
-        max_pay:      PKNK.employeePK.concat(PKNK.employeeNK),
-        sales_target: PKNK.employeePK.concat(PKNK.employeeNK).concat(["target"]),
+        max_pay:             PKNK.employeePK.concat(PKNK.employeeNK),
+        sales_target:        PKNK.employeePK.concat(PKNK.employeeNK).concat(["target"]),
         process_transaction: ["transaction_id", "date_transaction", "payment_type", "employee_id", "quantity_customer", "quantity_inventory", "membership_id"]
     },
     customQueryInput: Object = {
-        max_pay:      [],
-        sales_target: ["target"],
+        max_pay:             [],
+        sales_target:        ["target"],
         process_transaction: ["transaction_id", "membership_id", "sku"]
     },
     type: Object = {
@@ -214,11 +214,7 @@ function selectQuery() {
         $("#selected-query").html(selection);
         $("#queries").css("display", "none");
 
-        if (["sales_target"].includes(selection.toLowerCase().replace(/ /g, "_").toLowerCase())) {
-            createInputFields();
-        } else {
-            $("#query-inputs").html("");
-        }
+        createInputFields();
         insertTableColumns();
         getTableData();
     });
@@ -232,7 +228,11 @@ function getQueryData(): any {
         return $.ajax({
             type:        getType(),
             url:         url + "/get-query",
-            data:        JSON.stringify({query: getCustomQuery(), specification: getSpecification()}),
+            data:        JSON.stringify({
+                query:         getCustomQuery(),
+                inputs:        getInput(),
+                specification: getSpecification()
+            }),
             contentType: "application/json; charset=utf-8"
         })
             .then(function (res: any) {
@@ -668,9 +668,10 @@ function getType(): string {
 function getInput(): Object {
     let inputObj: any = {};
 
-    $("#attribute-inputs").children("input").each(function () {
-        inputObj[undecorateText($(this).attr("placeholder"))] = $(this).val();
-    });
+    (isCustomQuery() ? $("#query-inputs").children("input") : $("#attribute-inputs").children("input"))
+        .each(function () {
+            inputObj[undecorateText($(this).attr("placeholder"))] = $(this).val();
+        });
 
     return inputObj;
 }

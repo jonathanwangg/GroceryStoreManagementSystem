@@ -131,12 +131,7 @@ function selectQuery() {
         var selection = $(this).html();
         $("#selected-query").html(selection);
         $("#queries").css("display", "none");
-        if (["sales_target"].includes(selection.toLowerCase().replace(/ /g, "_").toLowerCase())) {
-            createInputFields();
-        }
-        else {
-            $("#query-inputs").html("");
-        }
+        createInputFields();
         insertTableColumns();
         getTableData();
     });
@@ -146,7 +141,11 @@ function getQueryData() {
         return $.ajax({
             type: getType(),
             url: url + "/get-query",
-            data: JSON.stringify({ query: getCustomQuery(), specification: getSpecification() }),
+            data: JSON.stringify({
+                query: getCustomQuery(),
+                inputs: getInput(),
+                specification: getSpecification()
+            }),
             contentType: "application/json; charset=utf-8"
         })
             .then(function (res) {
@@ -436,7 +435,8 @@ function getType() {
 }
 function getInput() {
     var inputObj = {};
-    $("#attribute-inputs").children("input").each(function () {
+    (isCustomQuery() ? $("#query-inputs").children("input") : $("#attribute-inputs").children("input"))
+        .each(function () {
         inputObj[undecorateText($(this).attr("placeholder"))] = $(this).val();
     });
     return inputObj;
