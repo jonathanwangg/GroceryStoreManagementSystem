@@ -18,32 +18,33 @@ var url = "http://localhost:4321", PKNK = {
 }, customQueryDict = {
     max_pay: PKNK.employeePK.concat(PKNK.employeeNK),
     sales_target: PKNK.employeePK.concat(PKNK.employeeNK).concat(["target"]),
-    process_transaction: ["transaction_id", "date_transaction", "payment_type", "employee_id", "quantity_customer", "quantity_inventory", "membership_id"]
+    process_transaction: ["transaction_id", "date_transaction", "payment_type", "employee_id", "quantity_customer",
+        "quantity_inventory", "membership_id"]
 }, customQueryInput = {
     max_pay: [],
     sales_target: ["target"],
-    process_transaction: ["transaction_id", "membership_id", "sku"]
+    process_transaction: ["transaction_id", "employee_id", "membership_id", "payment_type", "sku", "quantity"]
 }, type = {
-    membership_id: "NUMBER",
+    membership_id: "INT",
     first_name: "VARCHAR2(40)",
     last_name: "VARCHAR2(40)",
     address: "VARCHAR2(40)",
     phone_number: "VARCHAR2(40)",
     join_date: "DATE",
-    employee_id: "NUMBER",
+    employee_id: "INT",
     sin: "VARCHAR2(40)",
-    wage: "NUMBER",
+    wage: "FLOAT",
     position: "VARCHAR(40)",
     start_date: "DATE",
     end_date: "DATE",
-    hours_worked: "NUMBER",
-    deductions: "NUMBER",
-    gross_pay: "NUMBER",
-    net_pay: "NUMBER",
-    sku: "NUMBER",
+    hours_worked: "FLOAT",
+    deductions: "FLOAT",
+    gross_pay: "FLOAT",
+    net_pay: "FLOAT",
+    sku: "INT",
     product_name: "VARCHAR2(40)",
-    cost: "NUMBER",
-    days_to_expiry: "NUMBER",
+    cost: "FLOAT",
+    days_to_expiry: "INT",
     supplier_name: "VARCHAR2(40)",
     location: "VARCHAR2(40)",
     target: "NUMBER"
@@ -118,12 +119,7 @@ function selectEntity() {
         var selection = $(this).html();
         $("#selected-entity").html(selection);
         $("#entities").css("display", "none");
-        if (["Customer", "Employee", "Payroll", "Product", "Supplier"].includes(selection)) {
-            createInputFields();
-        }
-        else {
-            $("#attribute-inputs").html("");
-        }
+        createInputFields();
         insertTableColumns();
         getTableData();
     });
@@ -233,7 +229,7 @@ function insertTableColumns() {
             return "<th>" + decorateText(attr) + "</th>";
         }).join("") + "</tr>";
     htmlStr += "<tr class=\"specification\">" + attributes.map(function (attr) {
-        if (type[attr] === "NUMBER") {
+        if (["NUMBER", "FLOAT", "INT"].includes(type[attr])) {
             return "<td>\n" +
                 "                        <div class=\"operator-container-list\">\n" +
                 "                            <div class=\"operator-icon fa fa-calculator\" aria-hidden=\"true\">\n" +
@@ -282,6 +278,8 @@ function decorateText(str) {
             return "Customer ID";
         case "employee_id":
             return "Employee ID";
+        case "transaction_id":
+            return "Transaction ID";
         case "membership_id":
             return "Membership ID";
         case "sin":

@@ -5,8 +5,8 @@ export default class Communicator {
     public static dbConfig = require("./dbconfig.js");
 
     public static setting = {
-        user: Communicator.dbConfig.user,
-        password: Communicator.dbConfig.password,
+        user:          Communicator.dbConfig.user,
+        password:      Communicator.dbConfig.password,
         connectString: Communicator.dbConfig.connectString
     };
 
@@ -80,11 +80,27 @@ export default class Communicator {
                     SQLStr = "select e.*, result.target from employee e, " +
                         "(select e.employee_id AS id, SUM(r.quantity) AS target from employee e, processes p, receivesreceipt r " +
                         "where e.employee_id = p.employee_id AND r.transaction_id = p.transaction_id GROUP BY e.employee_id HAVING SUM(r.quantity)>" +
-                        data.inputs['target'] +") result where result.id = e.employee_id"
+                        data.inputs['target'] + ") result where result.id = e.employee_id"
                     break;
                 case "process_transaction":
+                    let t_id: number = data.inputs["transaction_id"];
+                    let m_id: number = data.inputs["membership_id"];
+                    let e_id: number = data.inputs["employee_id"];
+                    let p_type: string = data.inputs["payment_type"];
+                    let sku: number = data.inputs["sku"];
+                    let quantity: number = data.inputs["quantity"];
+                    let updated_quantity = 5 - quantity; //TODO: get inventory quantity from database
                     console.log("PROCESS TRANSACTION");
+
+                    SQLStr += "INSERT INTO Transaction VALUES (" + m_id + ",'2017-11-18'," + p_type + "," + e_id + ");\n" +
+                        "INSERT INTO ReceivesReceipt VALUES (" + t_id + "," + sku + "," + m_id + "," + quantity + ");\n" +
+                        "UPDATE Inventory SET quantity = " + updated_quantity + " where SKU = " + sku + ");\n" +
+                        "INSERT INTO Processes VALUES (" + t_id + "," + e_id + "," + m_id + ");\n" +
+                        "SELECT t.transaction_id, t.date_transaction, t.payment_type, t.employee_id, r.quantity, i.quantity, r.membership_id\n" +
+                        "FROM Transaction t, ReceivesReceipt r, Inventory i\n" +
+                        "WHERE t.transaction_id = r.transaction_id and r.sku = i.sku and t.transaction_id =" + t_id + "and r.sku = " + sku;
                     break;
+
             }
         } else {
             //CUSTOM QUERY WITH USER INPUT IN TABLE FILTERS
@@ -114,11 +130,11 @@ export default class Communicator {
      */
     public static execute(connection: any, SQLStr: string): any {
         return new Promise(function (resolve, reject) {
-            connection.execute(SQLStr,{},{
+            connection.execute(SQLStr, {}, {
                 fetchInfo: {
-                    JOIN_DATE: {type: Communicator.oracledb.STRING},
+                    JOIN_DATE:  {type: Communicator.oracledb.STRING},
                     START_DATE: {type: Communicator.oracledb.STRING},
-                    END_DATE: {type: Communicator.oracledb.STRING}
+                    END_DATE:   {type: Communicator.oracledb.STRING}
                 }
             }, function (err: Error, result: any) {
                 if (err) {

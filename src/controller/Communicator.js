@@ -54,7 +54,21 @@ var Communicator = (function () {
                         data.inputs['target'] + ") result where result.id = e.employee_id";
                     break;
                 case "process_transaction":
+                    var t_id = data.inputs["transaction_id"];
+                    var m_id = data.inputs["membership_id"];
+                    var e_id = data.inputs["employee_id"];
+                    var p_type = data.inputs["payment_type"];
+                    var sku = data.inputs["sku"];
+                    var quantity = data.inputs["quantity"];
+                    var updated_quantity = 5 - quantity;
                     console.log("PROCESS TRANSACTION");
+                    SQLStr += "INSERT INTO Transaction VALUES (" + m_id + ",'2017-11-18'," + p_type + "," + e_id + ");\n" +
+                        "INSERT INTO ReceivesReceipt VALUES (" + t_id + "," + sku + "," + m_id + "," + quantity + ");\n" +
+                        "UPDATE Inventory SET quantity = " + updated_quantity + " where SKU = " + sku + ");\n" +
+                        "INSERT INTO Processes VALUES (" + t_id + "," + e_id + "," + m_id + ");\n" +
+                        "SELECT t.transaction_id, t.date_transaction, t.payment_type, t.employee_id, r.quantity, i.quantity, r.membership_id\n" +
+                        "FROM Transaction t, ReceivesReceipt r, Inventory i\n" +
+                        "WHERE t.transaction_id = r.transaction_id and r.sku = i.sku and t.transaction_id =" + t_id + "and r.sku = " + sku;
                     break;
             }
         }

@@ -30,16 +30,17 @@ let url: string = "http://localhost:4321",
     customQueryDict: Object = {
         max_pay:             PKNK.employeePK.concat(PKNK.employeeNK),
         sales_target:        PKNK.employeePK.concat(PKNK.employeeNK).concat(["target"]),
-        process_transaction: ["transaction_id", "date_transaction", "payment_type", "employee_id", "quantity_customer", "quantity_inventory", "membership_id"]
+        process_transaction: ["transaction_id", "date_transaction", "payment_type", "employee_id", "quantity_customer",
+            "quantity_inventory", "membership_id"]
     },
     customQueryInput: Object = {
         max_pay:             [],
         sales_target:        ["target"],
-        process_transaction: ["transaction_id", "membership_id", "sku"]
+        process_transaction: ["transaction_id", "employee_id", "membership_id", "payment_type", "sku", "quantity"]
     },
     type: Object = {
         /* Customer */
-        membership_id: "NUMBER",
+        membership_id: "INT",
         first_name:    "VARCHAR2(40)",
         last_name:     "VARCHAR2(40)",
         address:       "VARCHAR2(40)",
@@ -47,32 +48,32 @@ let url: string = "http://localhost:4321",
         join_date:     "DATE",
 
         /* Employee */
-        employee_id: "NUMBER",
+        employee_id: "INT",
         //first_name: "VARCHAR2(40)",
-        // last_name: "VARCHAR2(40)",
+        //last_name:  "VARCHAR2(40)",
         sin:         "VARCHAR2(40)",
-        wage:        "NUMBER",
+        wage:        "FLOAT",
         position:    "VARCHAR(40)",
 
         /* Payroll */
-        // employee_id: "NUMBER",
+        //employee_id:  "INT",
         start_date:   "DATE",
         end_date:     "DATE",
-        hours_worked: "NUMBER",
-        deductions:   "NUMBER",
-        gross_pay:    "NUMBER",
-        net_pay:      "NUMBER",
+        hours_worked: "FLOAT",
+        deductions:   "FLOAT",
+        gross_pay:    "FLOAT",
+        net_pay:      "FLOAT",
 
         /* Product */
-        sku:            "NUMBER",
+        sku:            "INT",
         product_name:   "VARCHAR2(40)",
-        cost:           "NUMBER",
-        days_to_expiry: "NUMBER",
+        cost:           "FLOAT",
+        days_to_expiry: "INT",
 
         /* Supplier */
         supplier_name: "VARCHAR2(40)",
         location:      "VARCHAR2(40)",
-        // phone_number: "VARCHAR2(40)"
+        //phone_number:  "VARCHAR2(40)"
 
         /* Custom Queries */
         target: "NUMBER"
@@ -195,11 +196,7 @@ function selectEntity() {
         $("#selected-entity").html(selection);
         $("#entities").css("display", "none");
 
-        if (["Customer", "Employee", "Payroll", "Product", "Supplier"].includes(selection)) {
-            createInputFields();
-        } else {
-            $("#attribute-inputs").html("");
-        }
+        createInputFields();
         insertTableColumns();
         getTableData();
     });
@@ -367,7 +364,7 @@ function insertTableColumns() {
 
     //create specifications for each header (contains search bar, >=, A..., sorter, etc.)
     htmlStr += "<tr class=\"specification\">" + attributes.map(function (attr: string) {
-        if (type[attr] === "NUMBER") {
+        if (["NUMBER", "FLOAT", "INT"].includes(type[attr])) {
             return "<td>\n" +
                 "                        <div class=\"operator-container-list\">\n" +
                 "                            <div class=\"operator-icon fa fa-calculator\" aria-hidden=\"true\">\n" +
@@ -422,6 +419,8 @@ function decorateText(str: string) {
             return "Customer ID";
         case "employee_id":
             return "Employee ID";
+        case "transaction_id":
+            return "Transaction ID";
         case "membership_id":
             return "Membership ID";
         case "sin":

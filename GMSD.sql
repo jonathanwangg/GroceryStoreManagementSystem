@@ -1,17 +1,17 @@
-drop table  CUSTOMER           cascade constraints;
-drop table  EMPLOYEE           cascade constraints;
-drop table  SCHEDULE           cascade constraints;
-drop table  PAYROLL            cascade constraints;
-drop table  TRANSACTION        cascade constraints;
-drop table  PRODUCT            cascade constraints;
-drop table  RECEIVESRECEIPT    cascade constraints;
-drop table  PROCESSES          cascade constraints;
-drop table  Supplier          cascade constraints;
-drop table  SUPPLY             cascade constraints;
-drop table  INVENTORY          cascade constraints;
-drop table  HANDLES            cascade constraints;
-drop table  MODIFIES           cascade constraints;
-drop table  UPDATES            cascade constraints;
+drop table  Customer           cascade constraints;
+drop table  Employee           cascade constraints;
+drop table  Schedule           cascade constraints;
+drop table  Payroll            cascade constraints;
+drop table  Transaction        cascade constraints;
+drop table  Product            cascade constraints;
+drop table  ReceivesReceipt    cascade constraints;
+drop table  Processes          cascade constraints;
+drop table  Supplier           cascade constraints;
+drop table  Supply             cascade constraints;
+drop table  Inventory          cascade constraints;
+drop table  Handles            cascade constraints;
+drop table  Modifies           cascade constraints;
+drop table  Updates            cascade constraints;
 
 CREATE TABLE Customer (
     membership_id INT NOT NULL,
@@ -33,9 +33,7 @@ CREATE TABLE Employee (
     position VARCHAR(40) CHECK(position IN ('cashier', 'inventory associate', 'supervisor')),
     PRIMARY KEY(employee_id)
 );
-
 grant select on Employee to public;
-
 
 CREATE TABLE Schedule (
     employee_id INT NOT NULL,
@@ -52,8 +50,8 @@ CREATE TABLE Payroll (
     employee_id INT NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
-    hours_worked INT NOT NULL,
-    deductions INT,
+    hours_worked NOT NULL,
+    deductions FLOAT,
     gross_pay FLOAT NOT NULL,
     net_pay FLOAT NOT NULL,
     PRIMARY KEY(employee_id, start_date, end_date),
@@ -80,7 +78,6 @@ CREATE TABLE Product (
 );
 grant select on Product to public;
 
-
 CREATE TABLE ReceivesReceipt (
     transaction_id INT NOT NULL,
     SKU INT NOT NULL,
@@ -93,7 +90,6 @@ CREATE TABLE ReceivesReceipt (
 );
 grant select on ReceivesReceipt to public;
 
-
 CREATE TABLE Processes (
     transaction_id INT NOT NULL,
     employee_id INT NOT NULL,
@@ -105,8 +101,6 @@ CREATE TABLE Processes (
 );
 grant select on Processes to public;
 
-
-
 CREATE TABLE Supplier (
     supplier_name VARCHAR(40) NOT NULL,
     location VARCHAR(40) NOT NULL,
@@ -115,14 +109,13 @@ CREATE TABLE Supplier (
 );
 grant select on Supplier to public;
 
-
 CREATE TABLE Supply (
     delivery_id INT,
     SKU INT,
     supplier_name VARCHAR(40),
     location VARCHAR(40),
     delivery_quantity INT,
-    bulk_cost float,
+    bulk_cost FLOAT,
     PRIMARY KEY(delivery_id, SKU, supplier_name, location),
     FOREIGN KEY(SKU) REFERENCES Product(SKU),
     FOREIGN KEY(supplier_name, location) REFERENCES Supplier(supplier_name, location)
@@ -158,7 +151,6 @@ CREATE TABLE Modifies (
 );
 grant select on Modifies to public;
 
-
 CREATE TABLE Updates (
     supplier_name VARCHAR(40) NOT NULL,
     location VARCHAR(40) NOT NULL,
@@ -167,7 +159,6 @@ CREATE TABLE Updates (
     PRIMARY KEY(supplier_name, location, delivery_id, SKU),
     FOREIGN KEY(delivery_id, supplier_name, location, SKU) REFERENCES Supply(delivery_id, supplier_name, location, SKU)
 );
-
 grant select on Updates to public;
 
 commit;
@@ -181,7 +172,6 @@ INSERT INTO Customer VALUES (6,'Queenie','Kramarczyk','47 Garfield Ave','306-421
 INSERT INTO Customer VALUES (7,'Hui','Portaro','3 Mill Rd','506-827-7755','2017-11-03');
 INSERT INTO Customer VALUES (8,'Josefa','Opitz','136 W Grand Ave #3','519-788-7645','2017-11-04');
 INSERT INTO Customer VALUES (9,'Lea','Steinhaus','80 Maplewood Dr #34','905-618-8258','2011-11-05');
-
 
 commit;
 
@@ -350,7 +340,6 @@ INSERT INTO Handles VALUES (50,9792,1116,'Dalvir Vegeterian Supply','Vancouver')
 INSERT INTO Handles VALUES (50,6891,1117,'Richmond Fish Ltd','Richmond');
 
 commit;
-
 
 INSERT INTO Inventory VALUES (4763,800);
 INSERT INTO Inventory VALUES (1238,500);

@@ -18,7 +18,6 @@ export default class Dictionary {
         transactionPK: ["transaction_id"],
         transactionNK: ["date_transaction", "payment_type", "employee_id"],
 
-
         //product name not supplier name
         productPK: ["sku"],
         productNK: ["product_name", "cost", "days_to_expiry"],
@@ -90,6 +89,13 @@ export default class Dictionary {
         gross_pay:    "VARCHAR2(30)",
         net_pay:      "VARCHAR2(30)",
 
+        /* Payroll */
+        // employee_id: "NUMBER",
+        transaction_id:   "INT",
+        date_transaction: "DATE",
+        payment_type:     "VARCHAR2(40)",
+        // employee_id:      "INT"
+
         /* Product */
         sku:            "VARCHAR2(30)",
         cost:           "NUMBER",
@@ -102,7 +108,7 @@ export default class Dictionary {
         // phone_number: "VARCHAR2(30)"
 
         /* ReceivesReceipt */
-        transaction_id: "NUMBER",
+        // transaction_id: "NUMBER",
         // sku: "NUMBER",
         // membership_id: "NUMBER",
         quantity:       "NUMBER",
@@ -114,8 +120,8 @@ export default class Dictionary {
 
         /* Transaction */
         // transaction_id: "NUMBER",
-        date_transaction: "DATE",
-        payment_type:     "placeholder value", // todo: we said we would be using an enum here?????
+        // date_transaction: "DATE",
+        // payment_type:     "placeholder value", // todo: we said we would be using an enum here?????
         // employee_id: "NUMBER",
 
         /* Supply */
