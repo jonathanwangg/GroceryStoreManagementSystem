@@ -38,17 +38,24 @@ var Communicator = (function () {
         });
     };
     Communicator.getHardQuery = function (data) {
+        var SQLStr = "";
         if (data.specification.inputs.join("") === "") {
             switch (data.query) {
                 case "max_pay":
-                    return "SELECT *\n" +
+                    SQLStr += "SELECT *\n" +
                         "FROM employee\n" +
                         "WHERE wage >= ALL (SELECT wage\n" +
                         "FROM employee)";
+                    break;
+                case "process_transaction":
+                    console.log("PROCESS TRANSACTION");
+                    break;
             }
         }
         else {
         }
+        console.log(SQLStr);
+        return SQLStr;
     };
     Communicator.connect = function () {
         return new Promise(function (resolve, reject) {

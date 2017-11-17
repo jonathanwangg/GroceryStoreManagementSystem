@@ -16,7 +16,13 @@ var url = "http://localhost:4321", PKNK = {
     product: PKNK.productPK.concat(PKNK.productNK),
     supplier: PKNK.supplierPK.concat(PKNK.supplierNK)
 }, customQueryDict = {
-    max_pay: PKNK.employeePK.concat(PKNK.employeeNK)
+    max_pay: PKNK.employeePK.concat(PKNK.employeeNK),
+    sales_target: PKNK.employeePK.concat(PKNK.employeeNK).concat(["target"]),
+    process_transaction: ["transaction_id", "date_transaction", "payment_type", "employee_id", "quantity_customer", "quantity_inventory", "membership_id"]
+}, customQueryInput = {
+    max_pay: [],
+    sales_target: ["target"],
+    process_transaction: ["transaction_id", "membership_id", "sku"]
 }, type = {
     membership_id: "NUMBER",
     first_name: "VARCHAR2(30)",
@@ -38,12 +44,14 @@ var url = "http://localhost:4321", PKNK = {
     days_to_expiry: "NUMBER",
     supplier_name: "VARCHAR2(30)",
     location: "VARCHAR2(30)",
+    target: "NUMBER"
 };
 function init() {
     $(function () {
         setDragTable();
         getTableData();
         toggleEntitySelection();
+        toggleQuerySelection();
         toggleMethodSelection();
         toggleOperatorSelection();
         pressEnterToUpdateTable();
@@ -67,16 +75,23 @@ function getMethod() {
     return $("#selected-method").html().toLowerCase().replace(/ /g, "_");
 }
 function getCustomQuery() {
-    return $("#custom-query").children(".selected").html().toLowerCase().replace(/ /g, "_");
+    return $("#selected-query").html().toLowerCase().replace(/ /g, "_");
 }
 function isCustomQuery() {
-    return getMethod() === "custom";
+    return getMethod() === "send";
 }
 function toggleEntitySelection() {
     $("#selected-entity").on("click", function () {
         var entities = $("#entities");
         entities.css("display") === "none" ? entities.css("display", "block")
             : entities.css("display", "none");
+    });
+}
+function toggleQuerySelection() {
+    $("#selected-query").on("click", function () {
+        var queries = $("#queries");
+        queries.css("display") === "none" ? queries.css("display", "block")
+            : queries.css("display", "none");
     });
 }
 function toggleMethodSelection() {
@@ -86,7 +101,7 @@ function toggleMethodSelection() {
             return;
         }
         var methods = $("#methods");
-        methods.css("display") === "none" ? methods.css("display", "flex")
+        methods.css("display") === "none" ? methods.css("display", "block")
             : methods.css("display", "none");
     });
 }
@@ -113,11 +128,17 @@ function selectEntity() {
 }
 function selectQuery() {
     $(".query").on("click", function () {
-        var that = $(this);
-        that.parent().children(".selected").removeClass("selected");
-        that.addClass("selected");
+        var selection = $(this).html();
+        $("#selected-query").html(selection);
+        $("#queries").css("display", "none");
+        if (["sales_target"].includes(selection.toLowerCase().replace(/ /g, "_").toLowerCase())) {
+            createInputFields();
+        }
+        else {
+            $("#query-inputs").html("");
+        }
         insertTableColumns();
-        getQueryData();
+        getTableData();
     });
 }
 function getQueryData() {
@@ -141,16 +162,17 @@ function selectMethod() {
     $(".method").on("click", function () {
         var method = $(this).html();
         $("#methods").css("display", "none");
-        $("#selected-method").html(decorateText(method));
         if (method === "Custom") {
+            $("#selected-method").html("Send");
             expandCustomQuery();
         }
         else {
+            $("#selected-method").html(decorateText(method));
             expandAttributeInput();
-            createInputFields();
-            getTableData();
         }
+        createInputFields();
         insertTableColumns();
+        method === "Custom" ? getQueryData() : getTableData();
     });
 }
 function selectOperator() {
@@ -180,21 +202,27 @@ function pressEnterToUpdateTable() {
     });
 }
 function createInputFields() {
-    var fields = getAttributes(), htmlString = "";
+    var isCustom = isCustomQuery(), fields = isCustom ? customQueryInput[getCustomQuery()] : getAttributes(), htmlString = "";
     fields.forEach(function (field) {
         htmlString += "<input type=\"text\" placeholder=\"" + decorateText(field) + "\">";
     });
-    $("#attribute-inputs").html(htmlString);
-}
-function expandCustomQuery() {
-    $("#attribute-inputs").css("display", "none");
-    $("#selected-entity").css("display", "none");
-    $("#custom-query").css("display", "block");
+    isCustom ? $("#query-inputs").html(htmlString) : $("#attribute-inputs").html(htmlString);
 }
 function expandAttributeInput() {
-    $("#custom-query").css("display", "none");
+    $("#selected-query").css("display", "none");
+    $("#queries").css("display", "none");
+    $("#query-inputs").css("display", "none");
     $("#selected-entity").css("display", "flex");
+    $("#entities").css("display", "none");
     $("#attribute-inputs").css("display", "flex");
+}
+function expandCustomQuery() {
+    $("#selected-entity").css("display", "none");
+    $("#entities").css("display", "none");
+    $("#attribute-inputs").css("display", "none");
+    $("#selected-query").css("display", "flex");
+    $("#queries").css("display", "none");
+    $("#query-inputs").css("display", "flex");
 }
 function insertTableColumns() {
     var htmlStr = "";
@@ -351,7 +379,8 @@ function sendProceed() {
         if (isEmptyInput() && (methodStr === "insert" || methodStr === "update" || methodStr === "delete")) {
             return getTableData();
         }
-        if (methodStr === "custom") {
+        if (methodStr === "send") {
+            getQueryData();
             return;
         }
         if (methodStr === "drop") {

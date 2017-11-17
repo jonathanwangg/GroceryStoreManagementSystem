@@ -4,8 +4,8 @@ export default class Communicator {
     public static oracledb = require("oracledb");
     public static dbConfig = require("./dbconfig.js");
     public static setting = {
-        user: Communicator.dbConfig.user,
-        password: Communicator.dbConfig.password,
+        user:          Communicator.dbConfig.user,
+        password:      Communicator.dbConfig.password,
         connectString: Communicator.dbConfig.connectString
     };
 
@@ -60,17 +60,26 @@ export default class Communicator {
      * Returns the hardcoded query based on user specification.
      */
     public static getHardQuery(data: any): string {
+        let SQLStr: string = "";
+
         if (data.specification.inputs.join("") === "") {
             switch (data.query) {
                 case "max_pay":
-                    return "SELECT *\n" +
+                    SQLStr += "SELECT *\n" +
                         "FROM employee\n" +
                         "WHERE wage >= ALL (SELECT wage\n" +
                         "FROM employee)";
+                    break;
+                case "process_transaction":
+                    console.log("PROCESS TRANSACTION");
+                    break;
             }
         } else {
-            //CUSTOME QUERY WITH USER INPUT IN TABLE FILTERS
+            //CUSTOM QUERY WITH USER INPUT IN TABLE FILTERS
         }
+
+        console.log(SQLStr);
+        return SQLStr;
     }
 
     /**
@@ -202,7 +211,7 @@ export default class Communicator {
                 SQLStr += "DELETE FROM " + data.entity
                     + Communicator.getWHERE(PK.length, PK,
                         PK.map(function (key: any) {
-                            return Dictionary.type[key] === "NUMBER" ? '=':'A';
+                            return Dictionary.type[key] === "NUMBER" ? '=' : 'A';
                         }), PK.map(function (key: string) {
                             return inputs[key];
                         }));

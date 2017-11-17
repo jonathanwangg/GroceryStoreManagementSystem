@@ -56,12 +56,11 @@ body {
             position: relative;
             width: $tool-window-size;
 
-            #selected-entity {
+            #selected-entity, #selected-query {
                 align-items: center;
                 background-color: $pink-trans;
                 color: $white;
                 cursor: pointer;
-                display: flex;
                 font-variant: small-caps;
                 height: $header-size;
                 justify-content: center;
@@ -73,7 +72,15 @@ body {
                 }
             }
 
-            #entities, #methods {
+            #selected-entity {
+                display: flex;
+            }
+
+            #selected-query {
+                display: none;
+            }
+
+            #entities, #methods, #queries {
                 align-items: center;
                 background-color: $pink;
                 border: 0.02em black solid;
@@ -83,6 +90,9 @@ body {
                 flex-flow: column nowrap;
                 font-variant: small-caps;
                 justify-content: center;
+                max-height: calc(100vh - 2 * #{$header-size});
+                overflow-x: hidden;
+                overflow-y: auto;
                 position: absolute;
                 text-align: center;
                 width: 100%;
@@ -94,7 +104,6 @@ body {
                     height: $header-size;
                     justify-content: center;
                     left: 0;
-                    //padding: 0.2em 0;
                     width: 100%;
 
                     &:hover {
@@ -103,7 +112,7 @@ body {
                 }
             }
 
-            #entities {
+            #entities, #queries {
                 margin: $header-size 0 0 0;
                 top: 0;
                 z-index: 3;
@@ -112,6 +121,9 @@ body {
             #methods {
                 bottom: 0;
                 margin: 0 0 $header-size 0;
+                max-height: calc(100vh - 2 * #{$header-size});
+                overflow-x: hidden;
+                overflow-y: scroll;
                 z-index: 2;
             }
 
@@ -211,9 +223,8 @@ body {
                 }
             }
 
-            #attribute-inputs {
+            #attribute-inputs, #query-inputs {
                 align-items: center;
-                display: flex;
                 flex-flow: column nowrap;
                 justify-content: center;
                 margin: 0.5em 0;
@@ -234,33 +245,12 @@ body {
                 }
             }
 
-            #custom-query {
-                align-items: center;
+            #attribute-inputs {
+                display: flex;
+            }
+
+            #query-inputs {
                 display: none;
-                height: calc(100vh - #{$header-size});
-                overflow-x: hidden;
-                overflow-y: auto;
-                width: 100%;
-
-                .query {
-                    align-items: center;
-                    color: $white;
-                    cursor: pointer;
-                    display: flex;
-                    font-variant: small-caps;
-                    height: $header-size;
-                    justify-content: center;
-                    text-align: center;
-                    width: 100%;
-
-                    &:hover {
-                        background-color: $pink;
-                    }
-                }
-
-                .selected {
-                    background: $pink;
-                }
             }
         }
 

@@ -29,20 +29,23 @@ body {
       justify-content: space-between;
       position: relative;
       width: 7em; }
-      body #modal-data #data-container #selected-entity {
+      body #modal-data #data-container #selected-entity, body #modal-data #data-container #selected-query {
         align-items: center;
         background-color: rgba(220, 60, 80, 0.8);
         color: white;
         cursor: pointer;
-        display: flex;
         font-variant: small-caps;
         height: 15vh;
         justify-content: center;
         text-align: center;
         width: 100%; }
-        body #modal-data #data-container #selected-entity:hover {
+        body #modal-data #data-container #selected-entity:hover, body #modal-data #data-container #selected-query:hover {
           background-color: #dc3c50; }
-      body #modal-data #data-container #entities, body #modal-data #data-container #methods {
+      body #modal-data #data-container #selected-entity {
+        display: flex; }
+      body #modal-data #data-container #selected-query {
+        display: none; }
+      body #modal-data #data-container #entities, body #modal-data #data-container #methods, body #modal-data #data-container #queries {
         align-items: center;
         background-color: #dc3c50;
         border: 0.02em black solid;
@@ -52,10 +55,13 @@ body {
         flex-flow: column nowrap;
         font-variant: small-caps;
         justify-content: center;
+        max-height: calc(100vh - 2 * 15vh);
+        overflow-x: hidden;
+        overflow-y: auto;
         position: absolute;
         text-align: center;
         width: 100%; }
-        body #modal-data #data-container #entities span, body #modal-data #data-container #methods span {
+        body #modal-data #data-container #entities span, body #modal-data #data-container #methods span, body #modal-data #data-container #queries span {
           align-items: center;
           color: white;
           display: flex;
@@ -63,15 +69,18 @@ body {
           justify-content: center;
           left: 0;
           width: 100%; }
-          body #modal-data #data-container #entities span:hover, body #modal-data #data-container #methods span:hover {
+          body #modal-data #data-container #entities span:hover, body #modal-data #data-container #methods span:hover, body #modal-data #data-container #queries span:hover {
             background-color: #6c3081; }
-      body #modal-data #data-container #entities {
+      body #modal-data #data-container #entities, body #modal-data #data-container #queries {
         margin: 15vh 0 0 0;
         top: 0;
         z-index: 3; }
       body #modal-data #data-container #methods {
         bottom: 0;
         margin: 0 0 15vh 0;
+        max-height: calc(100vh - 2 * 15vh);
+        overflow-x: hidden;
+        overflow-y: scroll;
         z-index: 2; }
       body #modal-data #data-container #methods-container {
         align-items: center;
@@ -145,14 +154,13 @@ body {
         body #modal-data #data-container #confirmation-container #drop-cancel:hover {
           background: #ff1f3c;
           width: 100%; }
-      body #modal-data #data-container #attribute-inputs {
+      body #modal-data #data-container #attribute-inputs, body #modal-data #data-container #query-inputs {
         align-items: center;
-        display: flex;
         flex-flow: column nowrap;
         justify-content: center;
         margin: 0.5em 0;
         width: 100%; }
-        body #modal-data #data-container #attribute-inputs input {
+        body #modal-data #data-container #attribute-inputs input, body #modal-data #data-container #query-inputs input {
           border: 0.05em solid white;
           box-sizing: border-box;
           background: white;
@@ -160,29 +168,12 @@ body {
           margin: 0.1em 0;
           padding: 0.2em 0.6em;
           width: 100%; }
-          body #modal-data #data-container #attribute-inputs input:focus {
+          body #modal-data #data-container #attribute-inputs input:focus, body #modal-data #data-container #query-inputs input:focus {
             border: 0.05em #dc3c50 solid; }
-      body #modal-data #data-container #custom-query {
-        align-items: center;
-        display: none;
-        height: calc(100vh - 15vh);
-        overflow-x: hidden;
-        overflow-y: auto;
-        width: 100%; }
-        body #modal-data #data-container #custom-query .query {
-          align-items: center;
-          color: white;
-          cursor: pointer;
-          display: flex;
-          font-variant: small-caps;
-          height: 15vh;
-          justify-content: center;
-          text-align: center;
-          width: 100%; }
-          body #modal-data #data-container #custom-query .query:hover {
-            background-color: #dc3c50; }
-        body #modal-data #data-container #custom-query .selected {
-          background: #dc3c50; }
+      body #modal-data #data-container #attribute-inputs {
+        display: flex; }
+      body #modal-data #data-container #query-inputs {
+        display: none; }
     body #modal-data #table-container {
       box-sizing: border-box;
       align-items: center;

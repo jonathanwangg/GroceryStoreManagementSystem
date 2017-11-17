@@ -28,7 +28,14 @@ let url: string = "http://localhost:4321",
         supplier: PKNK.supplierPK.concat(PKNK.supplierNK)
     },
     customQueryDict: Object = {
-        max_pay: PKNK.employeePK.concat(PKNK.employeeNK)
+        max_pay:      PKNK.employeePK.concat(PKNK.employeeNK),
+        sales_target: PKNK.employeePK.concat(PKNK.employeeNK).concat(["target"]),
+        process_transaction: ["transaction_id", "date_transaction", "payment_type", "employee_id", "quantity_customer", "quantity_inventory", "membership_id"]
+    },
+    customQueryInput: Object = {
+        max_pay:      [],
+        sales_target: ["target"],
+        process_transaction: ["transaction_id", "membership_id", "sku"]
     },
     type: Object = {
         /* Customer */
@@ -65,6 +72,9 @@ let url: string = "http://localhost:4321",
         supplier_name: "VARCHAR2(30)",
         location:      "VARCHAR2(30)",
         // phone_number: "VARCHAR2(30)"
+
+        /* Custom Queries */
+        target: "NUMBER"
     };
 
 function init(): void {
@@ -72,6 +82,7 @@ function init(): void {
         setDragTable();
         getTableData();
         toggleEntitySelection();
+        toggleQuerySelection();
         toggleMethodSelection();
         toggleOperatorSelection();
         pressEnterToUpdateTable();
@@ -111,14 +122,14 @@ function getMethod(): string {
  * Returns the currently selected custom query.
  */
 function getCustomQuery(): string {
-    return $("#custom-query").children(".selected").html().toLowerCase().replace(/ /g, "_");
+    return $("#selected-query").html().toLowerCase().replace(/ /g, "_");
 }
 
 /**
  * Returns true if custom queries.
  */
 function isCustomQuery(): boolean {
-    return getMethod() === "custom";
+    return getMethod() === "send";
 }
 
 /**
@@ -130,6 +141,18 @@ function toggleEntitySelection() {
 
         entities.css("display") === "none" ? entities.css("display", "block")
             : entities.css("display", "none");
+    });
+}
+
+/**
+ * Expands Query selection (Employee, Customer, etc.).
+ */
+function toggleQuerySelection() {
+    $("#selected-query").on("click", function () {
+        let queries = $("#queries");
+
+        queries.css("display") === "none" ? queries.css("display", "block")
+            : queries.css("display", "none");
     });
 }
 
@@ -146,7 +169,7 @@ function toggleMethodSelection() {
 
         let methods = $("#methods");
 
-        methods.css("display") === "none" ? methods.css("display", "flex")
+        methods.css("display") === "none" ? methods.css("display", "block")
             : methods.css("display", "none");
     });
 }
@@ -186,12 +209,18 @@ function selectEntity() {
  */
 function selectQuery() {
     $(".query").on("click", function () {
-        let that = $(this);
+        let selection: string = $(this).html();
 
-        that.parent().children(".selected").removeClass("selected");
-        that.addClass("selected");
+        $("#selected-query").html(selection);
+        $("#queries").css("display", "none");
+
+        if (["sales_target"].includes(selection.toLowerCase().replace(/ /g, "_").toLowerCase())) {
+            createInputFields();
+        } else {
+            $("#query-inputs").html("");
+        }
         insertTableColumns();
-        getQueryData();
+        getTableData();
     });
 }
 
@@ -224,17 +253,19 @@ function selectMethod() {
         let method: string = $(this).html();
 
         $("#methods").css("display", "none");
-        $("#selected-method").html(decorateText(method));
 
         if (method === "Custom") {
+            $("#selected-method").html("Send");
             expandCustomQuery();
         } else {
+            $("#selected-method").html(decorateText(method));
             expandAttributeInput();
-            createInputFields();
-            getTableData();
         }
 
+        createInputFields();
         insertTableColumns();
+
+        method === "Custom" ? getQueryData() : getTableData();
     });
 }
 
@@ -267,6 +298,9 @@ function toggleSort() {
     })
 }
 
+/**
+ * Press enter to update tables in text fields.
+ */
 function pressEnterToUpdateTable() {
     $("table input").keypress(function (event: any) {
         //13 is enter key
@@ -282,32 +316,39 @@ function pressEnterToUpdateTable() {
  * Creates the necessary input parameters for Object (Employee, Customer, etc.) and Method (Delete, Input, etc.).
  */
 function createInputFields(): void {
-    let fields: any = getAttributes(),
+    let isCustom: boolean = isCustomQuery(),
+        fields: string[] = isCustom ? customQueryInput[getCustomQuery()] : getAttributes(),
         htmlString: string = "";
 
     fields.forEach(function (field: string) {
         htmlString += "<input type=\"text\" placeholder=\"" + decorateText(field) + "\">";
     });
 
-    $("#attribute-inputs").html(htmlString);
+    isCustom ? $("#query-inputs").html(htmlString) : $("#attribute-inputs").html(htmlString);
 }
 
 /**
- * Expands the list of custom queries.
- */
-function expandCustomQuery(): void {
-    $("#attribute-inputs").css("display", "none");
-    $("#selected-entity").css("display", "none");
-    $("#custom-query").css("display", "block");
-}
-
-/**
- * Expands the list of inputs for a given basic query.
+ * Expands the basic query pane.
  */
 function expandAttributeInput(): void {
-    $("#custom-query").css("display", "none");
+    $("#selected-query").css("display", "none");
+    $("#queries").css("display", "none");
+    $("#query-inputs").css("display", "none");
     $("#selected-entity").css("display", "flex");
+    $("#entities").css("display", "none");
     $("#attribute-inputs").css("display", "flex");
+}
+
+/**
+ * Expands the custom query pane.
+ */
+function expandCustomQuery(): void {
+    $("#selected-entity").css("display", "none");
+    $("#entities").css("display", "none");
+    $("#attribute-inputs").css("display", "none");
+    $("#selected-query").css("display", "flex");
+    $("#queries").css("display", "none");
+    $("#query-inputs").css("display", "flex");
 }
 
 /**
@@ -525,7 +566,8 @@ function sendProceed() {
             return getTableData();
         }
 
-        if (methodStr === "custom") {
+        if (methodStr === "send") {
+            getQueryData();
             return;
         }
 
