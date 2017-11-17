@@ -7,16 +7,21 @@ export default class Dictionary {
         customerNK: ["first_name", "last_name", "address", "phone_number", "join_date"],
 
         employeePK: ["employee_id"],
-        employeeNK: ["first_name", "last_name", "sin", "wage"],
+        employeeNK: ["first_name", "last_name", "sin", "wage", "position"],
+
+        schedulePK: ["employee_id", "work_date"],
+        scheduleNK: ["is_holiday", "start_time", "end_time"],
 
         payrollPK: ["employee_id", "start_date", "end_date"],
         payrollNK: ["hours_worked", "deductions", "gross_pay", "net_pay"],
 
-        productPK: ["sku"],
-        productNK: ["cost", "days_to_expiry", "supplier_name"],
+        transactionPK: ["transaction_id"],
+        transactionNK: ["date_transaction", "payment_type", "employee_id"],
 
-        supplierPK: ["supplier_name", "location"],
-        supplierNK: ["phone_number"],
+
+        //product name not supplier name
+        productPK: ["sku"],
+        productNK: ["product_name", "cost", "days_to_expiry"],
 
         receivesReceiptPK: ["transaction_id", "sku", "membership_id"],
         receivesReceiptNK: ["quantity"],
@@ -24,20 +29,17 @@ export default class Dictionary {
         processesPK: ["transaction_id", "employee_id", "membership_id"],
         processesNK: [],
 
-        transactionPK: ["transaction_id"],
-        transactionNK: ["date_transaction", "payment_type", "employee_id"],
+        supplierPK: ["supplier_name", "location"],
+        supplierNK: ["phone_number"],
 
         supplyPK: ["delivery_id", "sku", "supplier_name", "location"],
         supplyNK: ["delivery_quantity", "bulk_cost"],
 
-        handlesPK: ["employee_id", "sku", "delivery_id", "supplier_name", "location"],
-        handlesNK: [],
-
-        schedulePK: ["employee_id", "date"],
-        scheduleNK: ["is_holiday", "start_time", "end_time"],
-
         inventoryPK: ["sku"],
         inventoryNK: ["quantity"],
+
+        handlesPK: ["employee_id", "sku", "delivery_id", "supplier_name", "location"],
+        handlesNK: [],
 
         modifiesPK: ["transaction_id", "sku"],
         modifiesNK: [],

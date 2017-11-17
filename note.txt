@@ -1,4 +1,0 @@
-Trivial:
-
-1) $("#id").on("click", function ()) doesn't work on dynamically generated items, must use .on("click", "specific tag", function())
-2) VARCHAR(30) means char of variable length up to 30. CHAR is preferred if string size is fixed (ie. postal code)

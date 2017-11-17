@@ -77,9 +77,9 @@ export default class Communicator {
                     break;
                 case "sales_target":
                     SQLStr = "select e.*, result.target from employee e, " +
-                        "(select e.employeeid AS id, SUM(r.quantity) AS target from employee e, processes p, receivesreceipt r " +
-                        "where e.employeeid = p.employeeid AND r.transactionID = p.transactionID GROUP BY e.employeeid HAVING SUM(r.quantity) > " +
-                        data.inputs['target'] + ") result where result.id = e.employeeid;"
+                        "(select e.employee_id AS id, SUM(r.quantity) AS target from employee e, processes p, receivesreceipt r " +
+                        "where e.employee_id = p.employee_id AND r.transaction_id = p.transaction_id GROUP BY e.employee_id HAVING SUM(r.quantity)>" +
+                        data.inputs['target'] +") result where result.id = e.employee_id"
                     console.log(SQLStr);
                     break;
                 case "process_transaction":
