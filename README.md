@@ -25,3 +25,8 @@ ssh -l XXXX -L 127.0.0.1:1522:dbhost.ugrad.cs.ubc.ca:1522 remote.ugrad.cs.ubc.ca
     1) npm start (to start server)
     2) ctrl+c (to stop server)
 3) On your web browser, go to "localhost:4321"
+
+Changing DateFormat:
+Set the following environment variables:
+1) set NLS_LANG ='American_America.UTF8'
+2) set NLS_DATE_FORMAT='YYYY-MON-DD'

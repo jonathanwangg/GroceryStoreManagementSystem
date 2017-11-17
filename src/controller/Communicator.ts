@@ -3,6 +3,7 @@ import Dictionary from "./Dictionary";
 export default class Communicator {
     public static oracledb = require("oracledb");
     public static dbConfig = require("./dbconfig.js");
+
     public static setting = {
         user: Communicator.dbConfig.user,
         password: Communicator.dbConfig.password,
@@ -80,7 +81,6 @@ export default class Communicator {
                         "(select e.employee_id AS id, SUM(r.quantity) AS target from employee e, processes p, receivesreceipt r " +
                         "where e.employee_id = p.employee_id AND r.transaction_id = p.transaction_id GROUP BY e.employee_id HAVING SUM(r.quantity)>" +
                         data.inputs['target'] +") result where result.id = e.employee_id"
-                    console.log(SQLStr);
                     break;
                 case "process_transaction":
                     console.log("PROCESS TRANSACTION");
@@ -114,7 +114,13 @@ export default class Communicator {
      */
     public static execute(connection: any, SQLStr: string): any {
         return new Promise(function (resolve, reject) {
-            connection.execute(SQLStr, function (err: Error, result: any) {
+            connection.execute(SQLStr,{},{
+                fetchInfo: {
+                    JOIN_DATE: {type: Communicator.oracledb.STRING},
+                    START_DATE: {type: Communicator.oracledb.STRING},
+                    END_DATE: {type: Communicator.oracledb.STRING}
+                }
+            }, function (err: Error, result: any) {
                 if (err) {
                     Communicator.doRelease(connection)
                         .then(function () {
