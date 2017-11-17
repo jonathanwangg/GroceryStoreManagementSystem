@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var Log = (function () {
     function Log() {
     }
@@ -19,6 +20,5 @@ var Log = (function () {
     };
     return Log;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Log;
 //# sourceMappingURL=Util.js.map

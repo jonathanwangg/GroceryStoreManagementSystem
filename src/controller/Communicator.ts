@@ -100,6 +100,24 @@ export default class Communicator {
                         "FROM Transaction t, ReceivesReceipt r, Inventory i\n" +
                         "WHERE t.transaction_id = r.transaction_id and r.sku = i.sku and t.transaction_id =" + t_id + "and r.sku = " + sku;
                     break;
+                case "find_date_of_transaction_for_customer":
+                    return  "SELECT date_transaction \n" +
+                            "FROM ReceivesReciept R, Transaction T \n" +
+                            "WHERE R.transaction_id = T.transaction_id AND R.membership_id = 3"; // todo: user-input
+                case "employee_net_pay_amount":
+                    return  "SELECT employee_id, net_pay \n" +
+                            "FROM Employee E, Payroll P \n" +
+                            "WHERE E.employee_id = 3";  // todo: user-input in place of 3
+                case "supplier_product_amount":
+                    return  "SELECT sku, delivery_quantity \n" +
+                            "FROM Supplier S, Supply A, Product P \n" +
+                            "WHERE S.supplier_name = A.supplier_name AND" +
+                            "A.sku = P.sku AND P.sku = 3"; // todo: user-input in place of 3
+                case "total_pay_view":
+                    return  "CREATE VIEW  TotalPay\n" +
+                            "SELECT       start_date, SUM(net_pay)\n" +
+                            "FROM         Payroll\n" +
+                            "GROUP BY     start_date";
 
             }
         } else {

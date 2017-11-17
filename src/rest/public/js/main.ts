@@ -31,7 +31,11 @@ let url: string = "http://localhost:4321",
         max_pay:             PKNK.employeePK.concat(PKNK.employeeNK),
         sales_target:        PKNK.employeePK.concat(PKNK.employeeNK).concat(["target"]),
         process_transaction: ["transaction_id", "date_transaction", "payment_type", "employee_id", "quantity_customer",
-            "quantity_inventory", "membership_id"]
+                              "quantity_inventory", "membership_id"],
+        find_date_of_transaction_for_customer: ["date_transaction"],
+        employee_net_pay_amount: ["employee_id", "net_pay"],
+        supplier_product_amount: ["sku","delivery_quantity"],
+        total_pay_view: ["start_date", "SUM(net_pay)"]
     },
     customQueryInput: Object = {
         max_pay:             [],

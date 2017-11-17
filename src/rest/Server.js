@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var Util_1 = require("../Util");
 var restify = require("restify");
 var Communicator_1 = require("../controller/Communicator");
@@ -88,6 +89,5 @@ var Server = (function () {
     };
     return Server;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Server;
 //# sourceMappingURL=Server.js.map
