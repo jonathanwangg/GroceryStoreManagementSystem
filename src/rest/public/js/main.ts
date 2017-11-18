@@ -575,7 +575,7 @@ function getTableData(): any {
 function updateTable(res: any): void {
     let HTMLStr: String = res.rows.map(function (arr: any) {
         return "<tr>" + arr.map(function (elem: any) {
-            return "<td>" + elem + "</td>";
+            return "<td>" + (typeof elem === "number" ? elem.toFixed(2) : elem) + "</td>";
         }).join("") + "</tr>";
     }).join("");
 

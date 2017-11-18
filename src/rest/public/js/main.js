@@ -387,7 +387,7 @@ function getTableData() {
 function updateTable(res) {
     var HTMLStr = res.rows.map(function (arr) {
         return "<tr>" + arr.map(function (elem) {
-            return "<td>" + elem + "</td>";
+            return "<td>" + (typeof elem === "number" ? elem.toFixed(2) : elem) + "</td>";
         }).join("") + "</tr>";
     }).join("");
     $("tbody").html(HTMLStr);
