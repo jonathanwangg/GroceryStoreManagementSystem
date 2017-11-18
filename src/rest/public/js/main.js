@@ -19,14 +19,11 @@ var url = "http://localhost:4321", PKNK = {
     custom: [],
     max_pay: PKNK.employeePK.concat(PKNK.employeeNK),
     sales_target: PKNK.employeePK.concat(PKNK.employeeNK).concat(["target"]),
-    process_transaction: PKNK.transactionPK.concat(["membership_id", "sku"]).concat(PKNK.receivesReceiptNK).concat(PKNK.inventoryNK),
+    process_transaction: ["transaction_id", "date_transaction", "payment_type", "employee_id", "membership_id", "sku", "quantity_inventory", "quantity_receipt"],
     find_transaction_date: ["date_transaction"],
     employee_net_pay: ["employee_id", "net_pay"],
     supplier_product_amt: ["sku", "delivery_quantity"],
     total_pay_view: ["start_date", "net_pay"],
-    transaction: ["transaction_id", "date_transaction", "payment_type", "employee_id"],
-    inventory: ["sku", "quantity"],
-    receivesReceipt: ["transaction_id", "sku", "membership_id", "quantity"]
 }, customQueryInput = {
     custom: [],
     max_pay: [],

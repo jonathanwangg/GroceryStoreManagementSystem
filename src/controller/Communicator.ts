@@ -68,8 +68,6 @@ export default class Communicator {
     public static getHardQuery(data: any): string {
         let SQLStr: string = "";
 
-        console.log();
-
         switch (data.query) {
             case "max_pay":
                 SQLStr += "SELECT *\n" +
@@ -105,17 +103,21 @@ export default class Communicator {
                 //     "SELECT t.transaction_id, t.date_transaction, t.payment_type, t.employee_id, r.quantity, i.quantity, r.membership_id" +
                 //     "FROM Transaction t, ReceivesReceipt r, Inventory i" +
                 //     "WHERE t.transaction_id = r.transaction_id and r.sku = i.sku and t.transaction_id =" + t_id + " and r.sku = " + sku;
-                SQLStr +=
-                    "INSERT INTO Customer VALUES (10,'Lea','Steinhaus','80 Maplewood Dr #345','905-618-8258','2011-11-05'); commit;";
-                // "INSERT INTO Transaction VALUES (21,'2017-11-18','cash',10);\n commit;\n"+
-                // "INSERT INTO ReceivesReceipt VALUES (21,6891,5,3);\n commit;\n" +
-                // "UPDATE Inventory SET quantity = 2 where SKU = 6891;\n commit;\n" +
-                // "INSERT INTO Processes VALUES (21,10,5);\n commit;\n" +
-                // "INSERT INTO Modifies VALUES (21,6891);\n commit;\n" +
-                // "SELECT t.*, r.membership_id, r.sku, r.quantity, i.quantity " +
-                // "FROM Transaction t, ReceivesReceipt r, Inventory i " +
-                // "WHERE t.transaction_id = 21 and r.sku = 6891 and t.transaction_id = r.transaction_id and i.sku = r.sku"
-                break;
+                return "BEGIN\n" +
+                    "INSERT INTO Customer VALUES (20,'Lea','Steinhaus','80 Maplewood Dr #345','905-618-8258','2011-11-05')\n" +
+                    "INSERT INTO Customer VALUES (21,'Lea','Steinhaus','80 Maplewood Dr #345','905-618-8258','2011-11-05')\n" +
+                    "END";
+                // "INSERT INTO Customer VALUES (16,'Lea','Steinhaus','80 Maplewood Dr #345','905-618-8258','2011-11-05');";
+                // "INSERT INTO Transaction VALUES (21,'2017-11-18','cash',10);\n"+
+                // "INSERT INTO ReceivesReceipt VALUES (21,6891,5,3);\n" +
+                // "UPDATE Inventory SET quantity = 2 where SKU = 6891;\n" +
+                // "INSERT INTO Processes VALUES (21,10,5);\n" +
+                // "INSERT INTO Modifies VALUES (21,6891);\n" +
+                // "SELECT t.*, r.membership_id, r.sku, r.quantity, i.quantity\n" +
+                // "FROM Transaction t, ReceivesReceipt r, Inventory i\n" +
+                // "WHERE t.transaction_id = 19 and r.sku = 1230 and t.transaction_id = r.transaction_id and i.sku = r.sku;";
+                // "SELECT * FROM Customer";
+                // break;
             case "find_transaction_date":
                 SQLStr += "SELECT date_transaction\n" +
                     "      FROM   Transaction\n" +

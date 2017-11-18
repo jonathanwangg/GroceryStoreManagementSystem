@@ -254,7 +254,7 @@ body {
             align-items: center;
             display: flex;
             flex-flow: row nowrap;
-            font-size: 2em;
+            font-size: 1.5em;
             justify-content: center;
             width: 100%; }
             body #modal-data #table-container table thead .specification td {

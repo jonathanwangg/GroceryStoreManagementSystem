@@ -39,7 +39,6 @@ var Communicator = (function () {
     };
     Communicator.getHardQuery = function (data) {
         var SQLStr = "";
-        console.log();
         switch (data.query) {
             case "max_pay":
                 SQLStr += "SELECT *\n" +
@@ -59,9 +58,10 @@ var Communicator = (function () {
             case "process_transaction":
                 var t_id = data.inputs["transaction_id"], m_id = data.inputs["membership_id"], e_id = data.inputs["employee_id"], p_type = data.inputs["payment_type"], sku = data.inputs["sku"], quantity = data.inputs["quantity"], updated_quantity = 5 - quantity;
                 console.log("PROCESS TRANSACTION");
-                SQLStr +=
-                    "INSERT INTO Customer VALUES (10,'Lea','Steinhaus','80 Maplewood Dr #345','905-618-8258','2011-11-05'); commit;";
-                break;
+                return "BEGIN\n" +
+                    "INSERT INTO Customer VALUES (20,'Lea','Steinhaus','80 Maplewood Dr #345','905-618-8258','2011-11-05')\n" +
+                    "INSERT INTO Customer VALUES (21,'Lea','Steinhaus','80 Maplewood Dr #345','905-618-8258','2011-11-05')\n" +
+                    "END";
             case "find_transaction_date":
                 SQLStr += "SELECT date_transaction\n" +
                     "      FROM   Transaction\n" +
