@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var Util_1 = require("./Util");
 var Server_1 = require("./rest/Server");
 var App = (function () {
