@@ -161,16 +161,11 @@ CREATE TABLE Updates (
 );
 grant select on Updates to public;
 
-SQLStr += "CREATE VIEW TotalPay\n" +
-                    "      SELECT      start_date, SUM(net_pay) AS net_pay\n" +
-                    "      FROM        Payroll\n" +
-                    "      GROUP BY    start_date";
-
-
 CREATE VIEW     TotalPay
 SELECT          start_date, SUM(net_pay) AS net_pay
 FROM            Payroll
 GROUP BY        start_date
+
 commit;
 
 INSERT INTO Customer VALUES (1,'Francoise','Rautenstrauch','2335 Canton Hwy #6','519-569-8399','2017-10-17');
