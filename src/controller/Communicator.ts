@@ -150,10 +150,10 @@ export default class Communicator {
                     + data.inputs.sku;
                 break;
             case "total_pay_view":
-                SQLStr += "CREATE VIEW TotalPay\n" +
-                    "      SELECT      start_date, SUM(net_pay) AS net_pay\n" +
-                    "      FROM        Payroll\n" +
-                    "      GROUP BY    start_date";
+                // SQLStr += "CREATE VIEW TotalPay\n" +
+                //     "      SELECT      start_date, SUM(net_pay) AS net_pay\n" +
+                //     "      FROM        Payroll\n" +
+                //     "      GROUP BY    start_date";
                 break;
         }
 
