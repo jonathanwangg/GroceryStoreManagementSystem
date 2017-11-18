@@ -1,4 +1,6 @@
 /* Colours */
+/* Font and UI Size */
+/* Animation Speed */
 /* WebKit browsers */
 ::-webkit-input-placeholder {
   opacity: 0.4 !important; }
@@ -38,7 +40,12 @@ body {
         height: 15vh;
         justify-content: center;
         text-align: center;
-        width: 100%; }
+        width: 100%;
+        -moz-transition: all 0.5s;
+        -ms-transition: all 0.5s;
+        -o-transition: all 0.5s;
+        -webkit-transition: all 0.5s;
+        transition: all 0.5s; }
         body #modal-data #data-container #selected-entity:hover, body #modal-data #data-container #selected-query:hover {
           background-color: #dc3c50; }
       body #modal-data #data-container #selected-entity {
@@ -65,13 +72,19 @@ body {
           align-items: center;
           color: white;
           display: flex;
-          height: 15vh;
+          min-height: 15vh;
           justify-content: center;
           left: 0;
-          width: 100%; }
+          width: 100%;
+          -moz-transition: all 0.5s;
+          -ms-transition: all 0.5s;
+          -o-transition: all 0.5s;
+          -webkit-transition: all 0.5s;
+          transition: all 0.5s; }
           body #modal-data #data-container #entities span:hover, body #modal-data #data-container #methods span:hover, body #modal-data #data-container #queries span:hover {
             background-color: #6c3081; }
       body #modal-data #data-container #entities, body #modal-data #data-container #queries {
+        font-size: 0.5em;
         margin: 15vh 0 0 0;
         top: 0;
         z-index: 3; }
@@ -90,7 +103,12 @@ body {
         height: 15vh;
         justify-content: center;
         text-align: center;
-        width: 100%; }
+        width: 100%;
+        -moz-transition: all 0.5s;
+        -ms-transition: all 0.5s;
+        -o-transition: all 0.5s;
+        -webkit-transition: all 0.5s;
+        transition: all 0.5s; }
         body #modal-data #data-container #methods-container #selected-method, body #modal-data #data-container #methods-container #method-selector {
           align-items: center;
           color: white;
@@ -110,8 +128,14 @@ body {
         body #modal-data #data-container #methods-container #method-selector {
           font-size: 0.5em;
           width: 15%; }
-        body #modal-data #data-container #methods-container .normal:hover, body #modal-data #data-container #methods-container .success:hover, body #modal-data #data-container #methods-container .fail:hover {
-          cursor: pointer; }
+        body #modal-data #data-container #methods-container .normal, body #modal-data #data-container #methods-container .success, body #modal-data #data-container #methods-container .fail {
+          -moz-transition: all 0.5s;
+          -ms-transition: all 0.5s;
+          -o-transition: all 0.5s;
+          -webkit-transition: all 0.5s;
+          transition: all 0.5s; }
+          body #modal-data #data-container #methods-container .normal:hover, body #modal-data #data-container #methods-container .success:hover, body #modal-data #data-container #methods-container .fail:hover {
+            cursor: pointer; }
         body #modal-data #data-container #methods-container .normal:hover {
           background: #dc3c50; }
           body #modal-data #data-container #methods-container .normal:hover .fa-cog {
@@ -132,7 +156,12 @@ body {
         justify-content: center;
         position: absolute;
         text-align: center;
-        width: 100%; }
+        width: 100%;
+        -moz-transition: all 0.5s;
+        -ms-transition: all 0.5s;
+        -o-transition: all 0.5s;
+        -webkit-transition: all 0.5s;
+        transition: all 0.5s; }
         body #modal-data #data-container #confirmation-container #drop-confirm, body #modal-data #data-container #confirmation-container #drop-cancel {
           align-items: center;
           color: white;
@@ -244,7 +273,12 @@ body {
               color: #ff7a8a;
               font-size: 1.3em;
               font-variant: small-caps;
-              height: 1.5em; }
+              height: 2em;
+              -moz-transition: all 0.5s;
+              -ms-transition: all 0.5s;
+              -o-transition: all 0.5s;
+              -webkit-transition: all 0.5s;
+              transition: all 0.5s; }
               body #modal-data #table-container table thead tr th:hover, body #modal-data #table-container table tbody tr th:hover {
                 cursor: pointer; }
         body #modal-data #table-container table thead {
@@ -254,7 +288,7 @@ body {
             align-items: center;
             display: flex;
             flex-flow: row nowrap;
-            font-size: 1.5em;
+            font-size: 2em;
             justify-content: center;
             width: 100%; }
             body #modal-data #table-container table thead .specification td {
@@ -284,7 +318,12 @@ body {
                   line-height: 1.6em;
                   margin: 0 0.5em;
                   padding: 0;
-                  width: 1.6em; }
+                  width: 1.6em;
+                  -moz-transition: all 0.5s;
+                  -ms-transition: all 0.5s;
+                  -o-transition: all 0.5s;
+                  -webkit-transition: all 0.5s;
+                  transition: all 0.5s; }
                   body #modal-data #table-container table thead .specification td .operator-container-list > span .operator-selection, body #modal-data #table-container table thead .specification td .operator-container-list > div .operator-selection {
                     align-items: center;
                     background-color: #ff7a8a;
@@ -299,7 +338,12 @@ body {
                     body #modal-data #table-container table thead .specification td .operator-container-list > span .operator-selection > span, body #modal-data #table-container table thead .specification td .operator-container-list > div .operator-selection > span {
                       box-sizing: border-box;
                       padding: 0.5em 1em;
-                      width: 100%; }
+                      width: 100%;
+                      -moz-transition: all 0.5s;
+                      -ms-transition: all 0.5s;
+                      -o-transition: all 0.5s;
+                      -webkit-transition: all 0.5s;
+                      transition: all 0.5s; }
                       body #modal-data #table-container table thead .specification td .operator-container-list > span .operator-selection > span:hover, body #modal-data #table-container table thead .specification td .operator-container-list > div .operator-selection > span:hover {
                         background: #dc3c50;
                         cursor: pointer; }
@@ -312,38 +356,50 @@ body {
                 justify-content: space-around;
                 width: 100%; }
                 body #modal-data #table-container table thead .specification td .table-input span {
-                  font-size: 1.5em;
+                  font-size: calc(2em / 2);
                   width: 20%; }
                 body #modal-data #table-container table thead .specification td .table-input input {
                   border: none;
                   border-bottom: solid 0.1em white;
                   box-sizing: border-box;
                   color: white;
-                  padding: 0 0.4em;
-                  width: 70%; }
+                  padding: 0 0.4em 0 0.1em;
+                  width: 75%; }
                   body #modal-data #table-container table thead .specification td .table-input input:focus {
                     border-color: #ff7a8a; }
         body #modal-data #table-container table tbody {
-          font-size: 1.5em;
+          font-size: 2em;
           display: block;
           height: 85%;
           overflow-y: overlay;
-          width: 100%; }
+          width: 100%;
+          -moz-transition: all 0.5s;
+          -ms-transition: all 0.5s;
+          -o-transition: all 0.5s;
+          -webkit-transition: all 0.5s;
+          transition: all 0.5s; }
           body #modal-data #table-container table tbody tr {
+            align-items: center;
+            counter-increment: rowNumber;
+            display: flex;
+            flex-flow: row nowrap;
+            font-size: calc(2em * 0.25);
+            height: 2.5em;
+            justify-content: center;
             width: 100%; }
-            body #modal-data #table-container table tbody tr td:nth-child(even) {
-              background-color: #69247b; }
-            body #modal-data #table-container table tbody tr td:nth-child(odd) {
-              background-color: #6c3081; }
+            body #modal-data #table-container table tbody tr td {
+              min-height: 100%; }
+              body #modal-data #table-container table tbody tr td:nth-child(even) {
+                background-color: #69247b; }
+              body #modal-data #table-container table tbody tr td:nth-child(odd) {
+                background-color: #6c3081; }
             body #modal-data #table-container table tbody tr:hover {
               color: #ff7a8a; }
-          body #modal-data #table-container table tbody tr {
-            counter-increment: rowNumber; }
-          body #modal-data #table-container table tbody tr:hover::before {
-            content: counter(rowNumber);
-            width: 0;
-            position: relative;
-            z-index: 5;
-            transform: translateX(0.5em); }
+              body #modal-data #table-container table tbody tr:hover::before {
+                content: counter(rowNumber);
+                width: 0;
+                position: relative;
+                z-index: 5;
+                transform: translateX(0.5em); }
 
 /*# sourceMappingURL=main.css.map */

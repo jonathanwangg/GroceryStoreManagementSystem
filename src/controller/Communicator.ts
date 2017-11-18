@@ -5,8 +5,8 @@ export default class Communicator {
     public static dbConfig = require("./dbconfig.js");
 
     public static setting = {
-        user:          Communicator.dbConfig.user,
-        password:      Communicator.dbConfig.password,
+        user: Communicator.dbConfig.user,
+        password: Communicator.dbConfig.password,
         connectString: Communicator.dbConfig.connectString
     };
 
@@ -184,9 +184,9 @@ export default class Communicator {
         return new Promise(function (resolve, reject) {
             connection.execute(SQLStr, {}, {
                 fetchInfo: {
-                    JOIN_DATE:        {type: Communicator.oracledb.STRING},
-                    START_DATE:       {type: Communicator.oracledb.STRING},
-                    END_DATE:         {type: Communicator.oracledb.STRING},
+                    JOIN_DATE: {type: Communicator.oracledb.STRING},
+                    START_DATE: {type: Communicator.oracledb.STRING},
+                    END_DATE: {type: Communicator.oracledb.STRING},
                     DATE_TRANSACTION: {type: Communicator.oracledb.STRING}
                 }
             }, function (err: Error, result: any) {
@@ -262,6 +262,8 @@ export default class Communicator {
                 return Communicator.create(entity);
             case "drop":
                 return "DROP TABLE " + entity;
+            case "populate":
+                return Dictionary.populateStr;
             case "insert":
                 return Communicator.insert(entity, inputs);
             case "select":

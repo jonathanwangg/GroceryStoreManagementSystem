@@ -204,6 +204,8 @@ var Communicator = (function () {
                 return Communicator.create(entity);
             case "drop":
                 return "DROP TABLE " + entity;
+            case "populate":
+                return Dictionary_1.default.populateStr;
             case "insert":
                 return Communicator.insert(entity, inputs);
             case "select":
