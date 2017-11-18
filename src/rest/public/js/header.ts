@@ -88,5 +88,8 @@ let url: string = "http://localhost:4321",
         //phone_number:  "VARCHAR(40)"
 
         /* Custom Queries */
-        target: "FLOAT"
+        target: "FLOAT",
+        delivery_quantity: "INT",
+        quantity_inventory: "INT",
+        quantity_receipt: "INT"
     };

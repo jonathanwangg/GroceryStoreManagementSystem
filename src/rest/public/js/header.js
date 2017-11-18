@@ -57,6 +57,9 @@ var url = "http://localhost:4321", PKNK = {
     days_to_expiry: "INT",
     supplier_name: "VARCHAR(40)",
     location: "VARCHAR(40)",
-    target: "FLOAT"
+    target: "FLOAT",
+    delivery_quantity: "INT",
+    quantity_inventory: "INT",
+    quantity_receipt: "INT"
 };
 //# sourceMappingURL=header.js.map
