@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var Dictionary_1 = require("./Dictionary");
 var Communicator = (function () {
     function Communicator() {
@@ -111,19 +110,21 @@ var Communicator = (function () {
             case "employee_net_pay":
                 SQLStr += "SELECT E.employee_id, net_pay\n" +
                     "      FROM   Employee E, Payroll P\n" +
-                    "      WHERE  P.start_date = " + data.input.start_date + " AND E.employee_id = " + data.inputs.employee_id;
+                    "      WHERE  P.start_date = " + data.input.start_date + " AND E.employee_id = "
+                    + data.inputs.employee_id;
                 break;
             case "supplier_product_amt":
                 SQLStr += "SELECT A.sku, delivery_quantity\n" +
                     "      FROM   Supplier S, Supply A, Product P\n" +
-                    "      WHERE  S.supplier_name = A.supplier_name AND A.sku = P.sku AND P.sku = "
-                    + data.inputs.sku;
+                    "      WHERE  S.supplier_name = A.supplier_name AND A.sku = P.sku AND P.sku = " + data.inputs.sku;
                 break;
             case "total_pay_view":
+                SQLStr += "SELECT *\n" +
+                    "      FROM TotalPay";
                 break;
         }
         console.log(SQLStr);
-        SQLStr = Communicator.getQueryWHERE(SQLStr, data.specification.size, data.specification.attributes, data.specification.operators, data.specification.inputs, data.specification.isAscendings);
+        SQLStr = Communicator.getHardWHERE(SQLStr, data.specification.size, data.specification.attributes, data.specification.operators, data.specification.inputs, data.specification.isAscendings);
         return SQLStr;
     };
     Communicator.connect = function () {
@@ -281,7 +282,7 @@ var Communicator = (function () {
         }
         return whereStr.substring(0, whereStr.lastIndexOf(" AND "));
     };
-    Communicator.getQueryWHERE = function (SQLStr, size, attributes, operators, inputs, isAscendings) {
+    Communicator.getHardWHERE = function (SQLStr, size, attributes, operators, inputs, isAscendings) {
         if (inputs.join("") === "") {
             return "SELECT " + attributes.filter(function (attribute) {
                 return attribute !== undefined && attribute !== null;
@@ -334,14 +335,15 @@ var Communicator = (function () {
         }
         return orderStr.substring(0, orderStr.lastIndexOf(", "));
     };
-    Communicator.oracledb = require("oracledb");
-    Communicator.dbConfig = require("./dbconfig.js");
-    Communicator.setting = {
-        user: Communicator.dbConfig.user,
-        password: Communicator.dbConfig.password,
-        connectString: Communicator.dbConfig.connectString
-    };
     return Communicator;
 }());
+Communicator.oracledb = require("oracledb");
+Communicator.dbConfig = require("./dbconfig.js");
+Communicator.setting = {
+    user: Communicator.dbConfig.user,
+    password: Communicator.dbConfig.password,
+    connectString: Communicator.dbConfig.connectString
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Communicator;
 //# sourceMappingURL=Communicator.js.map

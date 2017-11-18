@@ -31,7 +31,7 @@ var url = "http://localhost:4321", PKNK = {
     sales_target: ["target"],
     process_transaction: ["transaction_id", "employee_id", "membership_id", "payment_type", "sku", "quantity"],
     find_transaction_date: ["transaction_id"],
-    employee_net_pay: ["employee_id"],
+    employee_net_pay: ["employee_id", "start_date"],
     supplier_product_amt: ["sku"],
     total_pay_view: []
 }, type = {

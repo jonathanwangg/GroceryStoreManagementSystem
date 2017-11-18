@@ -187,6 +187,7 @@ export default class Dictionary {
         "execute immediate 'DROP TABLE Handles CASCADE CONSTRAINTS';\n"+
         "execute immediate 'DROP TABLE Modifies CASCADE CONSTRAINTS';\n"+
         "execute immediate 'DROP TABLE Updates CASCADE CONSTRAINTS';\n"+
+        "execute immediate 'DROP VIEW TotalPay';\n"+
         "execute immediate 'CREATE TABLE Customer (\n" +
         "    membership_id INT NOT NULL,\n" +
         "    first_name VARCHAR(40) NOT NULL,\n" +
@@ -307,6 +308,10 @@ export default class Dictionary {
         "    PRIMARY KEY(supplier_name, location, delivery_id, SKU),\n" +
         "    FOREIGN KEY(delivery_id, supplier_name, location, SKU) REFERENCES Supply(delivery_id, supplier_name, location, SKU)\n" +
         ")';\n" +
+        "execute immediate 'CREATE VIEW TotalPay AS\n" +
+        "SELECT start_date, SUM(net_pay) AS net_pay\n" +
+        "FROM Payroll\n" +
+        "GROUP BY start_date';\n" +
         "execute immediate 'GRANT SELECT ON Customer TO PUBLIC';\n" +
         "execute immediate 'GRANT SELECT ON Employee TO PUBLIC';\n" +
         "execute immediate 'GRANT SELECT ON Schedule TO PUBLIC';\n" +
@@ -321,6 +326,7 @@ export default class Dictionary {
         "execute immediate 'GRANT SELECT ON Handles TO PUBLIC';\n" +
         "execute immediate 'GRANT SELECT ON Modifies TO PUBLIC';\n" +
         "execute immediate 'GRANT SELECT ON Updates TO PUBLIC';\n" +
+        "execute immediate 'GRANT SELECT ON TotalPay TO PUBLIC';\n" +
         "commit;" +
         "INSERT INTO Customer VALUES (1,'Francoise','Rautenstrauch','2335 Canton Hwy #6','519-569-8399','2017-10-17');\n" +
         "INSERT INTO Customer VALUES (2,'Kendra','Loud','6 Arch St #9757','506-363-1526','2017-10-17');\n" +

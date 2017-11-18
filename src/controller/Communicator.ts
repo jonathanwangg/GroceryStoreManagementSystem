@@ -140,25 +140,22 @@ export default class Communicator {
             case "employee_net_pay":
                 SQLStr += "SELECT E.employee_id, net_pay\n" +
                     "      FROM   Employee E, Payroll P\n" +
-                    "      WHERE  P.start_date = " + data.input.start_date +  " AND E.employee_id = " + data.inputs.employee_id;
-                            // todo: need to hook up the html and textbook for the P.stard_date = data.input.startDate
+                    "      WHERE  P.start_date = " + data.input.start_date + " AND E.employee_id = "
+                    + data.inputs.employee_id;
                 break;
             case "supplier_product_amt":
                 SQLStr += "SELECT A.sku, delivery_quantity\n" +
                     "      FROM   Supplier S, Supply A, Product P\n" +
-                    "      WHERE  S.supplier_name = A.supplier_name AND A.sku = P.sku AND P.sku = "
-                    + data.inputs.sku;
+                    "      WHERE  S.supplier_name = A.supplier_name AND A.sku = P.sku AND P.sku = " + data.inputs.sku;
                 break;
             case "total_pay_view":
-                // SQLStr += "CREATE VIEW TotalPay\n" +
-                //     "      SELECT      start_date, SUM(net_pay) AS net_pay\n" +
-                //     "      FROM        Payroll\n" +
-                //     "      GROUP BY    start_date";
+                SQLStr += "SELECT *\n" +
+                    "      FROM TotalPay";
                 break;
         }
 
         console.log(SQLStr);
-        SQLStr = Communicator.getQueryWHERE(SQLStr, data.specification.size, data.specification.attributes,
+        SQLStr = Communicator.getHardWHERE(SQLStr, data.specification.size, data.specification.attributes,
             data.specification.operators, data.specification.inputs, data.specification.isAscendings);
         return SQLStr;
     }
@@ -376,7 +373,7 @@ export default class Communicator {
     /**
      * Constructs WHERE statement for hard queries.
      */
-    public static getQueryWHERE(SQLStr: string, size: number, attributes: string[], operators: string[], inputs: string[], isAscendings: boolean[]): string {
+    public static getHardWHERE(SQLStr: string, size: number, attributes: string[], operators: string[], inputs: string[], isAscendings: boolean[]): string {
         if (inputs.join("") === "") {
             return "SELECT " + attributes.filter(function (attribute: string) {
                 return attribute !== undefined && attribute !== null;

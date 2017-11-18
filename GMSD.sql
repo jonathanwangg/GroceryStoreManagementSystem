@@ -1,17 +1,18 @@
-drop table  Customer           cascade constraints;
-drop table  Employee           cascade constraints;
-drop table  Schedule           cascade constraints;
-drop table  Payroll            cascade constraints;
-drop table  Transaction        cascade constraints;
-drop table  Product            cascade constraints;
-drop table  ReceivesReceipt    cascade constraints;
-drop table  Processes          cascade constraints;
-drop table  Supplier           cascade constraints;
-drop table  Supply             cascade constraints;
-drop table  Inventory          cascade constraints;
-drop table  Handles            cascade constraints;
-drop table  Modifies           cascade constraints;
-drop table  Updates            cascade constraints;
+DROP TABLE Customer         CASCADE CONSTRAINTS;
+DROP TABLE Employee         CASCADE CONSTRAINTS;
+DROP TABLE Schedule         CASCADE CONSTRAINTS;
+DROP TABLE Payroll          CASCADE CONSTRAINTS;
+DROP TABLE Transaction      CASCADE CONSTRAINTS;
+DROP TABLE Product          CASCADE CONSTRAINTS;
+DROP TABLE ReceivesReceipt  CASCADE CONSTRAINTS;
+DROP TABLE Processes        CASCADE CONSTRAINTS;
+DROP TABLE Supplier         CASCADE CONSTRAINTS;
+DROP TABLE Supply           CASCADE CONSTRAINTS;
+DROP TABLE Inventory        CASCADE CONSTRAINTS;
+DROP TABLE Handles          CASCADE CONSTRAINTS;
+DROP TABLE Modifies         CASCADE CONSTRAINTS;
+DROP TABLE Updates          CASCADE CONSTRAINTS;
+DROP VIEW  TotalPay;
 
 CREATE TABLE Customer (
     membership_id INT NOT NULL,
@@ -22,7 +23,6 @@ CREATE TABLE Customer (
     join_date DATE NOT NULL,
     PRIMARY KEY(membership_id)
 );
-grant select on Customer to public;
 
 CREATE TABLE Employee (
     employee_id INT NOT NULL,
@@ -33,7 +33,6 @@ CREATE TABLE Employee (
     position VARCHAR(40) CHECK(position IN ('cashier', 'inventory associate', 'supervisor')),
     PRIMARY KEY(employee_id)
 );
-grant select on Employee to public;
 
 CREATE TABLE Schedule (
     employee_id INT NOT NULL,
@@ -44,7 +43,6 @@ CREATE TABLE Schedule (
     PRIMARY KEY(employee_id, work_date),
     FOREIGN KEY(employee_id) REFERENCES Employee(employee_id)
 );
-grant select on Schedule to public;
 
 CREATE TABLE Payroll (
     employee_id INT NOT NULL,
@@ -57,7 +55,6 @@ CREATE TABLE Payroll (
     PRIMARY KEY(employee_id, start_date, end_date),
     FOREIGN KEY(employee_id) REFERENCES Employee(employee_id)
 );
-grant select on Payroll to public;
 
 CREATE TABLE Transaction (
     transaction_id INT NOT NULL,
@@ -67,7 +64,6 @@ CREATE TABLE Transaction (
     PRIMARY KEY(transaction_id),
     FOREIGN KEY (employee_id) REFERENCES Employee(employee_id)
 );
-grant select on Transaction to public;
 
 CREATE TABLE Product (
     SKU INT NOT NULL,
@@ -76,7 +72,6 @@ CREATE TABLE Product (
     days_to_expiry INT NOT NULL,
     PRIMARY KEY(SKU)
 );
-grant select on Product to public;
 
 CREATE TABLE ReceivesReceipt (
     transaction_id INT NOT NULL,
@@ -88,7 +83,6 @@ CREATE TABLE ReceivesReceipt (
     FOREIGN KEY(SKU) REFERENCES Product(SKU),
     FOREIGN KEY(membership_id) REFERENCES Customer(membership_id)
 );
-grant select on ReceivesReceipt to public;
 
 CREATE TABLE Processes (
     transaction_id INT NOT NULL,
@@ -99,7 +93,6 @@ CREATE TABLE Processes (
     FOREIGN KEY(employee_id) REFERENCES Employee(employee_id),
     FOREIGN KEY(membership_id) REFERENCES Customer(membership_id)
 );
-grant select on Processes to public;
 
 CREATE TABLE Supplier (
     supplier_name VARCHAR(40) NOT NULL,
@@ -107,7 +100,6 @@ CREATE TABLE Supplier (
     phone_number VARCHAR(40) NOT NULL,
     PRIMARY KEY(supplier_name,location)
 );
-grant select on Supplier to public;
 
 CREATE TABLE Supply (
     delivery_id INT,
@@ -120,7 +112,6 @@ CREATE TABLE Supply (
     FOREIGN KEY(SKU) REFERENCES Product(SKU),
     FOREIGN KEY(supplier_name, location) REFERENCES Supplier(supplier_name, location)
 );
-grant select on Supply to public;
 
 CREATE TABLE Inventory (
     SKU INT NOT NULL,
@@ -128,7 +119,6 @@ CREATE TABLE Inventory (
     PRIMARY KEY(SKU),
     FOREIGN KEY(SKU) REFERENCES Product(SKU)
 );
-grant select on Inventory to public;  
 
 CREATE TABLE Handles (
     employee_id INT NOT NULL,
@@ -140,7 +130,6 @@ CREATE TABLE Handles (
     FOREIGN KEY(employee_id) REFERENCES Employee(employee_id),
     FOREIGN KEY(SKU, delivery_id, supplier_name, location) REFERENCES Supply(SKU, delivery_id, supplier_name, location)
 );
-grant select on Handles to public;
 
 CREATE TABLE Modifies (
     transaction_id INT NOT NULL,
@@ -149,7 +138,6 @@ CREATE TABLE Modifies (
     FOREIGN KEY(transaction_id) REFERENCES Transaction(transaction_id),
     FOREIGN KEY(SKU) REFERENCES Product(SKU)
 );
-grant select on Modifies to public;
 
 CREATE TABLE Updates (
     supplier_name VARCHAR(40) NOT NULL,
@@ -159,14 +147,27 @@ CREATE TABLE Updates (
     PRIMARY KEY(supplier_name, location, delivery_id, SKU),
     FOREIGN KEY(delivery_id, supplier_name, location, SKU) REFERENCES Supply(delivery_id, supplier_name, location, SKU)
 );
-grant select on Updates to public;
 
-CREATE VIEW     TotalPay
-SELECT          start_date, SUM(net_pay) AS net_pay
-FROM            Payroll
-GROUP BY        start_date
+CREATE VIEW TotalPay AS
+SELECT start_date, SUM(net_pay) AS net_pay
+FROM Payroll
+GROUP BY start_date;
 
-commit;
+GRANT SELECT ON Customer TO PUBLIC;
+GRANT SELECT ON Employee TO PUBLIC;
+GRANT SELECT ON Schedule TO PUBLIC;
+GRANT SELECT ON Payroll TO PUBLIC;
+GRANT SELECT ON Transaction TO PUBLIC;
+GRANT SELECT ON Product TO PUBLIC;
+GRANT SELECT ON ReceivesReceipt TO PUBLIC;
+GRANT SELECT ON Processes TO PUBLIC;
+GRANT SELECT ON Supplier TO PUBLIC;
+GRANT SELECT ON Supply TO PUBLIC;
+GRANT SELECT ON Inventory TO PUBLIC;
+GRANT SELECT ON Handles TO PUBLIC;
+GRANT SELECT ON Modifies TO PUBLIC;
+GRANT SELECT ON Updates TO PUBLIC;
+GRANT SELECT ON TotalPay TO PUBLIC;
 
 INSERT INTO Customer VALUES (1,'Francoise','Rautenstrauch','2335 Canton Hwy #6','519-569-8399','2017-10-17');
 INSERT INTO Customer VALUES (2,'Kendra','Loud','6 Arch St #9757','506-363-1526','2017-10-17');
@@ -178,16 +179,12 @@ INSERT INTO Customer VALUES (7,'Hui','Portaro','3 Mill Rd','506-827-7755','2017-
 INSERT INTO Customer VALUES (8,'Josefa','Opitz','136 W Grand Ave #3','519-788-7645','2017-11-04');
 INSERT INTO Customer VALUES (9,'Lea','Steinhaus','80 Maplewood Dr #34','905-618-8258','2011-11-05');
 
-commit;
-
 INSERT INTO Employee VALUES (10,'Bob','Adamson','387-293-234',15.00,'cashier');
 INSERT INTO Employee VALUES (20,'Jane','Doe','327-238-238',15.25,'cashier');
 INSERT INTO Employee VALUES (30,'First','Last','182-374-286',15.50,'cashier');
 INSERT INTO Employee VALUES (40,'Peter','Pan','175-394-368',15.00,'inventory associate');
 INSERT INTO Employee VALUES (50,'Dalvir','Khaira','153-726-483',15.50,'inventory associate');
 INSERT INTO Employee VALUES (60,'John','Doe','163-476-397',20.00,'supervisor');
-
-commit;
 
 INSERT INTO Schedule VALUES (10,'2017-11-13','FALSE','9:00','15:00');
 INSERT INTO Schedule VALUES (10,'2017-11-14','FALSE','15:00','22:00');
@@ -214,8 +211,6 @@ INSERT INTO Schedule VALUES (60,'2017-11-14','FALSE','9:00','22:00');
 INSERT INTO Schedule VALUES (60,'2017-11-15','FALSE','9:00','22:00');
 INSERT INTO Schedule VALUES (60,'2017-11-16','TRUE','NULL','NULL');
 
-commit;
-
 INSERT INTO Payroll VALUES (10,'2017-10-01','2017-10-14',90,0,1350.00,1323.00);
 INSERT INTO Payroll VALUES (20,'2017-10-01','2017-10-14',80,0,1220.00,1195.60);
 INSERT INTO Payroll VALUES (30,'2017-10-01','2017-10-14',75,0,1162.50,1139.25);
@@ -229,8 +224,6 @@ INSERT INTO Payroll VALUES (40,'2017-10-15','2017-10-28',85,0,1275.00,1249.50);
 INSERT INTO Payroll VALUES (50,'2017-10-15','2017-10-28',80,0,1240.00,1215.20);
 INSERT INTO Payroll VALUES (60,'2017-10-15','2017-10-28',120,0,2400.00,2352.00);
 
-commit;
-
 INSERT INTO Transaction VALUES (11,'2017-11-13','cash',20);
 INSERT INTO Transaction VALUES (12,'2017-11-14','credit',10);
 INSERT INTO Transaction VALUES (13,'2017-11-15','credit',20);
@@ -240,8 +233,6 @@ INSERT INTO Transaction VALUES (16,'2017-11-16','cash',30);
 INSERT INTO Transaction VALUES (17,'2017-11-12','credit',30);
 INSERT INTO Transaction VALUES (18,'2017-11-13','credit',30);
 INSERT INTO Transaction VALUES (19,'2017-11-13','credit',10);
-
-commit;
 
 INSERT INTO Product VALUES (4763,'apple',2.99,30);
 INSERT INTO Product VALUES (1238,'carrot',3.49,20);
@@ -258,8 +249,6 @@ INSERT INTO Product VALUES (9791,'mushroom',3.99,8);
 INSERT INTO Product VALUES (6890,'blackberry',4.99,9);
 INSERT INTO Product VALUES (9792,'orange',5.99,10);
 INSERT INTO Product VALUES (6891,'salmon',15.99,1);
-
-commit;
 
 INSERT INTO ReceivesReceipt VALUES (11,4763,2,1);
 INSERT INTO ReceivesReceipt VALUES (11,1230,2,5);
@@ -285,8 +274,6 @@ INSERT INTO ReceivesReceipt VALUES (14,1230,7,6);
 INSERT INTO ReceivesReceipt VALUES (18,9792,9,3);
 INSERT INTO ReceivesReceipt VALUES (11,6891,2,7);
 
-commit;
-
 INSERT INTO Processes VALUES (11,20,2);
 INSERT INTO Processes VALUES (12,10,3);
 INSERT INTO Processes VALUES (13,20,8);
@@ -297,8 +284,6 @@ INSERT INTO Processes VALUES (17,30,5);
 INSERT INTO Processes VALUES (18,30,9);
 INSERT INTO Processes VALUES (19,10,4);
 
-commit;
-
 INSERT INTO Supplier VALUES ('Benny Foods Ltd','Vancouver','778-384-2837');
 INSERT INTO Supplier VALUES ('Vegan Supply','Vancouver','604-582-3847');
 INSERT INTO Supplier VALUES ('Mitchell Foods Ltd','Vancouver','604-273-2746');
@@ -307,8 +292,6 @@ INSERT INTO Supplier VALUES ('Dalvir Vegeterian Supply','Vancouver','778-234-387
 INSERT INTO Supplier VALUES ('Sunny''s Chicken','Richmond','778-593-4939');
 INSERT INTO Supplier VALUES ('Canadian Meat Ltd','Richmond','778-927-3346');
 INSERT INTO Supplier VALUES ('Richmond Fish Ltd','Richmond','604-238-0384');
-
-commit;
 
 INSERT INTO Supply VALUES (1111,4763,'Benny Foods Ltd','Vancouver',1000,249.99);
 INSERT INTO Supply VALUES (1112,1238,'Vegan Supply','Vancouver',900,298.99);
@@ -326,8 +309,6 @@ INSERT INTO Supply VALUES (1114,6890,'Mitchell Foods Ltd','Vancouver',1000,249.9
 INSERT INTO Supply VALUES (1116,9792,'Dalvir Vegeterian Supply','Vancouver',200,20.99);
 INSERT INTO Supply VALUES (1117,6891,'Richmond Fish Ltd','Richmond',80,10.99);
 
-commit;
-
 INSERT INTO Handles VALUES (40,4763,1111,'Benny Foods Ltd','Vancouver');
 INSERT INTO Handles VALUES (40,1238,1112,'Vegan Supply','Vancouver');
 INSERT INTO Handles VALUES (40,1230,1112,'Vegan Supply','Vancouver');
@@ -344,8 +325,6 @@ INSERT INTO Handles VALUES (50,6890,1114,'Mitchell Foods Ltd','Vancouver');
 INSERT INTO Handles VALUES (50,9792,1116,'Dalvir Vegeterian Supply','Vancouver');
 INSERT INTO Handles VALUES (50,6891,1117,'Richmond Fish Ltd','Richmond');
 
-commit;
-
 INSERT INTO Inventory VALUES (4763,800);
 INSERT INTO Inventory VALUES (1238,500);
 INSERT INTO Inventory VALUES (1230,300);
@@ -361,8 +340,6 @@ INSERT INTO Inventory VALUES (9791,320);
 INSERT INTO Inventory VALUES (6890,90);
 INSERT INTO Inventory VALUES (9792,10);
 INSERT INTO Inventory VALUES (6891,5);
-
-commit;
 
 INSERT INTO Modifies VALUES (11,4763);
 INSERT INTO Modifies VALUES (11,1238);
