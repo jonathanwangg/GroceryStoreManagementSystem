@@ -135,7 +135,7 @@ export default class Communicator {
             case "find_transaction_date":
                 SQLStr += "SELECT date_transaction\n" +
                     "      FROM   Transaction\n" +
-                    "      WHERE  transaction_id  = " + data.inputs.transaction_id;
+                    "      WHERE  transaction_id = " + data.inputs.transaction_id;
                 break;
             case "employee_net_pay": //TODO: Which deliverable is this referring to? Output doesn't make sense
                 SQLStr += "SELECT E.employee_id, net_pay\n" +
@@ -156,9 +156,9 @@ export default class Communicator {
                 break;
         }
 
+        console.log(SQLStr);
         SQLStr = Communicator.getQueryWHERE(SQLStr, data.specification.size, data.specification.attributes,
             data.specification.operators, data.specification.inputs, data.specification.isAscendings);
-
         return SQLStr;
     }
 
@@ -377,7 +377,9 @@ export default class Communicator {
      */
     public static getQueryWHERE(SQLStr: string, size: number, attributes: string[], operators: string[], inputs: string[], isAscendings: boolean[]): string {
         if (inputs.join("") === "") {
-            return "SELECT " + attributes.join(", ") + "\nFROM (" + SQLStr + ")" + Communicator.getORDERBY(size, attributes, isAscendings);
+            return "SELECT " + attributes.filter(function (attribute: string) {
+                return attribute !== undefined && attribute !== null;
+            }).join(", ") + "\nFROM (" + SQLStr + ")" + Communicator.getORDERBY(size, attributes, isAscendings);
         }
 
         let whereArr: string[] = [];

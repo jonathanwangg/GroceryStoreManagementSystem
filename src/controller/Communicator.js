@@ -105,7 +105,7 @@ var Communicator = (function () {
             case "find_transaction_date":
                 SQLStr += "SELECT date_transaction\n" +
                     "      FROM   Transaction\n" +
-                    "      WHERE  transaction_id  = " + data.inputs.transaction_id;
+                    "      WHERE  transaction_id = " + data.inputs.transaction_id;
                 break;
             case "employee_net_pay":
                 SQLStr += "SELECT E.employee_id, net_pay\n" +
@@ -125,6 +125,7 @@ var Communicator = (function () {
                     "      GROUP BY    start_date";
                 break;
         }
+        console.log(SQLStr);
         SQLStr = Communicator.getQueryWHERE(SQLStr, data.specification.size, data.specification.attributes, data.specification.operators, data.specification.inputs, data.specification.isAscendings);
         return SQLStr;
     };
@@ -285,7 +286,9 @@ var Communicator = (function () {
     };
     Communicator.getQueryWHERE = function (SQLStr, size, attributes, operators, inputs, isAscendings) {
         if (inputs.join("") === "") {
-            return "SELECT " + attributes.join(", ") + "\nFROM (" + SQLStr + ")" + Communicator.getORDERBY(size, attributes, isAscendings);
+            return "SELECT " + attributes.filter(function (attribute) {
+                return attribute !== undefined && attribute !== null;
+            }).join(", ") + "\nFROM (" + SQLStr + ")" + Communicator.getORDERBY(size, attributes, isAscendings);
         }
         var whereArr = [];
         for (var j = 0; j < size; j++) {
