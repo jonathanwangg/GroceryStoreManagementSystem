@@ -100,24 +100,25 @@ export default class Communicator {
                         "FROM Transaction t, ReceivesReceipt r, Inventory i\n" +
                         "WHERE t.transaction_id = r.transaction_id and r.sku = i.sku and t.transaction_id =" + t_id + "and r.sku = " + sku;
                     break;
-                case "find_date_of_transaction_for_customer":
-                    return  "SELECT date_transaction \n" +
-                            "FROM ReceivesReciept R, Transaction T \n" +
-                            "WHERE R.transaction_id = T.transaction_id AND R.membership_id = 3"; // todo: user-input
+                case "find_transaction_date":
+                    SQLStr += "SELECT date_transaction \n" +
+                        "FROM Transaction \n" +
+                        "WHERE transaction_id  = " + data.inputs.transaction_id; // todo: user-input
+                    break;
                 case "employee_net_pay_amount":
-                    return  "SELECT employee_id, net_pay \n" +
-                            "FROM Employee E, Payroll P \n" +
-                            "WHERE E.employee_id = 3";  // todo: user-input in place of 3
+                    return "SELECT employee_id, net_pay \n" +
+                        "FROM Employee E, Payroll P \n" +
+                        "WHERE E.employee_id = 3";  // todo: user-input in place of 3
                 case "supplier_product_amount":
-                    return  "SELECT sku, delivery_quantity \n" +
-                            "FROM Supplier S, Supply A, Product P \n" +
-                            "WHERE S.supplier_name = A.supplier_name AND" +
-                            "A.sku = P.sku AND P.sku = 3"; // todo: user-input in place of 3
+                    return "SELECT sku, delivery_quantity \n" +
+                        "FROM Supplier S, Supply A, Product P \n" +
+                        "WHERE S.supplier_name = A.supplier_name AND" +
+                        "A.sku = P.sku AND P.sku = 3"; // todo: user-input in place of 3
                 case "total_pay_view":
-                    return  "CREATE VIEW  TotalPay\n" +
-                            "SELECT       start_date, SUM(net_pay)\n" +
-                            "FROM         Payroll\n" +
-                            "GROUP BY     start_date";
+                    return "CREATE VIEW  TotalPay\n" +
+                        "SELECT       start_date, SUM(net_pay)\n" +
+                        "FROM         Payroll\n" +
+                        "GROUP BY     start_date";
 
             }
         } else {
@@ -150,9 +151,10 @@ export default class Communicator {
         return new Promise(function (resolve, reject) {
             connection.execute(SQLStr, {}, {
                 fetchInfo: {
-                    JOIN_DATE:  {type: Communicator.oracledb.STRING},
-                    START_DATE: {type: Communicator.oracledb.STRING},
-                    END_DATE:   {type: Communicator.oracledb.STRING}
+                    JOIN_DATE:        {type: Communicator.oracledb.STRING},
+                    START_DATE:       {type: Communicator.oracledb.STRING},
+                    END_DATE:         {type: Communicator.oracledb.STRING},
+                    DATE_TRANSACTION: {type: Communicator.oracledb.STRING}
                 }
             }, function (err: Error, result: any) {
                 if (err) {

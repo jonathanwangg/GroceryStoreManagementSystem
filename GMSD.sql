@@ -50,7 +50,7 @@ CREATE TABLE Payroll (
     employee_id INT NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
-    hours_worked NOT NULL,
+    hours_worked FLOAT NOT NULL,
     deductions FLOAT,
     gross_pay FLOAT NOT NULL,
     net_pay FLOAT NOT NULL,

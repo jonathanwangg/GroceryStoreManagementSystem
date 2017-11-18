@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 var Dictionary_1 = require("./Dictionary");
 var Communicator = (function () {
     function Communicator() {
@@ -71,10 +70,11 @@ var Communicator = (function () {
                         "FROM Transaction t, ReceivesReceipt r, Inventory i\n" +
                         "WHERE t.transaction_id = r.transaction_id and r.sku = i.sku and t.transaction_id =" + t_id + "and r.sku = " + sku;
                     break;
-                case "find_date_of_transaction_for_customer":
-                    return "SELECT date_transaction \n" +
-                        "FROM ReceivesReciept R, Transaction T \n" +
-                        "WHERE R.transaction_id = T.transaction_id AND R.membership_id = 3";
+                case "find_transaction_date":
+                    SQLStr += "SELECT date_transaction \n" +
+                        "FROM Transaction \n" +
+                        "WHERE transaction_id  = " + data.inputs.transaction_id;
+                    break;
                 case "employee_net_pay_amount":
                     return "SELECT employee_id, net_pay \n" +
                         "FROM Employee E, Payroll P \n" +
@@ -112,7 +112,8 @@ var Communicator = (function () {
                 fetchInfo: {
                     JOIN_DATE: { type: Communicator.oracledb.STRING },
                     START_DATE: { type: Communicator.oracledb.STRING },
-                    END_DATE: { type: Communicator.oracledb.STRING }
+                    END_DATE: { type: Communicator.oracledb.STRING },
+                    DATE_TRANSACTION: { type: Communicator.oracledb.STRING }
                 }
             }, function (err, result) {
                 if (err) {
@@ -294,14 +295,15 @@ var Communicator = (function () {
         }
         return orderStr.substring(0, orderStr.lastIndexOf(", "));
     };
-    Communicator.oracledb = require("oracledb");
-    Communicator.dbConfig = require("./dbconfig.js");
-    Communicator.setting = {
-        user: Communicator.dbConfig.user,
-        password: Communicator.dbConfig.password,
-        connectString: Communicator.dbConfig.connectString
-    };
     return Communicator;
 }());
+Communicator.oracledb = require("oracledb");
+Communicator.dbConfig = require("./dbconfig.js");
+Communicator.setting = {
+    user: Communicator.dbConfig.user,
+    password: Communicator.dbConfig.password,
+    connectString: Communicator.dbConfig.connectString
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Communicator;
 //# sourceMappingURL=Communicator.js.map

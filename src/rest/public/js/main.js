@@ -18,16 +18,17 @@ var url = "http://localhost:4321", PKNK = {
 }, customQueryDict = {
     max_pay: PKNK.employeePK.concat(PKNK.employeeNK),
     sales_target: PKNK.employeePK.concat(PKNK.employeeNK).concat(["target"]),
-    process_transaction: ["transaction_id", "date_transaction", "payment_type", "employee_id", "quantity_customer",
-        "quantity_inventory", "membership_id"],
-    find_date_of_transaction_for_customer: ["date_transaction"],
+    process_transaction: ["transaction_id", "date_transaction", "payment_type", "employee_id",
+        "quantity_customer", "quantity_inventory", "membership_id"],
+    find_transaction_date: ["date_transaction"],
     employee_net_pay_amount: ["employee_id", "net_pay"],
     supplier_product_amount: ["sku", "delivery_quantity"],
     total_pay_view: ["start_date", "SUM(net_pay)"]
 }, customQueryInput = {
     max_pay: [],
     sales_target: ["target"],
-    process_transaction: ["transaction_id", "employee_id", "membership_id", "payment_type", "sku", "quantity"]
+    process_transaction: ["transaction_id", "employee_id", "membership_id", "payment_type", "sku", "quantity"],
+    find_transaction_date: ["transaction_id"]
 }, type = {
     membership_id: "INT",
     first_name: "VARCHAR2(40)",

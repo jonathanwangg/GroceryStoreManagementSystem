@@ -27,20 +27,23 @@ let url: string = "http://localhost:4321",
         product:  PKNK.productPK.concat(PKNK.productNK),
         supplier: PKNK.supplierPK.concat(PKNK.supplierNK)
     },
+    //put columns you want displayed here
     customQueryDict: Object = {
-        max_pay:             PKNK.employeePK.concat(PKNK.employeeNK),
-        sales_target:        PKNK.employeePK.concat(PKNK.employeeNK).concat(["target"]),
-        process_transaction: ["transaction_id", "date_transaction", "payment_type", "employee_id", "quantity_customer",
-                              "quantity_inventory", "membership_id"],
-        find_date_of_transaction_for_customer: ["date_transaction"],
+        max_pay:                 PKNK.employeePK.concat(PKNK.employeeNK),
+        sales_target:            PKNK.employeePK.concat(PKNK.employeeNK).concat(["target"]),
+        process_transaction:     ["transaction_id", "date_transaction", "payment_type", "employee_id",
+            "quantity_customer", "quantity_inventory", "membership_id"],
+        find_transaction_date:   ["date_transaction"],
         employee_net_pay_amount: ["employee_id", "net_pay"],
-        supplier_product_amount: ["sku","delivery_quantity"],
-        total_pay_view: ["start_date", "SUM(net_pay)"]
+        supplier_product_amount: ["sku", "delivery_quantity"],
+        total_pay_view:          ["start_date", "SUM(net_pay)"]
     },
+    //these are the user inputs required by the hard query
     customQueryInput: Object = {
-        max_pay:             [],
-        sales_target:        ["target"],
-        process_transaction: ["transaction_id", "employee_id", "membership_id", "payment_type", "sku", "quantity"]
+        max_pay:               [],
+        sales_target:          ["target"],
+        process_transaction:   ["transaction_id", "employee_id", "membership_id", "payment_type", "sku", "quantity"],
+        find_transaction_date: ["transaction_id"]
     },
     type: Object = {
         /* Customer */
