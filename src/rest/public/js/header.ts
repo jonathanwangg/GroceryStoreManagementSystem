@@ -53,17 +53,17 @@ let url: string = "http://localhost:4321",
     type: Object = {
         /* Customer */
         membership_id: "INT",
-        first_name: "VARCHAR2(40)",
-        last_name: "VARCHAR2(40)",
-        address: "VARCHAR2(40)",
-        phone_number: "VARCHAR2(40)",
+        first_name: "VARCHAR(40)",
+        last_name: "VARCHAR(40)",
+        address: "VARCHAR(40)",
+        phone_number: "VARCHAR(40)",
         join_date: "DATE",
 
         /* Employee */
         employee_id: "INT",
-        //first_name: "VARCHAR2(40)",
-        //last_name:  "VARCHAR2(40)",
-        sin: "VARCHAR2(40)",
+        //first_name: "VARCHAR(40)",
+        //last_name:  "VARCHAR(40)",
+        sin: "VARCHAR(40)",
         wage: "FLOAT",
         position: "VARCHAR(40)",
 
@@ -78,15 +78,15 @@ let url: string = "http://localhost:4321",
 
         /* Product */
         sku: "INT",
-        product_name: "VARCHAR2(40)",
+        product_name: "VARCHAR(40)",
         cost: "FLOAT",
         days_to_expiry: "INT",
 
         /* Supplier */
-        supplier_name: "VARCHAR2(40)",
-        location: "VARCHAR2(40)",
-        //phone_number:  "VARCHAR2(40)"
+        supplier_name: "VARCHAR(40)",
+        location: "VARCHAR(40)",
+        //phone_number:  "VARCHAR(40)"
 
         /* Custom Queries */
-        target: "NUMBER"
+        target: "FLOAT"
     };

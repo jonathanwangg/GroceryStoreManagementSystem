@@ -76,118 +76,118 @@ export default class Dictionary {
 
     public static type: any = {
         /* Customer */
-        membership_id: "NUMBER",
-        first_name: "VARCHAR2(30)",
-        last_name: "VARCHAR2(30)",
-        address: "VARCHAR2(30)",
-        phone_number: "VARCHAR2(30)",
+        membership_id: "INT",
+        first_name: "VARCHAR(40)",
+        last_name: "VARCHAR(40)",
+        address: "VARCHAR(40)",
+        phone_number: "VARCHAR(40)",
         join_date: "DATE",
 
         /* Employee */
-        employee_id: "NUMBER",
-        // first_name: "VARCHAR2(30)",
-        // last_name: "VARCHAR2(30)",
-        sin: "VARCHAR2(30)",
-        wage: "NUMBER",
-
-        /* Payroll */
-        // employee_id: "NUMBER",
-        start_date: "DATE",
-        end_date: "DATE",
-        hours_worked: "VARCHAR2(30)",
-        deductions: "VARCHAR2(30)",
-        gross_pay: "VARCHAR2(30)",
-        net_pay: "VARCHAR2(30)",
-
-        /* Payroll */
-        // employee_id: "NUMBER",
-        transaction_id: "INT",
-        date_transaction: "DATE",
-        payment_type: "VARCHAR2(40)",
-        // employee_id:      "INT"
-
-        /* Product */
-        sku: "VARCHAR2(30)",
-        cost: "NUMBER",
-        days_to_expiry: "NUMBER",
-        // supplier_name: "VARCHAR2(30)",
-
-        /* Supplier */
-        supplier_name: "VARCHAR2(30)",
-        location: "VARCHAR2(30)",
-        // phone_number: "VARCHAR2(30)"
-
-        /* ReceivesReceipt */
-        // transaction_id: "NUMBER",
-        // sku: "NUMBER",
-        // membership_id: "NUMBER",
-        quantity: "NUMBER",
-
-        /* Processes */
-        // transaction_id: "NUMBER",
-        // employee_id: "NUMBER",
-        // membership_id: "NUMBER",
+        employee_id: "INT",
+        // first_name: "VARCHAR(40)",
+        // last_name: "VARCHAR(40)",
+        sin: "VARCHAR(40)",
+        wage: "FLOAT",
+        position: "VARCHAR(40)",
 
         /* Transaction */
-        // transaction_id: "NUMBER",
-        // date_transaction: "DATE",
-        // payment_type:     "placeholder value", // todo: we said we would be using an enum here?????
-        // employee_id: "NUMBER",
-
-        /* Supply */
-        delivery_id: "NUMBER",
-        // sku: "NUMBER",
-        // supplier_name: "VARCHAR2(30)",
-        // location: "VARCHAR2(30)",
-        delivery_quantity: "NUMBER",
-        bulk_cost: "FLOAT",
-
-        /* Handles */
-        // employee_id: "NUMBER",
-        // sku: "NUMBER",
-        // delivery_id: "NUMBER",
-        // supplier_name: "VARCHAR2(30)",
-        // location: "VARCHAR2(30)",
+        transaction_id: "INT",
+        date_transaction: "DATE",
+        payment_type: "VARCHAR(40)",
+        // employee_id: "INT",
 
         /* Schedule */
-        // employee_id: "NUMBER",
-        date: "DATE",
-        is_holiday: "BIT",
-        start_time: "DATE",          // todo: using DATEDIFF() to compute time between start and end
-        end_time: "DATE",
+        // employee_id: "INT",
+        work_date: "DATE",
+        is_holiday: "VARCHAR(40)",
+        start_time: "VARCHAR(40)",      //TODO: using DATEDIFF() to compute time between start and end
+        end_time: "VARCHAR(40)",
+
+        /* Payroll */
+        // employee_id: "INT",
+        start_date: "DATE",
+        end_date: "DATE",
+        hours_worked: "FLOAT",
+        deductions: "FLOAT",
+        gross_pay: "FLOAT",
+        net_pay: "FLOAT",
+
+        /* Transaction */
+        // transaction_id: "INT",
+        // date_transaction: "DATE",
+        // payment_type: "VARCHAR(40)",     // TODO: we said we would be using an enum here?
+        // employee_id: "INT",
+
+        /* Product */
+        sku: "INT",
+        product_name: "VARCHAR(40)",
+        cost: "FLOAT",
+        days_to_expiry: "INT",
+
+        /* ReceivesReceipt */
+        // transaction_id: "INT",
+        // sku: "INT",
+        // membership_id: "INT",
+        quantity: "INT",
+
+        /* Processes */
+        // transaction_id: "INT",
+        // employee_id: "INT",
+        // membership_id: "INT",
+
+        /* Supplier */
+        supplier_name: "VARCHAR(40)",
+        location: "VARCHAR(40)",
+        // phone_number: "VARCHAR(40)",
+
+        /* Supply */
+        delivery_id: "INT",
+        // sku: "INT",
+        // supplier_name: "VARCHAR(40)",
+        // location: "VARCHAR(40)",
+        delivery_quantity: "INT",
+        bulk_cost: "FLOAT",
 
         /* Inventory */
-        // sku: "NUMBER",
-        // quantity: "NUMBER",
+        // sku: "INT",
+        // quantity: "INT",
+
+        /* Handles */
+        // employee_id: "INT",
+        // sku: "INT",
+        // delivery_id: "INT",
+        // supplier_name: "VARCHAR(40)",
+        // location: "VARCHAR(40)",
 
         /* Modifies */
-        // transaction_id: "NUMBER",
-        // sku: "NUMBER",
+        // transaction_id: "INT",
+        // sku: "INT",
 
         /* Updates */
-        // supplier_name: "VARCHAR2(30)",
-        // location: "VARCHAR2(30)",
-        // delivery_id: "NUMBER",
-        // sku: "NUMBER",
+        // supplier_name: "VARCHAR(40)",
+        // location: "VARCHAR(40)",
+        // delivery_id: "INT",
+        // sku: "INT",
     };
 
     public static populateStr: string =
         "BEGIN\n" +
-        "execute immediate 'DROP TABLE Customer CASCADE CONSTRAINTS';\n"+
-        "execute immediate 'DROP TABLE Employee CASCADE CONSTRAINTS';\n"+
-        "execute immediate 'DROP TABLE Schedule CASCADE CONSTRAINTS';\n"+
-        "execute immediate 'DROP TABLE Payroll CASCADE CONSTRAINTS';\n"+
-        "execute immediate 'DROP TABLE Transaction CASCADE CONSTRAINTS';\n"+
-        "execute immediate 'DROP TABLE Product CASCADE CONSTRAINTS';\n"+
-        "execute immediate 'DROP TABLE ReceivesReceipt CASCADE CONSTRAINTS';\n"+
-        "execute immediate 'DROP TABLE Processes CASCADE CONSTRAINTS';\n"+
-        "execute immediate 'DROP TABLE Supplier CASCADE CONSTRAINTS';\n"+
-        "execute immediate 'DROP TABLE Supply CASCADE CONSTRAINTS';\n"+
-        "execute immediate 'DROP TABLE Inventory CASCADE CONSTRAINTS';\n"+
-        "execute immediate 'DROP TABLE Handles CASCADE CONSTRAINTS';\n"+
-        "execute immediate 'DROP TABLE Modifies CASCADE CONSTRAINTS';\n"+
-        "execute immediate 'DROP TABLE Updates CASCADE CONSTRAINTS';\n"+
-        "execute immediate 'DROP VIEW TotalPay';\n"+
+        "execute immediate 'DROP TABLE Customer CASCADE CONSTRAINTS';\n" +
+        "execute immediate 'DROP TABLE Employee CASCADE CONSTRAINTS';\n" +
+        "execute immediate 'DROP TABLE Schedule CASCADE CONSTRAINTS';\n" +
+        "execute immediate 'DROP TABLE Payroll CASCADE CONSTRAINTS';\n" +
+        "execute immediate 'DROP TABLE Transaction CASCADE CONSTRAINTS';\n" +
+        "execute immediate 'DROP TABLE Product CASCADE CONSTRAINTS';\n" +
+        "execute immediate 'DROP TABLE ReceivesReceipt CASCADE CONSTRAINTS';\n" +
+        "execute immediate 'DROP TABLE Processes CASCADE CONSTRAINTS';\n" +
+        "execute immediate 'DROP TABLE Supplier CASCADE CONSTRAINTS';\n" +
+        "execute immediate 'DROP TABLE Supply CASCADE CONSTRAINTS';\n" +
+        "execute immediate 'DROP TABLE Inventory CASCADE CONSTRAINTS';\n" +
+        "execute immediate 'DROP TABLE Handles CASCADE CONSTRAINTS';\n" +
+        "execute immediate 'DROP TABLE Modifies CASCADE CONSTRAINTS';\n" +
+        "execute immediate 'DROP TABLE Updates CASCADE CONSTRAINTS';\n" +
+        "execute immediate 'DROP VIEW TotalPay';\n" +
         "execute immediate 'CREATE TABLE Customer (\n" +
         "    membership_id INT NOT NULL,\n" +
         "    first_name VARCHAR(40) NOT NULL,\n" +

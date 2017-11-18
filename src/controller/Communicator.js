@@ -110,7 +110,7 @@ var Communicator = (function () {
             case "employee_net_pay":
                 SQLStr += "SELECT E.employee_id, net_pay\n" +
                     "      FROM   Employee E, Payroll P\n" +
-                    "      WHERE  P.start_date = " + data.input.start_date + " AND E.employee_id = "
+                    "      WHERE  P.start_date = '" + data.inputs.start_date + "' AND E.employee_id = "
                     + data.inputs.employee_id;
                 break;
             case "supplier_product_amt":
