@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var Dictionary_1 = require("./Dictionary");
 var Communicator = (function () {
     function Communicator() {
@@ -110,7 +111,7 @@ var Communicator = (function () {
             case "employee_net_pay":
                 SQLStr += "SELECT E.employee_id, net_pay\n" +
                     "      FROM   Employee E, Payroll P\n" +
-                    "      WHERE  E.employee_id = " + data.inputs.employee_id;
+                    "      WHERE  P.start_date = " + data.input.start_date + " AND E.employee_id = " + data.inputs.employee_id;
                 break;
             case "supplier_product_amt":
                 SQLStr += "SELECT A.sku, delivery_quantity\n" +
@@ -337,15 +338,14 @@ var Communicator = (function () {
         }
         return orderStr.substring(0, orderStr.lastIndexOf(", "));
     };
+    Communicator.oracledb = require("oracledb");
+    Communicator.dbConfig = require("./dbconfig.js");
+    Communicator.setting = {
+        user: Communicator.dbConfig.user,
+        password: Communicator.dbConfig.password,
+        connectString: Communicator.dbConfig.connectString
+    };
     return Communicator;
 }());
-Communicator.oracledb = require("oracledb");
-Communicator.dbConfig = require("./dbconfig.js");
-Communicator.setting = {
-    user: Communicator.dbConfig.user,
-    password: Communicator.dbConfig.password,
-    connectString: Communicator.dbConfig.connectString
-};
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Communicator;
 //# sourceMappingURL=Communicator.js.map

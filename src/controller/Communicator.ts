@@ -137,18 +137,19 @@ export default class Communicator {
                     "      FROM   Transaction\n" +
                     "      WHERE  transaction_id = " + data.inputs.transaction_id;
                 break;
-            case "employee_net_pay": //TODO: Which deliverable is this referring to? Output doesn't make sense
+            case "employee_net_pay":
                 SQLStr += "SELECT E.employee_id, net_pay\n" +
                     "      FROM   Employee E, Payroll P\n" +
-                    "      WHERE  E.employee_id = " + data.inputs.employee_id;
+                    "      WHERE  P.start_date = " + data.input.start_date +  " AND E.employee_id = " + data.inputs.employee_id;
+                            // todo: need to hook up the html and textbook for the P.stard_date = data.input.startDate
                 break;
-            case "supplier_product_amt": //TODO: Supplier S is not needed, is this deliverable supposed to deal with 3 tables?
+            case "supplier_product_amt":
                 SQLStr += "SELECT A.sku, delivery_quantity\n" +
                     "      FROM   Supplier S, Supply A, Product P\n" +
                     "      WHERE  S.supplier_name = A.supplier_name AND A.sku = P.sku AND P.sku = "
                     + data.inputs.sku;
                 break;
-            case "total_pay_view": //TODO: What should be displayed to the user from this statement?
+            case "total_pay_view":
                 SQLStr += "CREATE VIEW TotalPay\n" +
                     "      SELECT      start_date, SUM(net_pay) AS net_pay\n" +
                     "      FROM        Payroll\n" +
