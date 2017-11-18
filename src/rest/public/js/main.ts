@@ -29,21 +29,28 @@ let url: string = "http://localhost:4321",
     },
     //put columns you want displayed here
     customQueryDict: Object = {
-        max_pay:                 PKNK.employeePK.concat(PKNK.employeeNK),
-        sales_target:            PKNK.employeePK.concat(PKNK.employeeNK).concat(["target"]),
-        process_transaction:     ["transaction_id", "date_transaction", "payment_type", "employee_id",
-            "quantity_customer", "quantity_inventory", "membership_id"],
-        find_transaction_date:   ["date_transaction"],
-        employee_net_pay_amount: ["employee_id", "net_pay"],
-        supplier_product_amount: ["sku", "delivery_quantity"],
-        total_pay_view:          ["start_date", "SUM(net_pay)"]
+        custom:                [],
+        max_pay:               PKNK.employeePK.concat(PKNK.employeeNK),
+        sales_target:          PKNK.employeePK.concat(PKNK.employeeNK).concat(["target"]),
+        process_transaction:   PKNK.transactionPK.concat(["membership_id", "sku"]).concat(PKNK.receivesReceiptNK).concat(PKNK.inventoryNK),
+        find_transaction_date: ["date_transaction"],
+        employee_net_pay:      ["employee_id", "net_pay"],
+        supplier_product_amt:  ["sku", "delivery_quantity"],
+        total_pay_view:        ["start_date", "net_pay"],
+        transaction:           ["transaction_id", "date_transaction", "payment_type", "employee_id"],
+        inventory:             ["sku", "quantity"],
+        receivesReceipt:       ["transaction_id", "sku", "membership_id", "quantity"]
     },
     //these are the user inputs required by the hard query
     customQueryInput: Object = {
+        custom:                [],
         max_pay:               [],
         sales_target:          ["target"],
         process_transaction:   ["transaction_id", "employee_id", "membership_id", "payment_type", "sku", "quantity"],
-        find_transaction_date: ["transaction_id"]
+        find_transaction_date: ["transaction_id"],
+        employee_net_pay:      ["employee_id"],
+        supplier_product_amt:  ["sku"],
+        total_pay_view:        []
     },
     type: Object = {
         /* Customer */
@@ -95,6 +102,7 @@ function init(): void {
         toggleMethodSelection();
         toggleOperatorSelection();
         pressEnterToUpdateTable();
+        pressEnterToInsertData();
         toggleSort();
         selectEntity();
         selectQuery();
@@ -221,7 +229,7 @@ function selectQuery() {
 
         createInputFields();
         insertTableColumns();
-        getTableData();
+        getQueryData();
     });
 }
 
@@ -229,13 +237,27 @@ function selectQuery() {
  * Retrieves entity data from the database.
  */
 function getQueryData(): any {
+    let query: string = getCustomQuery(),
+        input: Object = getInput();
+
+    if (query === "custom") {
+        return;
+    }
+
+    if (customQueryInput[query].join("") !== ""
+        && Object.keys(input).map(function (key) {
+            return input[key];
+        }).join("") === "") {
+        return;
+    }
+
     return new Promise(function (resolve, reject) {
         return $.ajax({
-            type:        getType(),
+            type:        "POST",
             url:         url + "/get-query",
             data:        JSON.stringify({
-                query:         getCustomQuery(),
-                inputs:        getInput(),
+                query:         query,
+                inputs:        input,
                 specification: getSpecification()
             }),
             contentType: "application/json; charset=utf-8"
@@ -299,7 +321,7 @@ function toggleSort() {
         that.removeClass(isAscending ? "fa-chevron-up" : "fa-chevron-down")
             .addClass(isAscending ? "fa-chevron-down" : "fa-chevron-up");
 
-        getTableData();
+        isCustomQuery() ? getQueryData() : getTableData();
     })
 }
 
@@ -307,13 +329,27 @@ function toggleSort() {
  * Press enter to update tables in text fields.
  */
 function pressEnterToUpdateTable() {
-    $("table input").keypress(function (event: any) {
+    $("table").on("keyup", "input", function (event: any) {
+        //13 is enter key
+        if (event.which !== 13) {
+            return;
+        }
+        console.log(getCustomQuery());
+        getCustomQuery() ? getQueryData() : getTableData();
+    });
+}
+
+/**
+ * Press enter to insert input data.
+ */
+function pressEnterToInsertData() {
+    $("#data-container").on("keyup", "input", function (event: any) {
         //13 is enter key
         if (event.which !== 13) {
             return;
         }
 
-        $("#selected-entity").css("display") === "none" ? getQueryData() : getTableData();
+        getCustomQuery() ? getQueryData() : sendData();
     });
 }
 
@@ -479,15 +515,9 @@ function getAttributes(): string[] {
  * Sends client data to server for conversion into SQL statements.
  */
 function sendData(): any {
-    console.log(JSON.stringify({
-        method: getMethod(),
-        entity: getEntity(),
-        inputs: getInput()
-    }));
-
     return new Promise(function (resolve, reject) {
         return $.ajax({
-            type:        getType(),
+            type:        "POST",
             url:         url + "/send-data",
             data:        JSON.stringify({
                 method: getMethod(),
@@ -618,7 +648,7 @@ function buttonFeedback(success: boolean): void {
 function getTableData(): any {
     return new Promise(function (resolve, reject) {
         return $.ajax({
-            type:        getType(),
+            type:        "POST",
             url:         url + "/update-table",
             data:        JSON.stringify(getSpecification()),
             contentType: "application/json; charset=utf-8"
@@ -645,28 +675,6 @@ function updateTable(res: any): void {
 
     $("tbody").html(HTMLStr);
     setDragTable();
-}
-
-/**
- * Returns the HTTP method type.
- */
-function getType(): string {
-    //TODO: Fix the HTTP methods
-    // switch ($("#selected-method").html()) {
-    //     case "Insert":
-    //         return "POST";
-    //     case "Update":
-    //         return "PUT";
-    //     case "Delete":
-    //         return "DELETE";
-    //     case "SELECT":
-    //         return "GET";
-    //     case "Create":
-    //         return "WHAT?"; //TODO: Fix this
-    //     case "Drop":
-    //         return "WHAT?"; //TODO: Fix this
-    // }
-    return "POST";
 }
 
 /**

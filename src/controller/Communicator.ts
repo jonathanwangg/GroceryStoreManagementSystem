@@ -68,63 +68,80 @@ export default class Communicator {
     public static getHardQuery(data: any): string {
         let SQLStr: string = "";
 
-        if (data.specification.inputs.join("") === "") {
-            switch (data.query) {
-                case "max_pay":
-                    SQLStr = "SELECT *\n" +
-                        "FROM employee\n" +
-                        "WHERE wage >= ALL (SELECT wage\n" +
-                        "FROM employee)";
-                    break;
-                case "sales_target":
-                    SQLStr = "select e.*, result.target from employee e, " +
-                        "(select e.employee_id AS id, SUM(r.quantity) AS target from employee e, processes p, receivesreceipt r " +
-                        "where e.employee_id = p.employee_id AND r.transaction_id = p.transaction_id GROUP BY e.employee_id HAVING SUM(r.quantity)>" +
-                        data.inputs['target'] + ") result where result.id = e.employee_id"
-                    break;
-                case "process_transaction":
-                    let t_id: number = data.inputs["transaction_id"];
-                    let m_id: number = data.inputs["membership_id"];
-                    let e_id: number = data.inputs["employee_id"];
-                    let p_type: string = data.inputs["payment_type"];
-                    let sku: number = data.inputs["sku"];
-                    let quantity: number = data.inputs["quantity"];
-                    let updated_quantity = 5 - quantity; //TODO: get inventory quantity from database
-                    console.log("PROCESS TRANSACTION");
+        console.log();
 
-                    SQLStr += "INSERT INTO Transaction VALUES (" + m_id + ",'2017-11-18'," + p_type + "," + e_id + ");\n" +
-                        "INSERT INTO ReceivesReceipt VALUES (" + t_id + "," + sku + "," + m_id + "," + quantity + ");\n" +
-                        "UPDATE Inventory SET quantity = " + updated_quantity + " where SKU = " + sku + ");\n" +
-                        "INSERT INTO Processes VALUES (" + t_id + "," + e_id + "," + m_id + ");\n" +
-                        "SELECT t.transaction_id, t.date_transaction, t.payment_type, t.employee_id, r.quantity, i.quantity, r.membership_id\n" +
-                        "FROM Transaction t, ReceivesReceipt r, Inventory i\n" +
-                        "WHERE t.transaction_id = r.transaction_id and r.sku = i.sku and t.transaction_id =" + t_id + "and r.sku = " + sku;
-                    break;
-                case "find_transaction_date":
-                    SQLStr += "SELECT date_transaction \n" +
-                        "FROM Transaction \n" +
-                        "WHERE transaction_id  = " + data.inputs.transaction_id; // todo: user-input
-                    break;
-                case "employee_net_pay_amount":
-                    return "SELECT employee_id, net_pay \n" +
-                        "FROM Employee E, Payroll P \n" +
-                        "WHERE E.employee_id = 3";  // todo: user-input in place of 3
-                case "supplier_product_amount":
-                    return "SELECT sku, delivery_quantity \n" +
-                        "FROM Supplier S, Supply A, Product P \n" +
-                        "WHERE S.supplier_name = A.supplier_name AND" +
-                        "A.sku = P.sku AND P.sku = 3"; // todo: user-input in place of 3
-                case "total_pay_view":
-                    return "CREATE VIEW  TotalPay\n" +
-                        "SELECT       start_date, SUM(net_pay)\n" +
-                        "FROM         Payroll\n" +
-                        "GROUP BY     start_date";
+        switch (data.query) {
+            case "max_pay":
+                SQLStr += "SELECT *\n" +
+                    "   FROM   Employee\n" +
+                    "   WHERE  wage >= ALL (SELECT wage\n" +
+                    "                       FROM   employee)";
+                break;
+            case "sales_target":
+                SQLStr += "SELECT e.*, result.target\n" +
+                    "   FROM   Employee e, (SELECT   e.employee_id AS id, SUM(r.quantity) AS target\n" +
+                    "                       FROM     Employee e, Processes p, ReceivesReceipt r\n" +
+                    "                       WHERE    e.employee_id = p.employee_id AND r.transaction_id = p.transaction_id\n" +
+                    "                       GROUP BY e.employee_id\n" +
+                    "                       HAVING   SUM(r.quantity) > " + data.inputs["target"] + ") result\n" +
+                    "   WHERE  result.id = e.employee_id";
+                break;
+            case "process_transaction":
+                let t_id = data.inputs["transaction_id"],
+                    m_id = data.inputs["membership_id"],
+                    e_id = data.inputs["employee_id"],
+                    p_type = data.inputs["payment_type"],
+                    sku = data.inputs["sku"],
+                    quantity = data.inputs["quantity"],
+                    updated_quantity = 5 - quantity; //TODO: get inventory quantity from database
+                console.log("PROCESS TRANSACTION");
 
-            }
-        } else {
-            //CUSTOM QUERY WITH USER INPUT IN TABLE FILTERS
+                // SQLStr +=
+                //     "INSERT INTO Transaction VALUES (" + t_id + ", '2017-11-18'," + "'" + p_type + "'" +  "," + e_id + ");\n" +
+                //     "INSERT INTO ReceivesReceipt VALUES (" + t_id + ", " + sku + ", " + m_id + ", " + quantity + ");\n" +
+                //     "UPDATE Inventory SET quantity = " + updated_quantity + " where SKU = " + sku + ";\n" +
+                //     "INSERT INTO Processes VALUES (" + t_id + "," + e_id + "," + m_id + ");\n" +
+                //     "INSERT INTO Modifies VALUES (" + t_id + ", " + sku + ");\n" +
+                //     "SELECT t.transaction_id, t.date_transaction, t.payment_type, t.employee_id, r.quantity, i.quantity, r.membership_id" +
+                //     "FROM Transaction t, ReceivesReceipt r, Inventory i" +
+                //     "WHERE t.transaction_id = r.transaction_id and r.sku = i.sku and t.transaction_id =" + t_id + " and r.sku = " + sku;
+                SQLStr +=
+                    "INSERT INTO Customer VALUES (10,'Lea','Steinhaus','80 Maplewood Dr #345','905-618-8258','2011-11-05'); commit;";
+                // "INSERT INTO Transaction VALUES (21,'2017-11-18','cash',10);\n commit;\n"+
+                // "INSERT INTO ReceivesReceipt VALUES (21,6891,5,3);\n commit;\n" +
+                // "UPDATE Inventory SET quantity = 2 where SKU = 6891;\n commit;\n" +
+                // "INSERT INTO Processes VALUES (21,10,5);\n commit;\n" +
+                // "INSERT INTO Modifies VALUES (21,6891);\n commit;\n" +
+                // "SELECT t.*, r.membership_id, r.sku, r.quantity, i.quantity " +
+                // "FROM Transaction t, ReceivesReceipt r, Inventory i " +
+                // "WHERE t.transaction_id = 21 and r.sku = 6891 and t.transaction_id = r.transaction_id and i.sku = r.sku"
+                break;
+            case "find_transaction_date":
+                SQLStr += "SELECT date_transaction\n" +
+                    "      FROM   Transaction\n" +
+                    "      WHERE  transaction_id  = " + data.inputs.transaction_id;
+                break;
+            case "employee_net_pay": //TODO: Which deliverable is this referring to? Output doesn't make sense
+                SQLStr += "SELECT E.employee_id, net_pay\n" +
+                    "      FROM   Employee E, Payroll P\n" +
+                    "      WHERE  E.employee_id = " + data.inputs.employee_id;
+                break;
+            case "supplier_product_amt": //TODO: Supplier S is not needed, is this deliverable supposed to deal with 3 tables?
+                SQLStr += "SELECT A.sku, delivery_quantity\n" +
+                    "      FROM   Supplier S, Supply A, Product P\n" +
+                    "      WHERE  S.supplier_name = A.supplier_name AND A.sku = P.sku AND P.sku = "
+                    + data.inputs.sku;
+                break;
+            case "total_pay_view": //TODO: What should be displayed to the user from this statement?
+                SQLStr += "CREATE VIEW TotalPay\n" +
+                    "      SELECT      start_date, SUM(net_pay) AS net_pay\n" +
+                    "      FROM        Payroll\n" +
+                    "      GROUP BY    start_date";
+                break;
         }
 
+        SQLStr = Communicator.getQueryWHERE(SQLStr, data.specification.size, data.specification.attributes,
+            data.specification.operators, data.specification.inputs, data.specification.isAscendings);
         console.log(SQLStr);
         return SQLStr;
     }
@@ -222,20 +239,16 @@ export default class Communicator {
      * Converts the given Object into SQL.
      */
     public static getSQLStr(data: any): string {
-        let SQLStr: string = "",
-            entity: string = data.entity,
+        let entity: string = data.entity,
             inputs: Object = data.inputs;
 
         switch (data.method) {
             case "create":
-                SQLStr += Communicator.create(entity);
-                break;
+                return Communicator.create(entity);
             case "drop":
-                SQLStr += "DROP TABLE " + entity;
-                break;
+                return "DROP TABLE " + entity;
             case "insert":
-                SQLStr += Communicator.insert(entity, inputs);
-                break;
+                return Communicator.insert(entity, inputs);
             case "select":
                 //SELECT allColumns FROM entity
                 let map: Object = {};
@@ -248,7 +261,7 @@ export default class Communicator {
                     }
                 });
 
-                SQLStr += "SELECT " + data.attributes.join(", ") + "\nFROM " + data.entity
+                return "SELECT " + data.attributes.join(", ") + "\nFROM " + data.entity
                     + Communicator.getWHERE(Object.keys(map).length, Object.keys(map), data.operators.filter(function (value: any) {
                             return value !== 0;
                         }),
@@ -256,24 +269,19 @@ export default class Communicator {
                             return map[key];
                         }))
                     + Communicator.getORDERBY(data.size, data.attributes, data.isAscendings);
-                break;
             case "update":
-                SQLStr += Communicator.update(entity, inputs);
-                break;
+                return Communicator.update(entity, inputs);
             case "delete":
                 let PK = Dictionary.PKNK[entity + "PK"];
-                SQLStr += "DELETE FROM " + data.entity
+
+                return "DELETE FROM " + data.entity
                     + Communicator.getWHERE(PK.length, PK,
                         PK.map(function (key: any) {
                             return Dictionary.type[key] === "NUMBER" ? '=' : 'A';
                         }), PK.map(function (key: string) {
                             return inputs[key];
                         }));
-                break;
         }
-
-        console.log(SQLStr + "\n"); //TODO: Delete this
-        return SQLStr;
     }
 
     /**
@@ -348,9 +356,30 @@ export default class Communicator {
     }
 
     /**
+     * Constructs WHERE statement for hard queries.
+     */
+    public static getQueryWHERE(SQLStr: string, size: number, attributes: string[], operators: string[], inputs: string[], isAscendings: boolean[]): string {
+        if (inputs.join("") === "") {
+            return "SELECT " + attributes.join(", ") + "\nFROM (" + SQLStr + ")" + Communicator.getORDERBY(size, attributes, isAscendings);
+        }
+
+        let whereArr: string[] = [];
+
+        for (let j: number = 0; j < size; j++) {
+            if (inputs[j] !== "") {
+                whereArr.push(Communicator.getWHERECondition(attributes[j], operators[j], inputs[j]));
+            }
+        }
+
+        // return "WHERE " + whereArr.join(" AND ");
+        return "SELECT " + attributes.join(", ") + "\nFROM (" + SQLStr + ")\nWHERE " + whereArr.join(" AND ")
+            + Communicator.getORDERBY(size, attributes, isAscendings);
+    }
+
+    /**
      * Constructs a subcondition for WHERE.
      */
-    public static getWHERECondition(attribute: string, operator: string, input: string) {
+    public static getWHERECondition(attribute: string, operator: string, input: string): string {
         switch (operator) {
             case "=":
                 return attribute + " = " + input;

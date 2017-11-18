@@ -16,19 +16,26 @@ var url = "http://localhost:4321", PKNK = {
     product: PKNK.productPK.concat(PKNK.productNK),
     supplier: PKNK.supplierPK.concat(PKNK.supplierNK)
 }, customQueryDict = {
+    custom: [],
     max_pay: PKNK.employeePK.concat(PKNK.employeeNK),
     sales_target: PKNK.employeePK.concat(PKNK.employeeNK).concat(["target"]),
-    process_transaction: ["transaction_id", "date_transaction", "payment_type", "employee_id",
-        "quantity_customer", "quantity_inventory", "membership_id"],
+    process_transaction: PKNK.transactionPK.concat(["membership_id", "sku"]).concat(PKNK.receivesReceiptNK).concat(PKNK.inventoryNK),
     find_transaction_date: ["date_transaction"],
-    employee_net_pay_amount: ["employee_id", "net_pay"],
-    supplier_product_amount: ["sku", "delivery_quantity"],
-    total_pay_view: ["start_date", "SUM(net_pay)"]
+    employee_net_pay: ["employee_id", "net_pay"],
+    supplier_product_amt: ["sku", "delivery_quantity"],
+    total_pay_view: ["start_date", "net_pay"],
+    transaction: ["transaction_id", "date_transaction", "payment_type", "employee_id"],
+    inventory: ["sku", "quantity"],
+    receivesReceipt: ["transaction_id", "sku", "membership_id", "quantity"]
 }, customQueryInput = {
+    custom: [],
     max_pay: [],
     sales_target: ["target"],
     process_transaction: ["transaction_id", "employee_id", "membership_id", "payment_type", "sku", "quantity"],
-    find_transaction_date: ["transaction_id"]
+    find_transaction_date: ["transaction_id"],
+    employee_net_pay: ["employee_id"],
+    supplier_product_amt: ["sku"],
+    total_pay_view: []
 }, type = {
     membership_id: "INT",
     first_name: "VARCHAR2(40)",
@@ -63,6 +70,7 @@ function init() {
         toggleMethodSelection();
         toggleOperatorSelection();
         pressEnterToUpdateTable();
+        pressEnterToInsertData();
         toggleSort();
         selectEntity();
         selectQuery();
@@ -136,17 +144,27 @@ function selectQuery() {
         $("#queries").css("display", "none");
         createInputFields();
         insertTableColumns();
-        getTableData();
+        getQueryData();
     });
 }
 function getQueryData() {
+    var query = getCustomQuery(), input = getInput();
+    if (query === "custom") {
+        return;
+    }
+    if (customQueryInput[query].join("") !== ""
+        && Object.keys(input).map(function (key) {
+            return input[key];
+        }).join("") === "") {
+        return;
+    }
     return new Promise(function (resolve, reject) {
         return $.ajax({
-            type: getType(),
+            type: "POST",
             url: url + "/get-query",
             data: JSON.stringify({
-                query: getCustomQuery(),
-                inputs: getInput(),
+                query: query,
+                inputs: input,
                 specification: getSpecification()
             }),
             contentType: "application/json; charset=utf-8"
@@ -192,15 +210,24 @@ function toggleSort() {
         var isAscending = that.hasClass("fa-chevron-up");
         that.removeClass(isAscending ? "fa-chevron-up" : "fa-chevron-down")
             .addClass(isAscending ? "fa-chevron-down" : "fa-chevron-up");
-        getTableData();
+        isCustomQuery() ? getQueryData() : getTableData();
     });
 }
 function pressEnterToUpdateTable() {
-    $("table input").keypress(function (event) {
+    $("table").on("keyup", "input", function (event) {
         if (event.which !== 13) {
             return;
         }
-        $("#selected-entity").css("display") === "none" ? getQueryData() : getTableData();
+        console.log(getCustomQuery());
+        getCustomQuery() ? getQueryData() : getTableData();
+    });
+}
+function pressEnterToInsertData() {
+    $("#data-container").on("keyup", "input", function (event) {
+        if (event.which !== 13) {
+            return;
+        }
+        getCustomQuery() ? getQueryData() : sendData();
     });
 }
 function createInputFields() {
@@ -321,14 +348,9 @@ function getAttributes() {
     }
 }
 function sendData() {
-    console.log(JSON.stringify({
-        method: getMethod(),
-        entity: getEntity(),
-        inputs: getInput()
-    }));
     return new Promise(function (resolve, reject) {
         return $.ajax({
-            type: getType(),
+            type: "POST",
             url: url + "/send-data",
             data: JSON.stringify({
                 method: getMethod(),
@@ -412,7 +434,7 @@ function buttonFeedback(success) {
 function getTableData() {
     return new Promise(function (resolve, reject) {
         return $.ajax({
-            type: getType(),
+            type: "POST",
             url: url + "/update-table",
             data: JSON.stringify(getSpecification()),
             contentType: "application/json; charset=utf-8"
@@ -434,9 +456,6 @@ function updateTable(res) {
     }).join("");
     $("tbody").html(HTMLStr);
     setDragTable();
-}
-function getType() {
-    return "POST";
 }
 function getInput() {
     var inputObj = {};
