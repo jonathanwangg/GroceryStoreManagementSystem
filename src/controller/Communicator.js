@@ -28,6 +28,38 @@ var Communicator = (function () {
     };
     Communicator.getQueryData = function (data) {
         return new Promise(function (resolve, reject) {
+            if (data.query === "process_transaction") {
+                var inputs = data.inputs, block = "BEGIN\n" +
+                    "INSERT INTO Transaction VALUES (" + inputs["transaction_id"] + ", '2017-11-18', '"
+                    + inputs["payment_type"] + "', " + inputs["employee_id"] + ");\n" +
+                    "INSERT INTO ReceivesReceipt VALUES (" + inputs["transaction_id"] + ", " + inputs["sku"] + ", "
+                    + inputs["membership_id"] + ", " + inputs["quantity"] + ");\n" +
+                    "UPDATE Inventory SET quantity = quantity - " + inputs["quantity"] + "\n"
+                    + "WHERE SKU = " + inputs["sku"] + ";\n" +
+                    "INSERT INTO Processes VALUES (" + inputs["transaction_id"] + ", " + inputs["employee_id"]
+                    + ", " + inputs["membership_id"] + ");\n" +
+                    "INSERT INTO Modifies VALUES (" + inputs["transaction_id"] + ", " + inputs["sku"] + ");\n" +
+                    "END;";
+                return Communicator.communicate(block)
+                    .then(function () {
+                    return Communicator.communicate(Communicator.getHardQuery(data))
+                        .then(function (res) {
+                        return resolve(res);
+                    })
+                        .catch(function (err) {
+                        return reject(err);
+                    });
+                })
+                    .catch(function () {
+                    return Communicator.communicate(Communicator.getHardQuery(data))
+                        .then(function (res) {
+                        return resolve(res);
+                    })
+                        .catch(function (err) {
+                        return reject(err);
+                    });
+                });
+            }
             Communicator.communicate(Communicator.getHardQuery(data))
                 .then(function (res) {
                 return resolve(res);
@@ -56,12 +88,20 @@ var Communicator = (function () {
                     "   WHERE  result.id = e.employee_id";
                 break;
             case "process_transaction":
-                var t_id = data.inputs["transaction_id"], m_id = data.inputs["membership_id"], e_id = data.inputs["employee_id"], p_type = data.inputs["payment_type"], sku = data.inputs["sku"], quantity = data.inputs["quantity"], updated_quantity = 5 - quantity;
-                console.log("PROCESS TRANSACTION");
-                return "BEGIN\n" +
-                    "INSERT INTO Customer VALUES (20,'Lea','Steinhaus','80 Maplewood Dr #345','905-618-8258','2011-11-05')\n" +
-                    "INSERT INTO Customer VALUES (21,'Lea','Steinhaus','80 Maplewood Dr #345','905-618-8258','2011-11-05')\n" +
-                    "END";
+                SQLStr += "SELECT " + data.specification.attributes.map(function (attribute) {
+                    if (attribute === "quantity_inventory") {
+                        return Dictionary_1.default.processTransactions[attribute] + " AS quantity_inventory";
+                    }
+                    else if (attribute === "quantity_receipt") {
+                        return Dictionary_1.default.processTransactions[attribute] + " AS quantity_receipt";
+                    }
+                    else {
+                        return Dictionary_1.default.processTransactions[attribute];
+                    }
+                }).join(", ") + "\nFROM Transaction t, ReceivesReceipt r, Inventory i\n" +
+                    "WHERE t.transaction_id = " + data.inputs["transaction_id"] + " AND r.sku = " + data.inputs["sku"] +
+                    " AND t.transaction_id = r.transaction_id AND i.sku = r.sku";
+                break;
             case "find_transaction_date":
                 SQLStr += "SELECT date_transaction\n" +
                     "      FROM   Transaction\n" +
@@ -86,7 +126,6 @@ var Communicator = (function () {
                 break;
         }
         SQLStr = Communicator.getQueryWHERE(SQLStr, data.specification.size, data.specification.attributes, data.specification.operators, data.specification.inputs, data.specification.isAscendings);
-        console.log(SQLStr);
         return SQLStr;
     };
     Communicator.connect = function () {

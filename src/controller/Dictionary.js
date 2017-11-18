@@ -50,6 +50,16 @@ Dictionary.objects = {
     modifies: Dictionary.PKNK.modifiesPK.concat(Dictionary.PKNK.modifiesNK),
     updates: Dictionary.PKNK.updatesPK.concat(Dictionary.PKNK.updatesNK)
 };
+Dictionary.processTransactions = {
+    transaction_id: "t.transaction_id",
+    date_transaction: "t.date_transaction",
+    payment_type: "t.payment_type",
+    employee_id: "t.employee_id",
+    membership_id: "r.membership_id",
+    sku: "r.sku",
+    quantity_inventory: "i.quantity",
+    quantity_receipt: "r.quantity",
+};
 Dictionary.type = {
     membership_id: "NUMBER",
     first_name: "VARCHAR2(30)",

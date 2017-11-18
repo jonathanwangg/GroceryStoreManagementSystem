@@ -215,7 +215,6 @@ function pressEnterToUpdateTable() {
         if (event.which !== 13) {
             return;
         }
-        console.log(getCustomQuery());
         getCustomQuery() ? getQueryData() : getTableData();
     });
 }

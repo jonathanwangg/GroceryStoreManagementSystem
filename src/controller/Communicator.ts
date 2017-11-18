@@ -45,8 +45,43 @@ export default class Communicator {
     /**
      * Hardcoded queries.
      */
-    public static getQueryData(data: string): any {
+    public static getQueryData(data: any): any {
         return new Promise(function (resolve, reject) {
+            if (data.query === "process_transaction") {
+                let inputs: Object = data.inputs,
+                    block: string = "BEGIN\n" +
+                        "INSERT INTO Transaction VALUES (" + inputs["transaction_id"] + ", '2017-11-18', '"
+                        + inputs["payment_type"] + "', " + inputs["employee_id"] + ");\n" +
+                        "INSERT INTO ReceivesReceipt VALUES (" + inputs["transaction_id"] + ", " + inputs["sku"] + ", "
+                        + inputs["membership_id"] + ", " + inputs["quantity"] + ");\n" +
+                        "UPDATE Inventory SET quantity = quantity - " + inputs["quantity"] + "\n"
+                        + "WHERE SKU = " + inputs["sku"] + ";\n" +
+                        "INSERT INTO Processes VALUES (" + inputs["transaction_id"] + ", " + inputs["employee_id"]
+                        + ", " + inputs["membership_id"] + ");\n" +
+                        "INSERT INTO Modifies VALUES (" + inputs["transaction_id"] + ", " + inputs["sku"] + ");\n" +
+                        "END;";
+
+                return Communicator.communicate(block)
+                    .then(function () {
+                        return Communicator.communicate(Communicator.getHardQuery(data))
+                            .then(function (res: any) {
+                                return resolve(res);
+                            })
+                            .catch(function (err: Error) {
+                                return reject(err);
+                            });
+                    })
+                    .catch(function () {
+                        return Communicator.communicate(Communicator.getHardQuery(data))
+                            .then(function (res: any) {
+                                return resolve(res);
+                            })
+                            .catch(function (err: Error) {
+                                return reject(err);
+                            });
+                    });
+            }
+
             Communicator.communicate(Communicator.getHardQuery(data))
                 .then(function (res: any) {
                     return resolve(res);
@@ -85,39 +120,18 @@ export default class Communicator {
                     "   WHERE  result.id = e.employee_id";
                 break;
             case "process_transaction":
-                let t_id = data.inputs["transaction_id"],
-                    m_id = data.inputs["membership_id"],
-                    e_id = data.inputs["employee_id"],
-                    p_type = data.inputs["payment_type"],
-                    sku = data.inputs["sku"],
-                    quantity = data.inputs["quantity"],
-                    updated_quantity = 5 - quantity; //TODO: get inventory quantity from database
-                console.log("PROCESS TRANSACTION");
-
-                // SQLStr +=
-                //     "INSERT INTO Transaction VALUES (" + t_id + ", '2017-11-18'," + "'" + p_type + "'" +  "," + e_id + ");\n" +
-                //     "INSERT INTO ReceivesReceipt VALUES (" + t_id + ", " + sku + ", " + m_id + ", " + quantity + ");\n" +
-                //     "UPDATE Inventory SET quantity = " + updated_quantity + " where SKU = " + sku + ";\n" +
-                //     "INSERT INTO Processes VALUES (" + t_id + "," + e_id + "," + m_id + ");\n" +
-                //     "INSERT INTO Modifies VALUES (" + t_id + ", " + sku + ");\n" +
-                //     "SELECT t.transaction_id, t.date_transaction, t.payment_type, t.employee_id, r.quantity, i.quantity, r.membership_id" +
-                //     "FROM Transaction t, ReceivesReceipt r, Inventory i" +
-                //     "WHERE t.transaction_id = r.transaction_id and r.sku = i.sku and t.transaction_id =" + t_id + " and r.sku = " + sku;
-                return "BEGIN\n" +
-                    "INSERT INTO Customer VALUES (20,'Lea','Steinhaus','80 Maplewood Dr #345','905-618-8258','2011-11-05')\n" +
-                    "INSERT INTO Customer VALUES (21,'Lea','Steinhaus','80 Maplewood Dr #345','905-618-8258','2011-11-05')\n" +
-                    "END";
-                // "INSERT INTO Customer VALUES (16,'Lea','Steinhaus','80 Maplewood Dr #345','905-618-8258','2011-11-05');";
-                // "INSERT INTO Transaction VALUES (21,'2017-11-18','cash',10);\n"+
-                // "INSERT INTO ReceivesReceipt VALUES (21,6891,5,3);\n" +
-                // "UPDATE Inventory SET quantity = 2 where SKU = 6891;\n" +
-                // "INSERT INTO Processes VALUES (21,10,5);\n" +
-                // "INSERT INTO Modifies VALUES (21,6891);\n" +
-                // "SELECT t.*, r.membership_id, r.sku, r.quantity, i.quantity\n" +
-                // "FROM Transaction t, ReceivesReceipt r, Inventory i\n" +
-                // "WHERE t.transaction_id = 19 and r.sku = 1230 and t.transaction_id = r.transaction_id and i.sku = r.sku;";
-                // "SELECT * FROM Customer";
-                // break;
+                SQLStr += "SELECT " + data.specification.attributes.map(function (attribute: string) {
+                        if (attribute === "quantity_inventory") {
+                            return Dictionary.processTransactions[attribute] + " AS quantity_inventory";
+                        } else if (attribute === "quantity_receipt") {
+                            return Dictionary.processTransactions[attribute] + " AS quantity_receipt";
+                        } else {
+                            return Dictionary.processTransactions[attribute];
+                        }
+                    }).join(", ") + "\nFROM Transaction t, ReceivesReceipt r, Inventory i\n" +
+                    "WHERE t.transaction_id = " + data.inputs["transaction_id"] + " AND r.sku = " + data.inputs["sku"] +
+                    " AND t.transaction_id = r.transaction_id AND i.sku = r.sku";
+                break;
             case "find_transaction_date":
                 SQLStr += "SELECT date_transaction\n" +
                     "      FROM   Transaction\n" +
@@ -144,7 +158,7 @@ export default class Communicator {
 
         SQLStr = Communicator.getQueryWHERE(SQLStr, data.specification.size, data.specification.attributes,
             data.specification.operators, data.specification.inputs, data.specification.isAscendings);
-        console.log(SQLStr);
+
         return SQLStr;
     }
 
@@ -196,7 +210,6 @@ export default class Communicator {
             });
         });
     }
-
 
     /**
      * Sends the given SQL command to the database.

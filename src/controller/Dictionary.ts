@@ -18,7 +18,6 @@ export default class Dictionary {
         transactionPK: ["transaction_id"],
         transactionNK: ["date_transaction", "payment_type", "employee_id"],
 
-        //product name not supplier name
         productPK: ["sku"],
         productNK: ["product_name", "cost", "days_to_expiry"],
 
@@ -62,6 +61,17 @@ export default class Dictionary {
         inventory:       Dictionary.PKNK.inventoryPK.concat(Dictionary.PKNK.inventoryNK),
         modifies:        Dictionary.PKNK.modifiesPK.concat(Dictionary.PKNK.modifiesNK),
         updates:         Dictionary.PKNK.updatesPK.concat(Dictionary.PKNK.updatesNK)
+    };
+
+    public static processTransactions: any = {
+        transaction_id: "t.transaction_id",
+        date_transaction: "t.date_transaction",
+        payment_type: "t.payment_type",
+        employee_id: "t.employee_id",
+        membership_id: "r.membership_id",
+        sku: "r.sku",
+        quantity_inventory: "i.quantity",
+        quantity_receipt: "r.quantity",
     };
 
     public static type: any = {
