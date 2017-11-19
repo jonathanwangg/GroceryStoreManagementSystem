@@ -1,4 +1,3 @@
-
 function init(): void {
     $(function () {
         setDragTable();
@@ -573,15 +572,12 @@ function getTableData(): any {
  * Updates the Table HTML with the given response.
  */
 function updateTable(res: any): void {
-    let colSize: number = res.metaData.length;
-    console.log(res);
     let HTMLStr: string = res.rows.map(function (arr: any) {
         let HTMLRowStr: string = "";
 
-        for (let j: number = 0; j < colSize; j++) {
+        for (let j: number = 0; j < res.metaData.length; j++) {
             let colName: string = res.metaData[j].name.toLowerCase();
 
-            console.log(colName + " is a " + type[colName] + ", so it is " + (type[colName] === "FLOAT"));
             HTMLRowStr += "<td>" + (type[colName] === "DECIMAL(19,2)" ? arr[j].toFixed(2) : arr[j]) + "</td>";
         }
 

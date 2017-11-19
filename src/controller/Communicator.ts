@@ -15,8 +15,6 @@ export default class Communicator {
      */
     public static processInput(data: Object): any {
         return new Promise(function (resolve, reject) {
-            console.log(Communicator.getSQLStr(data));
-
             Communicator.communicate(Communicator.getSQLStr(data))
                 .then(function (res: any) {
                     return resolve(res);
@@ -154,10 +152,8 @@ export default class Communicator {
                 break;
         }
 
-        console.log(SQLStr);
-        SQLStr = Communicator.getHardWHERE(SQLStr, data.specification.size, data.specification.attributes,
+        return Communicator.getHardWHERE(SQLStr, data.specification.size, data.specification.attributes,
             data.specification.operators, data.specification.inputs, data.specification.isAscendings);
-        return SQLStr;
     }
 
     /**
