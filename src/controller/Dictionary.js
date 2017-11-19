@@ -112,16 +112,16 @@ Dictionary.populateStr = "BEGIN\n" +
     "execute immediate 'DROP TABLE Updates CASCADE CONSTRAINTS';\n" +
     "execute immediate 'DROP VIEW TotalPay';\n" +
     "execute immediate 'CREATE TABLE Customer (\n" +
-    "    membership_id INT NOT NULL,\n" +
+    "    membership_id INT,\n" +
     "    first_name VARCHAR(40) NOT NULL,\n" +
     "    last_name VARCHAR(40) NOT NULL,\n" +
-    "    address VARCHAR(40) NOT NULL,\n" +
+    "    address VARCHAR(40),\n" +
     "    phone_number VARCHAR(40) NOT NULL,\n" +
     "    join_date DATE NOT NULL,\n" +
     "    PRIMARY KEY(membership_id)\n" +
     ")';\n" +
     "execute immediate 'CREATE TABLE Employee (\n" +
-    "    employee_id INT NOT NULL,\n" +
+    "    employee_id INT,\n" +
     "    first_name VARCHAR(40) NOT NULL,\n" +
     "    last_name VARCHAR(40) NOT NULL,\n" +
     "    sin VARCHAR(40) NOT NULL,\n" +
@@ -130,8 +130,8 @@ Dictionary.populateStr = "BEGIN\n" +
     "    PRIMARY KEY(employee_id)\n" +
     ")';\n" +
     "execute immediate 'CREATE TABLE Schedule (\n" +
-    "    employee_id INT NOT NULL,\n" +
-    "    work_date DATE NOT NULL,\n" +
+    "    employee_id INT,\n" +
+    "    work_date DATE,\n" +
     "    is_holiday VARCHAR(40) NOT NULL,\n" +
     "    start_time VARCHAR(40),\n" +
     "    end_time VARCHAR(40),\n" +
@@ -139,18 +139,18 @@ Dictionary.populateStr = "BEGIN\n" +
     "    FOREIGN KEY(employee_id) REFERENCES Employee(employee_id)\n" +
     ")';\n" +
     "execute immediate 'CREATE TABLE Payroll (\n" +
-    "    employee_id INT NOT NULL,\n" +
-    "    start_date DATE NOT NULL,\n" +
-    "    end_date DATE NOT NULL,\n" +
+    "    employee_id INT,\n" +
+    "    start_date DATE,\n" +
+    "    end_date DATE,\n" +
     "    hours_worked DECIMAL(19,2) NOT NULL,\n" +
     "    deductions DECIMAL(19,2),\n" +
-    "    gross_pay DECIMAL(19,2) NOT NULL,\n" +
+    "    gross_pay DECIMAL(19,2),\n" +
     "    net_pay DECIMAL(19,2) NOT NULL,\n" +
     "    PRIMARY KEY(employee_id, start_date, end_date),\n" +
     "    FOREIGN KEY(employee_id) REFERENCES Employee(employee_id)\n" +
     ")';\n" +
     "execute immediate 'CREATE TABLE Transaction (\n" +
-    "    transaction_id INT NOT NULL,\n" +
+    "    transaction_id INT,\n" +
     "    date_transaction DATE NOT NULL,\n" +
     "    payment_type VARCHAR(40) NOT NULL,\n" +
     "    employee_id INT NOT NULL,\n" +
@@ -158,16 +158,16 @@ Dictionary.populateStr = "BEGIN\n" +
     "    FOREIGN KEY (employee_id) REFERENCES Employee(employee_id)\n" +
     ")';\n" +
     "execute immediate 'CREATE TABLE Product (\n" +
-    "    SKU INT NOT NULL,\n" +
+    "    SKU INT,\n" +
     "    product_name VARCHAR(40) NOT NULL,\n" +
     "    cost DECIMAL(19,2) NOT NULL,\n" +
-    "    days_to_expiry INT NOT NULL,\n" +
+    "    days_to_expiry INT,\n" +
     "    PRIMARY KEY(SKU)\n" +
     ")';\n" +
     "execute immediate 'CREATE TABLE ReceivesReceipt (\n" +
-    "    transaction_id INT NOT NULL,\n" +
-    "    SKU INT NOT NULL,\n" +
-    "    membership_id INT NOT NULL,\n" +
+    "    transaction_id INT,\n" +
+    "    SKU INT,\n" +
+    "    membership_id INT,\n" +
     "    quantity INT NOT NULL,\n" +
     "    PRIMARY KEY(transaction_id, SKU, membership_id),\n" +
     "    FOREIGN KEY(transaction_id) REFERENCES Transaction(transaction_id),\n" +
@@ -175,18 +175,18 @@ Dictionary.populateStr = "BEGIN\n" +
     "    FOREIGN KEY(membership_id) REFERENCES Customer(membership_id)\n" +
     ")';\n" +
     "execute immediate 'CREATE TABLE Processes (\n" +
-    "    transaction_id INT NOT NULL,\n" +
-    "    employee_id INT NOT NULL,\n" +
-    "    membership_id INT NOT NULL,\n" +
+    "    transaction_id INT,\n" +
+    "    employee_id INT,\n" +
+    "    membership_id INT,\n" +
     "    PRIMARY KEY(transaction_id, employee_id, membership_id),\n" +
     "    FOREIGN KEY(transaction_id) REFERENCES Transaction(transaction_id),\n" +
     "    FOREIGN KEY(employee_id) REFERENCES Employee(employee_id),\n" +
     "    FOREIGN KEY(membership_id) REFERENCES Customer(membership_id)\n" +
     ")';\n" +
     "execute immediate 'CREATE TABLE Supplier (\n" +
-    "    supplier_name VARCHAR(40) NOT NULL,\n" +
-    "    location VARCHAR(40) NOT NULL,\n" +
-    "    phone_number VARCHAR(40) NOT NULL,\n" +
+    "    supplier_name VARCHAR(40),\n" +
+    "    location VARCHAR(40),\n" +
+    "    phone_number VARCHAR(40),\n" +
     "    PRIMARY KEY(supplier_name,location)\n" +
     ")';\n" +
     "execute immediate 'CREATE TABLE Supply (\n" +
@@ -194,40 +194,40 @@ Dictionary.populateStr = "BEGIN\n" +
     "    SKU INT,\n" +
     "    supplier_name VARCHAR(40),\n" +
     "    location VARCHAR(40),\n" +
-    "    delivery_quantity INT,\n" +
-    "    bulk_cost DECIMAL(19,2),\n" +
+    "    delivery_quantity INT NOT NULL,\n" +
+    "    bulk_cost DECIMAL(19,2) NOT NULL,\n" +
     "    PRIMARY KEY(delivery_id, SKU, supplier_name, location),\n" +
     "    FOREIGN KEY(SKU) REFERENCES Product(SKU),\n" +
     "    FOREIGN KEY(supplier_name, location) REFERENCES Supplier(supplier_name, location)\n" +
     ")';\n" +
     "execute immediate 'CREATE TABLE Inventory (\n" +
-    "    SKU INT NOT NULL,\n" +
+    "    SKU INT,\n" +
     "    quantity INT NOT NULL,\n" +
     "    PRIMARY KEY(SKU),\n" +
     "    FOREIGN KEY(SKU) REFERENCES Product(SKU)\n" +
     ")';\n" +
     "execute immediate 'CREATE TABLE Handles (\n" +
-    "    employee_id INT NOT NULL,\n" +
-    "    SKU INT NOT NULL,\n" +
-    "    delivery_id INT NOT NULL,\n" +
-    "    supplier_name VARCHAR(40) NOT NULL,\n" +
-    "    location VARCHAR(40) NOT NULL,\n" +
+    "    employee_id INT,\n" +
+    "    SKU INT,\n" +
+    "    delivery_id INT,\n" +
+    "    supplier_name VARCHAR(40),\n" +
+    "    location VARCHAR(40),\n" +
     "    PRIMARY KEY(employee_id, SKU, delivery_id, supplier_name, location),\n" +
     "    FOREIGN KEY(employee_id) REFERENCES Employee(employee_id),\n" +
     "    FOREIGN KEY(SKU, delivery_id, supplier_name, location) REFERENCES Supply(SKU, delivery_id, supplier_name, location)\n" +
     ")';\n" +
     "execute immediate 'CREATE TABLE Modifies (\n" +
-    "    transaction_id INT NOT NULL,\n" +
-    "    SKU INT NOT NULL,\n" +
+    "    transaction_id INT,\n" +
+    "    SKU INT,\n" +
     "    PRIMARY KEY(transaction_id, SKU),\n" +
     "    FOREIGN KEY(transaction_id) REFERENCES Transaction(transaction_id),\n" +
     "    FOREIGN KEY(SKU) REFERENCES Product(SKU)\n" +
     ")';\n" +
     "execute immediate 'CREATE TABLE Updates (\n" +
-    "    supplier_name VARCHAR(40) NOT NULL,\n" +
-    "    location VARCHAR(40) NOT NULL,\n" +
-    "    delivery_id INT NOT NULL,\n" +
-    "    SKU INT NOT NULL,\n" +
+    "    supplier_name VARCHAR(40),\n" +
+    "    location VARCHAR(40),\n" +
+    "    delivery_id INT,\n" +
+    "    SKU INT,\n" +
     "    PRIMARY KEY(supplier_name, location, delivery_id, SKU),\n" +
     "    FOREIGN KEY(delivery_id, supplier_name, location, SKU) REFERENCES Supply(delivery_id, supplier_name, location, SKU)\n" +
     ")';\n" +

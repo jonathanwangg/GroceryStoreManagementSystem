@@ -15,17 +15,17 @@ DROP TABLE Updates          CASCADE CONSTRAINTS;
 DROP VIEW  TotalPay;
 
 CREATE TABLE Customer (
-    membership_id INT NOT NULL,
+    membership_id INT,
     first_name VARCHAR(40) NOT NULL,
     last_name VARCHAR(40) NOT NULL,
-    address VARCHAR(40) NOT NULL,
+    address VARCHAR(40),
     phone_number VARCHAR(40) NOT NULL,
     join_date DATE NOT NULL,
     PRIMARY KEY(membership_id)
 );
 
 CREATE TABLE Employee (
-    employee_id INT NOT NULL,
+    employee_id INT,
     first_name VARCHAR(40) NOT NULL,
     last_name VARCHAR(40) NOT NULL,
     sin VARCHAR(40) NOT NULL,
@@ -35,8 +35,8 @@ CREATE TABLE Employee (
 );
 
 CREATE TABLE Schedule (
-    employee_id INT NOT NULL,
-    work_date DATE NOT NULL,
+    employee_id INT,
+    work_date DATE,
     is_holiday VARCHAR(40) NOT NULL,
     start_time VARCHAR(40),
     end_time VARCHAR(40),
@@ -45,19 +45,19 @@ CREATE TABLE Schedule (
 );
 
 CREATE TABLE Payroll (
-    employee_id INT NOT NULL,
-    start_date DATE NOT NULL,
-    end_date DATE NOT NULL,
+    employee_id INT,
+    start_date DATE,
+    end_date DATE,
     hours_worked DECIMAL(19,2) NOT NULL,
     deductions DECIMAL(19,2),
-    gross_pay DECIMAL(19,2) NOT NULL,
+    gross_pay DECIMAL(19,2),
     net_pay DECIMAL(19,2) NOT NULL,
     PRIMARY KEY(employee_id, start_date, end_date),
     FOREIGN KEY(employee_id) REFERENCES Employee(employee_id)
 );
 
 CREATE TABLE Transaction (
-    transaction_id INT NOT NULL,
+    transaction_id INT,
     date_transaction DATE NOT NULL,
     payment_type VARCHAR(40) NOT NULL,
     employee_id INT NOT NULL,
@@ -66,17 +66,17 @@ CREATE TABLE Transaction (
 );
 
 CREATE TABLE Product (
-    SKU INT NOT NULL,
+    SKU INT,
     product_name VARCHAR(40) NOT NULL,
     cost DECIMAL(19,2) NOT NULL,
-    days_to_expiry INT NOT NULL,
+    days_to_expiry INT,
     PRIMARY KEY(SKU)
 );
 
 CREATE TABLE ReceivesReceipt (
-    transaction_id INT NOT NULL,
-    SKU INT NOT NULL,
-    membership_id INT NOT NULL,
+    transaction_id INT,
+    SKU INT,
+    membership_id INT,
     quantity INT NOT NULL,
     PRIMARY KEY(transaction_id, SKU, membership_id),
     FOREIGN KEY(transaction_id) REFERENCES Transaction(transaction_id),
@@ -85,9 +85,9 @@ CREATE TABLE ReceivesReceipt (
 );
 
 CREATE TABLE Processes (
-    transaction_id INT NOT NULL,
-    employee_id INT NOT NULL,
-    membership_id INT NOT NULL,
+    transaction_id INT,
+    employee_id INT,
+    membership_id INT,
     PRIMARY KEY(transaction_id, employee_id, membership_id),
     FOREIGN KEY(transaction_id) REFERENCES Transaction(transaction_id),
     FOREIGN KEY(employee_id) REFERENCES Employee(employee_id),
@@ -95,9 +95,9 @@ CREATE TABLE Processes (
 );
 
 CREATE TABLE Supplier (
-    supplier_name VARCHAR(40) NOT NULL,
-    location VARCHAR(40) NOT NULL,
-    phone_number VARCHAR(40) NOT NULL,
+    supplier_name VARCHAR(40),
+    location VARCHAR(40),
+    phone_number VARCHAR(40),
     PRIMARY KEY(supplier_name,location)
 );
 
@@ -106,44 +106,44 @@ CREATE TABLE Supply (
     SKU INT,
     supplier_name VARCHAR(40),
     location VARCHAR(40),
-    delivery_quantity INT,
-    bulk_cost DECIMAL(19,2),
+    delivery_quantity INT NOT NULL,
+    bulk_cost DECIMAL(19,2) NOT NULL,
     PRIMARY KEY(delivery_id, SKU, supplier_name, location),
     FOREIGN KEY(SKU) REFERENCES Product(SKU),
     FOREIGN KEY(supplier_name, location) REFERENCES Supplier(supplier_name, location)
 );
 
 CREATE TABLE Inventory (
-    SKU INT NOT NULL,
+    SKU INT,
     quantity INT NOT NULL,
     PRIMARY KEY(SKU),
     FOREIGN KEY(SKU) REFERENCES Product(SKU)
 );
 
 CREATE TABLE Handles (
-    employee_id INT NOT NULL,
-    SKU INT NOT NULL,
-    delivery_id INT NOT NULL,
-    supplier_name VARCHAR(40) NOT NULL,
-    location VARCHAR(40) NOT NULL,
+    employee_id INT,
+    SKU INT,
+    delivery_id INT,
+    supplier_name VARCHAR(40),
+    location VARCHAR(40),
     PRIMARY KEY(employee_id, SKU, delivery_id, supplier_name, location),
     FOREIGN KEY(employee_id) REFERENCES Employee(employee_id),
     FOREIGN KEY(SKU, delivery_id, supplier_name, location) REFERENCES Supply(SKU, delivery_id, supplier_name, location)
 );
 
 CREATE TABLE Modifies (
-    transaction_id INT NOT NULL,
-    SKU INT NOT NULL,
+    transaction_id INT,
+    SKU INT,
     PRIMARY KEY(transaction_id, SKU),
     FOREIGN KEY(transaction_id) REFERENCES Transaction(transaction_id),
     FOREIGN KEY(SKU) REFERENCES Product(SKU)
 );
 
 CREATE TABLE Updates (
-    supplier_name VARCHAR(40) NOT NULL,
-    location VARCHAR(40) NOT NULL,
-    delivery_id INT NOT NULL,
-    SKU INT NOT NULL,
+    supplier_name VARCHAR(40),
+    location VARCHAR(40),
+    delivery_id INT,
+    SKU INT,
     PRIMARY KEY(supplier_name, location, delivery_id, SKU),
     FOREIGN KEY(delivery_id, supplier_name, location, SKU) REFERENCES Supply(delivery_id, supplier_name, location, SKU)
 );
