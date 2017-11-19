@@ -29,7 +29,7 @@ CREATE TABLE Employee (
     first_name VARCHAR(40) NOT NULL,
     last_name VARCHAR(40) NOT NULL,
     sin VARCHAR(40) NOT NULL,
-    wage FLOAT NOT NULL,
+    wage DECIMAL(19,2) NOT NULL,
     position VARCHAR(40) CHECK(position IN ('cashier', 'inventory associate', 'supervisor')),
     PRIMARY KEY(employee_id)
 );
@@ -48,10 +48,10 @@ CREATE TABLE Payroll (
     employee_id INT NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
-    hours_worked FLOAT NOT NULL,
-    deductions FLOAT,
-    gross_pay FLOAT NOT NULL,
-    net_pay FLOAT NOT NULL,
+    hours_worked DECIMAL(19,2) NOT NULL,
+    deductions DECIMAL(19,2),
+    gross_pay DECIMAL(19,2) NOT NULL,
+    net_pay DECIMAL(19,2) NOT NULL,
     PRIMARY KEY(employee_id, start_date, end_date),
     FOREIGN KEY(employee_id) REFERENCES Employee(employee_id)
 );
@@ -68,7 +68,7 @@ CREATE TABLE Transaction (
 CREATE TABLE Product (
     SKU INT NOT NULL,
     product_name VARCHAR(40) NOT NULL,
-    cost FLOAT NOT NULL,
+    cost DECIMAL(19,2) NOT NULL,
     days_to_expiry INT NOT NULL,
     PRIMARY KEY(SKU)
 );
@@ -107,7 +107,7 @@ CREATE TABLE Supply (
     supplier_name VARCHAR(40),
     location VARCHAR(40),
     delivery_quantity INT,
-    bulk_cost FLOAT,
+    bulk_cost DECIMAL(19,2),
     PRIMARY KEY(delivery_id, SKU, supplier_name, location),
     FOREIGN KEY(SKU) REFERENCES Product(SKU),
     FOREIGN KEY(supplier_name, location) REFERENCES Supplier(supplier_name, location)

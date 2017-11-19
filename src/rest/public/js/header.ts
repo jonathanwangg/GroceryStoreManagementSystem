@@ -64,22 +64,22 @@ let url: string = "http://localhost:4321",
         //first_name: "VARCHAR(40)",
         //last_name:  "VARCHAR(40)",
         sin: "VARCHAR(40)",
-        wage: "FLOAT",
+        wage: "DECIMAL(19,2)",
         position: "VARCHAR(40)",
 
         /* Payroll */
         //employee_id:  "INT",
         start_date: "DATE",
         end_date: "DATE",
-        hours_worked: "FLOAT",
-        deductions: "FLOAT",
-        gross_pay: "FLOAT",
-        net_pay: "FLOAT",
+        hours_worked: "DECIMAL(19,2)",
+        deductions: "DECIMAL(19,2)",
+        gross_pay: "DECIMAL(19,2)",
+        net_pay: "DECIMAL(19,2)",
 
         /* Product */
         sku: "INT",
         product_name: "VARCHAR(40)",
-        cost: "FLOAT",
+        cost: "DECIMAL(19,2)",
         days_to_expiry: "INT",
 
         /* Supplier */
@@ -88,7 +88,7 @@ let url: string = "http://localhost:4321",
         //phone_number:  "VARCHAR(40)"
 
         /* Custom Queries */
-        target: "FLOAT",
+        target: "DECIMAL(19,2)",
         delivery_quantity: "INT",
         quantity_inventory: "INT",
         quantity_receipt: "INT"

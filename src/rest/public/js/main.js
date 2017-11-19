@@ -197,7 +197,7 @@ function insertTableColumns() {
             return "<th>" + decorateText(attr) + "</th>";
         }).join("") + "</tr>";
     htmlStr += "<tr class=\"specification\">" + attributes.map(function (attr) {
-        if (["NUMBER", "FLOAT", "INT"].includes(type[attr])) {
+        if (["NUMBER", "DECIMAL(19,2)", "INT"].includes(type[attr])) {
             return "<td>\n" +
                 "                        <div class=\"operator-container-list\">\n" +
                 "                            <div class=\"operator-icon fa fa-calculator\" aria-hidden=\"true\">\n" +

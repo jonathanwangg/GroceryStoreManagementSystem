@@ -313,7 +313,7 @@ function insertTableColumns() {
 
     //create specifications for each header (contains search bar, >=, A..., sorter, etc.)
     htmlStr += "<tr class=\"specification\">" + attributes.map(function (attr: string) {
-        if (["NUMBER", "FLOAT", "INT"].includes(type[attr])) {
+        if (["NUMBER", "DECIMAL(19,2)", "INT"].includes(type[attr])) {
             return "<td>\n" +
                 "                        <div class=\"operator-container-list\">\n" +
                 "                            <div class=\"operator-icon fa fa-calculator\" aria-hidden=\"true\">\n" +

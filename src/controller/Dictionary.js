@@ -69,7 +69,7 @@ Dictionary.type = {
     join_date: "DATE",
     employee_id: "INT",
     sin: "VARCHAR(40)",
-    wage: "FLOAT",
+    wage: "DECIMAL(19,2)",
     position: "VARCHAR(40)",
     transaction_id: "INT",
     date_transaction: "DATE",
@@ -80,20 +80,20 @@ Dictionary.type = {
     end_time: "VARCHAR(40)",
     start_date: "DATE",
     end_date: "DATE",
-    hours_worked: "FLOAT",
-    deductions: "FLOAT",
-    gross_pay: "FLOAT",
-    net_pay: "FLOAT",
+    hours_worked: "DECIMAL(19,2)",
+    deductions: "DECIMAL(19,2)",
+    gross_pay: "DECIMAL(19,2)",
+    net_pay: "DECIMAL(19,2)",
     sku: "INT",
     product_name: "VARCHAR(40)",
-    cost: "FLOAT",
+    cost: "DECIMAL(19,2)",
     days_to_expiry: "INT",
     quantity: "INT",
     supplier_name: "VARCHAR(40)",
     location: "VARCHAR(40)",
     delivery_id: "INT",
     delivery_quantity: "INT",
-    bulk_cost: "FLOAT",
+    bulk_cost: "DECIMAL(19,2)",
 };
 Dictionary.populateStr = "BEGIN\n" +
     "execute immediate 'DROP TABLE Customer CASCADE CONSTRAINTS';\n" +
@@ -125,7 +125,7 @@ Dictionary.populateStr = "BEGIN\n" +
     "    first_name VARCHAR(40) NOT NULL,\n" +
     "    last_name VARCHAR(40) NOT NULL,\n" +
     "    sin VARCHAR(40) NOT NULL,\n" +
-    "    wage FLOAT NOT NULL,\n" +
+    "    wage DECIMAL(19,2) NOT NULL,\n" +
     "    position VARCHAR(40),\n" +
     "    PRIMARY KEY(employee_id)\n" +
     ")';\n" +
@@ -142,10 +142,10 @@ Dictionary.populateStr = "BEGIN\n" +
     "    employee_id INT NOT NULL,\n" +
     "    start_date DATE NOT NULL,\n" +
     "    end_date DATE NOT NULL,\n" +
-    "    hours_worked FLOAT NOT NULL,\n" +
-    "    deductions FLOAT,\n" +
-    "    gross_pay FLOAT NOT NULL,\n" +
-    "    net_pay FLOAT NOT NULL,\n" +
+    "    hours_worked DECIMAL(19,2) NOT NULL,\n" +
+    "    deductions DECIMAL(19,2),\n" +
+    "    gross_pay DECIMAL(19,2) NOT NULL,\n" +
+    "    net_pay DECIMAL(19,2) NOT NULL,\n" +
     "    PRIMARY KEY(employee_id, start_date, end_date),\n" +
     "    FOREIGN KEY(employee_id) REFERENCES Employee(employee_id)\n" +
     ")';\n" +
@@ -160,7 +160,7 @@ Dictionary.populateStr = "BEGIN\n" +
     "execute immediate 'CREATE TABLE Product (\n" +
     "    SKU INT NOT NULL,\n" +
     "    product_name VARCHAR(40) NOT NULL,\n" +
-    "    cost FLOAT NOT NULL,\n" +
+    "    cost DECIMAL(19,2) NOT NULL,\n" +
     "    days_to_expiry INT NOT NULL,\n" +
     "    PRIMARY KEY(SKU)\n" +
     ")';\n" +
@@ -195,7 +195,7 @@ Dictionary.populateStr = "BEGIN\n" +
     "    supplier_name VARCHAR(40),\n" +
     "    location VARCHAR(40),\n" +
     "    delivery_quantity INT,\n" +
-    "    bulk_cost FLOAT,\n" +
+    "    bulk_cost DECIMAL(19,2),\n" +
     "    PRIMARY KEY(delivery_id, SKU, supplier_name, location),\n" +
     "    FOREIGN KEY(SKU) REFERENCES Product(SKU),\n" +
     "    FOREIGN KEY(supplier_name, location) REFERENCES Supplier(supplier_name, location)\n" +
