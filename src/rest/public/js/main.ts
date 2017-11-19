@@ -573,10 +573,19 @@ function getTableData(): any {
  * Updates the Table HTML with the given response.
  */
 function updateTable(res: any): void {
-    let HTMLStr: String = res.rows.map(function (arr: any) {
-        return "<tr>" + arr.map(function (elem: any) {
-            return "<td>" + (typeof elem === "number" ? elem.toFixed(2) : elem) + "</td>";
-        }).join("") + "</tr>";
+    let colSize: number = res.metaData.length;
+    console.log(res);
+    let HTMLStr: string = res.rows.map(function (arr: any) {
+        let HTMLRowStr: string = "";
+
+        for (let j: number = 0; j < colSize; j++) {
+            let colName: string = res.metaData[j].name.toLowerCase();
+
+            console.log(colName + " is a " + type[colName] + ", so it is " + (type[colName] === "FLOAT"));
+            HTMLRowStr += "<td>" + (type[colName] === "DECIMAL(19,2)" ? arr[j].toFixed(2) : arr[j]) + "</td>";
+        }
+
+        return "<tr>" + HTMLRowStr + "</tr>";
     }).join("");
 
     $("tbody").html(HTMLStr);

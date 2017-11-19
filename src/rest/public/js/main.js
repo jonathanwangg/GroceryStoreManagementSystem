@@ -385,10 +385,16 @@ function getTableData() {
     });
 }
 function updateTable(res) {
+    var colSize = res.metaData.length;
+    console.log(res);
     var HTMLStr = res.rows.map(function (arr) {
-        return "<tr>" + arr.map(function (elem) {
-            return "<td>" + (typeof elem === "number" ? elem.toFixed(2) : elem) + "</td>";
-        }).join("") + "</tr>";
+        var HTMLRowStr = "";
+        for (var j = 0; j < colSize; j++) {
+            var colName = res.metaData[j].name.toLowerCase();
+            console.log(colName + " is a " + type[colName] + ", so it is " + (type[colName] === "FLOAT"));
+            HTMLRowStr += "<td>" + (type[colName] === "DECIMAL(19,2)" ? arr[j].toFixed(2) : arr[j]) + "</td>";
+        }
+        return "<tr>" + HTMLRowStr + "</tr>";
     }).join("");
     $("tbody").html(HTMLStr);
     setDragTable();

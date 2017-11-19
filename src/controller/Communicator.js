@@ -5,8 +5,8 @@ var Communicator = (function () {
     }
     Communicator.processInput = function (data) {
         return new Promise(function (resolve, reject) {
-            var SQLStr = Communicator.getSQLStr(data);
-            Communicator.communicate(SQLStr)
+            console.log(Communicator.getSQLStr(data));
+            Communicator.communicate(Communicator.getSQLStr(data))
                 .then(function (res) {
                 return resolve(res);
             })
@@ -142,6 +142,7 @@ var Communicator = (function () {
             connection.execute(SQLStr, {}, {
                 fetchInfo: {
                     JOIN_DATE: { type: Communicator.oracledb.STRING },
+                    WORK_DATE: { type: Communicator.oracledb.STRING },
                     START_DATE: { type: Communicator.oracledb.STRING },
                     END_DATE: { type: Communicator.oracledb.STRING },
                     DATE_TRANSACTION: { type: Communicator.oracledb.STRING }
@@ -210,14 +211,16 @@ var Communicator = (function () {
             case "select":
                 var map_1 = {};
                 data.attributes.forEach(function (key, i) {
-                    if (data.inputs[i].length !== 0) {
+                    if (data.inputs[i] && data.inputs[i].length !== 0) {
                         map_1[key] = data.inputs[i];
                     }
                     else {
                         delete data.operators[i];
                     }
                 });
-                return "SELECT " + data.attributes.join(", ") + "\nFROM " + data.entity
+                return "SELECT " + data.attributes.filter(function (attribute) {
+                    return attribute !== undefined && attribute !== null;
+                }).join(", ") + "\nFROM " + data.entity
                     + Communicator.getWHERE(Object.keys(map_1).length, Object.keys(map_1), data.operators.filter(function (value) {
                         return value !== 0;
                     }), Object.keys(map_1).map(function (key) {
@@ -230,7 +233,7 @@ var Communicator = (function () {
                 var PK = Dictionary_1.default.PKNK[entity + "PK"];
                 return "DELETE FROM " + data.entity
                     + Communicator.getWHERE(PK.length, PK, PK.map(function (key) {
-                        return Dictionary_1.default.type[key] === "NUMBER" ? '=' : 'A';
+                        return Communicator.isNumber(key) ? '=' : 'A';
                     }), PK.map(function (key) {
                         return inputs[key];
                     }));
@@ -251,19 +254,19 @@ var Communicator = (function () {
     Communicator.insert = function (entity, inputs) {
         return "INSERT INTO " + entity + " ("
             + Object.keys(inputs).join(", ") + ")" + "\nVALUES ("
-            + Object.keys(inputs).map(function (elem) {
-                if (Dictionary_1.default.type[elem] === "NUMBER") {
-                    return inputs[elem];
-                }
-                return "\'" + inputs[elem] + "\'";
+            + Object.keys(inputs).map(function (key) {
+                return Communicator.isNumber(key) ? inputs[key] : "\'" + inputs[key] + "\'";
             }).join(", ") + ")";
+    };
+    Communicator.isNumber = function (key) {
+        return ["INT", "DECIMAL(19,2)"].includes(Dictionary_1.default.type[key]);
     };
     Communicator.update = function (entity, inputs) {
         var SQLStr = "UPDATE " + entity + "\nSET ", NK = Dictionary_1.default.PKNK[entity + "NK"].filter(function (key) {
             return inputs[key].length !== 0;
         }), PK = Dictionary_1.default.PKNK[entity + "PK"];
         SQLStr += NK.map(function (key) {
-            return key + " = " + (Dictionary_1.default.type[key] === "NUMBER" ? inputs[key] : "'" + inputs[key] + "'");
+            return key + " = " + (Communicator.isNumber(key) ? inputs[key] : "'" + inputs[key] + "'");
         }).join(", ");
         return SQLStr + Communicator.getWHERE(PK.length, PK, PK.map(function () {
             return '=';

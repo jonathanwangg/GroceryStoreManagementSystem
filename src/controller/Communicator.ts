@@ -15,9 +15,9 @@ export default class Communicator {
      */
     public static processInput(data: Object): any {
         return new Promise(function (resolve, reject) {
-            let SQLStr: string = Communicator.getSQLStr(data);
+            console.log(Communicator.getSQLStr(data));
 
-            Communicator.communicate(SQLStr)
+            Communicator.communicate(Communicator.getSQLStr(data))
                 .then(function (res: any) {
                     return resolve(res);
                 })
@@ -183,6 +183,7 @@ export default class Communicator {
             connection.execute(SQLStr, {}, {
                 fetchInfo: {
                     JOIN_DATE: {type: Communicator.oracledb.STRING},
+                    WORK_DATE: {type: Communicator.oracledb.STRING},
                     START_DATE: {type: Communicator.oracledb.STRING},
                     END_DATE: {type: Communicator.oracledb.STRING},
                     DATE_TRANSACTION: {type: Communicator.oracledb.STRING}
@@ -269,14 +270,16 @@ export default class Communicator {
                 let map: Object = {};
 
                 data.attributes.forEach(function (key: string, i: number) {
-                    if (data.inputs[i].length !== 0) {
+                    if (data.inputs[i] && data.inputs[i].length !== 0) {
                         map[key] = data.inputs[i];
                     } else {
                         delete data.operators[i];
                     }
                 });
 
-                return "SELECT " + data.attributes.join(", ") + "\nFROM " + data.entity
+                return "SELECT " + data.attributes.filter(function (attribute: string) {
+                        return attribute !== undefined && attribute !== null;
+                    }).join(", ") + "\nFROM " + data.entity
                     + Communicator.getWHERE(Object.keys(map).length, Object.keys(map), data.operators.filter(function (value: any) {
                             return value !== 0;
                         }),
@@ -292,7 +295,7 @@ export default class Communicator {
                 return "DELETE FROM " + data.entity
                     + Communicator.getWHERE(PK.length, PK,
                         PK.map(function (key: any) {
-                            return Dictionary.type[key] === "NUMBER" ? '=' : 'A';
+                            return Communicator.isNumber(key) ? '=' : 'A';
                         }), PK.map(function (key: string) {
                             return inputs[key];
                         }));
@@ -321,13 +324,16 @@ export default class Communicator {
     public static insert(entity: string, inputs: Object): string {
         return "INSERT INTO " + entity + " ("
             + Object.keys(inputs).join(", ") + ")" + "\nVALUES ("
-            + Object.keys(inputs).map(function (elem) {
-                if (Dictionary.type[elem] === "NUMBER") {
-                    return inputs[elem];
-                }
-
-                return "\'" + inputs[elem] + "\'";
+            + Object.keys(inputs).map(function (key) {
+                return Communicator.isNumber(key) ? inputs[key] : "\'" + inputs[key] + "\'";
             }).join(", ") + ")";
+    }
+
+    /**
+     * Returns true if the given key is a number, else false.
+     */
+    public static isNumber(key: any) {
+        return ["INT", "DECIMAL(19,2)"].includes(Dictionary.type[key]);
     }
 
     /**
@@ -341,7 +347,7 @@ export default class Communicator {
             PK = Dictionary.PKNK[entity + "PK"];
 
         SQLStr += NK.map(function (key: string) {
-            return key + " = " + (Dictionary.type[key] === "NUMBER" ? inputs[key] : "'" + inputs[key] + "'");
+            return key + " = " + (Communicator.isNumber(key) ? inputs[key] : "'" + inputs[key] + "'");
         }).join(", ");
 
         return SQLStr + Communicator.getWHERE(PK.length, PK,
