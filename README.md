@@ -1,3 +1,17 @@
+# Modeling a Grocery Store Management System
+
+- Created an application for employees to inquire about store information such as sales, wages, work scheduling, and inventory.
+- Provided a database where new information about the store could be updated in real time such as item purchases, sales, and stock delivery.
+- Constructed an easy to use interface to allow the manager to quickly determine certain information such as "highest sales this week" and "find the date of a transaction".
+
+Technologies Used:
+- TypeScript
+- HTML
+- CSS
+- SQL
+
+# Other
+
 Setting up Windows (run everything in Windows CMD):
 1) Install Node.js from the Node.js website
 2) At the project root directory, run
